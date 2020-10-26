@@ -9,6 +9,7 @@
 
 #include "headers/tinyShell.h"
 #include "headers/error.h"
+#include "headers/variables.h"
 
 void afficherRetour(char** tabcmd) {
     char** ps;
@@ -40,6 +41,12 @@ void demanderCommande(char** tabcmd) {
 }
 
 void executerCommande(char** tabcmd) {
+    if (!strcmp(*tabcmd, CMD_SETVARIABLE)) {
+        // Vire le "set"
+        ++tabcmd;
+        setVariable(tabcmd);
+        exit(0);
+    }
     execvp(*tabcmd, tabcmd);
     syserror(2);
     exit(FAIL_EXEC);
@@ -48,6 +55,8 @@ void executerCommande(char** tabcmd) {
 int main(void) {
     char* tabcmd[size];
     pid_t pid;
+
+    listeVariables = (list_var) calloc(1, sizeof(struct var_locale));
 
     for(;;) {
         demanderCommande(tabcmd);
