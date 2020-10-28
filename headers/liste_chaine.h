@@ -1,3 +1,6 @@
+#ifndef LISTE_CHAINEE
+#define LISTE_CHAINEE
+
 typedef struct var_locale var_locale;
 struct var_locale
 {
@@ -16,3 +19,5 @@ list_var supprimerVar(list_var liste, char *nom);
 list_var var_existe(list_var liste, char *nom);
 
 void afficher_variables(list_var liste);
+
+#endif

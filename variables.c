@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 #include "headers/variables.h"
-
+#include "headers/liste_chaine.h"
 
 int setVariable(char** tabcmd) {
     char* commande;
@@ -13,14 +13,29 @@ int setVariable(char** tabcmd) {
     printf("La commande finale : %s\n", commande);
 
     gererVariableDepuisCommande(commande, nomsVariables, '$', '=');
-    for (int i = 0; nomsVariables[i] != NULL; i++) {
-        printf("Le nom de la %dieme variable : %s\n", i, nomsVariables[i]);
-    }
+    // for (int i = 0; nomsVariables[i] != NULL; i++) {
+    //     printf("Le nom de la %dieme variable : %s\n", i, nomsVariables[i]);
+    // }
 
     gererVariableDepuisCommande(commande, valeursVariables, '=', '$');
-    for (int i = 0; valeursVariables[i] != NULL; i++) {
-        printf("La valeur de la %dieme variable : %s\n", i, valeursVariables[i]);
+    // for (int i = 0; valeursVariables[i] != NULL; i++) {
+    //     printf("La valeur de la %dieme variable : %s\n", i, valeursVariables[i]);
+    // }
+    for (int i = 0; nomsVariables[i] != NULL; i++) {
+        if (valeursVariables[i] == NULL) exit(1);
+        var_locale* variable;
+
+        if ((variable = var_existe(listeVariables, nomsVariables[i])) != NULL) {
+            variable->valeur = valeursVariables[i];
+            if (variable->suivant == NULL) printf("Le suivant de l'existant : NULL\n");
+            else printf("Le suivant de l'existant : %s\n", variable->suivant->nom);
+        }
+        else {
+            printf("N'existe pas\n");
+            ajouterEnFin(listeVariables, nomsVariables[i], valeursVariables[i]);
+        }
     }
+        afficher_variables(listeVariables);
 
     return 0;
 }
