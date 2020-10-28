@@ -10,7 +10,6 @@ int setVariable(char** tabcmd) {
     char* commande;
     char* nomsVariables[1024], *valeursVariables[1024];
     commande = gestionEspacesCommande(tabcmd);
-    printf("La commande finale : %s\n", commande);
 
     gererVariableDepuisCommande(commande, nomsVariables, '$', '=');
     // for (int i = 0; nomsVariables[i] != NULL; i++) {
@@ -27,11 +26,8 @@ int setVariable(char** tabcmd) {
 
         if ((variable = var_existe(listeVariables, nomsVariables[i])) != NULL) {
             variable->valeur = valeursVariables[i];
-            if (variable->suivant == NULL) printf("Le suivant de l'existant : NULL\n");
-            else printf("Le suivant de l'existant : %s\n", variable->suivant->nom);
         }
         else {
-            printf("N'existe pas\n");
             ajouterEnFin(listeVariables, nomsVariables[i], valeursVariables[i]);
         }
     }
