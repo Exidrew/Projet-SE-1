@@ -10,6 +10,7 @@
 #include "headers/tinyShell.h"
 #include "headers/error.h"
 #include "headers/variables.h"
+#include "headers/tubeCommunication.h"
 
 void afficherRetour(char** tabcmd) {
     char** ps;
@@ -44,7 +45,8 @@ void executerCommande(char** tabcmd) {
     if (!strcmp(*tabcmd, CMD_SETVARIABLE)) {
         // Vire le "set"
         ++tabcmd;
-        setVariable(tabcmd);
+        listeVariables = setVariable(tabcmd, listeVariables);
+        ecrireVariableVersTube(tubeSetVariable, listeVariables);
         exit(0);
     }
     execvp(*tabcmd, tabcmd);
@@ -56,19 +58,20 @@ int main(void) {
     char* tabcmd[size];
     pid_t pid;
 
-    listeVariables = (list_var) calloc(1, sizeof(struct var_locale));
-
     for(;;) {
+        creerTubeDeCommunication(tubeSetVariable);
         demanderCommande(tabcmd);
         if (!strcmp(*tabcmd, "exit")) exit(0);
         if ((pid = fork()) == ERR) {
             fatalsyserror(1);
         }
-        if(pid) {
-            afficherRetour(tabcmd);
+        if(!pid) {
+            executerCommande(tabcmd);
         }
         else {
-            executerCommande(tabcmd);
+            afficherRetour(tabcmd);
+            lireVariableDepuisTube(tubeSetVariable);
+            afficher_variables(listeVariables);
         }
     }
     exit(0);

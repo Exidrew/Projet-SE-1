@@ -4,8 +4,8 @@
 typedef struct var_locale var_locale;
 struct var_locale
 {
-    char *nom;
-    char *valeur;
+    char nom[1024];
+    char valeur[1024];
     struct var_locale *suivant;
 };
 
@@ -19,5 +19,7 @@ list_var supprimerVar(list_var liste, char *nom);
 list_var var_existe(list_var liste, char *nom);
 
 void afficher_variables(list_var liste);
+
+int tailleChaine(var_locale* liste);
 
 #endif

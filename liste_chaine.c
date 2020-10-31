@@ -3,25 +3,19 @@
 #include <string.h>
 #include "headers/liste_chaine.h"
 
-list_var ajouterEnFin(list_var liste, char *nom, char *valeur)
+list_var ajouterEnFin(list_var liste, char nom[1024], char valeur[1024])
 {
     var_locale* nouvelleVar_locale = malloc(sizeof(var_locale));
-    nouvelleVar_locale->nom = nom;
-    nouvelleVar_locale->valeur = valeur;
+    for (int i = 0; i < 1024; i++) nouvelleVar_locale->nom[i] = nom[i];
+    for (int i = 0; i < 1024; i++) nouvelleVar_locale->valeur[i] = valeur[i];
     var_locale* variableExistante = var_existe(liste, nom);
     if(variableExistante != NULL){
-        variableExistante->valeur = valeur;
-        return liste;
-    }
-    if(liste == NULL)
-    {
+        for (int i = 0; i < 1024; i++) variableExistante->valeur[i] = valeur[i];
         return nouvelleVar_locale;
     }
-    else
-    {
-        nouvelleVar_locale->suivant = liste;
-        return nouvelleVar_locale;
-    }
+
+    nouvelleVar_locale->suivant = liste;
+    return nouvelleVar_locale;
 }
 
 list_var supprimerVar(list_var liste, char *nom){
@@ -61,6 +55,7 @@ list_var supprimerVar(list_var liste, char *nom){
             }
         }
     }
+    return NULL;
 }
 
 list_var var_existe(list_var liste, char *nom)
@@ -69,7 +64,7 @@ list_var var_existe(list_var liste, char *nom)
     if(liste == NULL){
         return NULL; 
     }
-    while(tmp != NULL){
+    while(tmp != NULL && tmp->nom != NULL){
         if(strcmp(tmp->nom, nom) == 0)
             return tmp;
         tmp = tmp->suivant;
@@ -89,4 +84,19 @@ void afficher_variables(list_var liste)
             tmp = tmp->suivant;
         }
     }
+}
+
+int tailleChaine(var_locale* liste) {
+    var_locale* tmp = liste;
+    int total = 0;
+    if(liste == NULL){
+        return total;
+    }
+    else{
+        while(tmp != NULL){
+            total++;
+            tmp = tmp->suivant;
+        }
+    }
+    return total;
 }

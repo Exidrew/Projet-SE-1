@@ -5,10 +5,10 @@
 
 #define CMD_SETVARIABLE "set"
 
-list_var listeVariables;
+var_locale* listeVariables;
 
 int verifierCommande(char** tabcmd);
-int setVariable(char** tabcmd);
+list_var setVariable(char** tabcmd, list_var variables);
 char* gestionEspacesCommande(char** tabcmd);
 /*
     Fonction qui va ajouter les chaines commencant par début et terminant par fin

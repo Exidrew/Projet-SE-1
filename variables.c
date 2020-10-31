@@ -6,7 +6,7 @@
 #include "headers/variables.h"
 #include "headers/liste_chaine.h"
 
-int setVariable(char** tabcmd) {
+list_var setVariable(char** tabcmd, list_var variables) {
     char* commande;
     char* nomsVariables[1024], *valeursVariables[1024];
     commande = gestionEspacesCommande(tabcmd);
@@ -22,18 +22,13 @@ int setVariable(char** tabcmd) {
     // }
     for (int i = 0; nomsVariables[i] != NULL; i++) {
         if (valeursVariables[i] == NULL) exit(1);
-        var_locale* variable;
-
-        if ((variable = var_existe(listeVariables, nomsVariables[i])) != NULL) {
-            variable->valeur = valeursVariables[i];
-        }
-        else {
-            ajouterEnFin(listeVariables, nomsVariables[i], valeursVariables[i]);
-        }
+        variables = ajouterEnFin(variables, nomsVariables[i], valeursVariables[i]);
     }
-        afficher_variables(listeVariables);
 
-    return 0;
+    printf("Affichage depuis le fils : \n");
+    afficher_variables(variables);
+
+    return variables;
 }
 
 char** gererVariableDepuisCommande(char* commande, char** tab, char debut, char fin) {
