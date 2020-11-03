@@ -13,6 +13,7 @@
 int tubeSetVariable[2];
 
 void afficherRetour(char** tabcmd);
+void demanderCommande(char** tabcmd);
 void executerCommande(char** tabcmd);
 
 #endif

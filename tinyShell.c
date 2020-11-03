@@ -41,14 +41,15 @@ void demanderCommande(char** tabcmd) {
     if (i) tabcmd[i] = NULL;
 }
 
-void executerCommande(char** tabcmd) {
-    if (!strcmp(*tabcmd, CMD_SETVARIABLE)) {
-        // Vire le "set"
-        ++tabcmd;
+void executerSetVariable(char** tabcmd) {
+        ++tabcmd; // Vire le "set"
         listeVariables = setVariable(tabcmd, listeVariables);
         ecrireVariableVersTube(tubeSetVariable, listeVariables);
         exit(0);
-    }
+}
+
+void executerCommande(char** tabcmd) {
+    if (!strcmp(*tabcmd, CMD_SETVARIABLE)) executerSetVariable(tabcmd);
     execvp(*tabcmd, tabcmd);
     syserror(2);
     exit(FAIL_EXEC);
@@ -65,12 +66,11 @@ int main(void) {
         if ((pid = fork()) == ERR) {
             fatalsyserror(1);
         }
-        if(!pid) {
-            executerCommande(tabcmd);
-        }
+        if(!pid) executerCommande(tabcmd);
         else {
             afficherRetour(tabcmd);
             lireVariableDepuisTube(tubeSetVariable);
+            fermerTube(tubeSetVariable);
             afficher_variables(listeVariables);
         }
     }
