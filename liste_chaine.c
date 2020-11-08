@@ -3,11 +3,11 @@
 #include <string.h>
 #include "headers/liste_chaine.h"
 
-list_var ajouterEnFin(list_var liste, char nom[1024], char valeur[1024])
+list_var ajouter(list_var liste, char nom[1024], char valeur[1024])
 {
-    var_locale* nouvelleVar_locale = malloc(sizeof(var_locale));
-    for (int i = 0; i < 1024; i++) nouvelleVar_locale->nom[i] = nom[i];
-    for (int i = 0; i < 1024; i++) nouvelleVar_locale->valeur[i] = valeur[i];
+    var_locale* nouvelleVar_locale = calloc(1, sizeof(var_locale));
+    for (int i = 0; i < strlen(nom); i++) nouvelleVar_locale->nom[i] = nom[i];
+    for (int i = 0; i < strlen(valeur); i++) nouvelleVar_locale->valeur[i] = valeur[i];
     var_locale* variableExistante = var_existe(liste, nom);
     if(variableExistante != NULL){
         for (int i = 0; i < 1024; i++) variableExistante->valeur[i] = valeur[i];
@@ -23,7 +23,7 @@ list_var supprimerVar(list_var liste, char *nom){
     var_locale* ptmp = liste;
     if(liste == NULL)
         return NULL;
- 
+
     if(liste->suivant == NULL)
     {
         if(strcmp(liste->nom, nom) == 0)
@@ -75,12 +75,12 @@ list_var var_existe(list_var liste, char *nom)
 void afficher_variables(list_var liste)
 {
     var_locale* tmp = liste;
-    if(liste == NULL){
+    if(tmp == NULL){
         printf("pas de variable locale en memoire\n");
     }
     else{
-        while(tmp != NULL){
-            printf("%s : %s\n",tmp->nom, tmp->valeur);
+        while (tmp != NULL) {
+            printf("%s : %s\n", tmp->nom, tmp->valeur);
             tmp = tmp->suivant;
         }
     }
@@ -99,4 +99,13 @@ int tailleChaine(var_locale* liste) {
         }
     }
     return total;
+}
+
+void freeVariables(list_var liste) {
+    list_var tmp;
+    while (liste != NULL) {
+        tmp = liste;
+        liste = liste->suivant;
+        free(tmp);
+    }
 }

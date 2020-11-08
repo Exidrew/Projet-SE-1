@@ -9,70 +9,87 @@
 
 #include "headers/tinyShell.h"
 #include "headers/error.h"
+#include "headers/gestionChaine.h"
 #include "headers/variables.h"
 #include "headers/tubeCommunication.h"
 
-void afficherRetour(char** tabcmd) {
-    char** ps;
+void afficherRetour(char** tabcmd, int nbCommandes) {
     int status;
     wait(&status);
     if (WIFEXITED(status)) {
         if ((status = WEXITSTATUS(status)) != FAIL_EXEC) {
             printf(VERT("exit status of ["));
-            for (ps = tabcmd; *ps; ps++) printf("%s ", *ps);
+            afficherEnBrutLesCommandesEntrees(tabcmd, nbCommandes);
             printf(VERT("\b]=%d\n"), status);
         }
     }
     else puts(ROUGE("Abnormal exit"));
 }
 
-void demanderCommande(char** tabcmd) {
-    char lgcmd[sizelgcmd], *s;
-    int i;
-    putchar('>');
-    fgets(lgcmd, sizelgcmd-1, stdin);
-    for(s=lgcmd; isspace(*s); s++);
-    for(i=0; *s;i++) {
-        tabcmd[i] = s;
-        while(!isspace(*s)) s++;
-        *s++='\0';
-        while (isspace(*s)) s++;
+void executerSetVariable(char* tabcmd) {
+    listeVariables = setVariable(tabcmd, listeVariables);
+}
+
+void executerCommande(char** tabcmd, int nbCommandes) {
+    afficherLesCommandesEntrees(tabcmd, nbCommandes);
+    for (int i = 0; i <= nbCommandes; i++) {
+        printf("Entre\n");
+        if (estCommande(tabcmd[i], CMD_SETVARIABLE)) {
+            executerSetVariable(tabcmd[i]);
+        }
+        else {
+            execvp(*tabcmd, tabcmd);
+            syserror(2);
+            freeCommandes(tabcmd, nbCommandes);
+            freeVariables(listeVariables);
+            exit(FAIL_EXEC);
+        }
     }
-    if (i) tabcmd[i] = NULL;
+    ecrireVariableVersTube(tubeSetVariable, listeVariables);
+    freeCommandes(tabcmd, nbCommandes);
+    freeVariables(listeVariables);
+    exit(0);
 }
 
-void executerSetVariable(char** tabcmd) {
-        ++tabcmd; // Vire le "set"
-        listeVariables = setVariable(tabcmd, listeVariables);
-        ecrireVariableVersTube(tubeSetVariable, listeVariables);
-        exit(0);
-}
-
-void executerCommande(char** tabcmd) {
-    if (!strcmp(*tabcmd, CMD_SETVARIABLE)) executerSetVariable(tabcmd);
-    execvp(*tabcmd, tabcmd);
-    syserror(2);
-    exit(FAIL_EXEC);
+void freeCommandes(char** commandes, int nbCommandes) {
+    int i;
+    for (i = 0; i < sizelgcmd; i++) {
+        free(commandes[i]);
+    }
+    free(commandes);
 }
 
 int main(void) {
-    char* tabcmd[size];
+    char** commandes;
+    int nbCommandes;
     pid_t pid;
+
+    commandes = allouerMemoireCommandes();
 
     for(;;) {
         creerTubeDeCommunication(tubeSetVariable);
-        demanderCommande(tabcmd);
-        if (!strcmp(*tabcmd, "exit")) exit(0);
+        commandes = demanderCommande(commandes, &nbCommandes);
+        if (!strcmp(*commandes, CMD_EXIT)) {
+            freeCommandes(commandes, nbCommandes);
+            freeVariables(listeVariables);
+            exit(0);
+        }
         if ((pid = fork()) == ERR) {
+            freeCommandes(commandes, nbCommandes);
             fatalsyserror(1);
         }
-        if(!pid) executerCommande(tabcmd);
+        if(!pid) executerCommande(commandes, nbCommandes);
         else {
-            afficherRetour(tabcmd);
+            printf("nbCommandes : %d\n", nbCommandes);
+            afficherRetour(commandes, nbCommandes);
             lireVariableDepuisTube(tubeSetVariable);
             fermerTube(tubeSetVariable);
             afficher_variables(listeVariables);
+            viderCommande(commandes, nbCommandes);
         }
     }
+    fermerTube(tubeSetVariable);
+    freeCommandes(commandes, nbCommandes);
+    freeVariables(listeVariables);
     exit(0);
 }

@@ -7,13 +7,21 @@
 
 var_locale* listeVariables;
 
-int verifierCommande(char** tabcmd);
-list_var setVariable(char** tabcmd, list_var variables);
+list_var setVariable(char* tabcmd, list_var variables);
 char* gestionEspacesCommande(char** tabcmd);
 /*
     Fonction qui va ajouter les chaines commencant par début et terminant par fin
     dans le tableau tab
 */
 char** gererVariableDepuisCommande(char* commande, char** tab, char debut, char fin);
+
+/*
+    Fonction qui va ajouter les chaines terminant par fin dans le tableau tab
+*/
+char* gererVariableDepuisCommande2(char* commande, char tab[1024], char fin);
+
+void afficherLesCommandesEntrees(char** commandes, int nbCommandes);
+
+void afficherEnBrutLesCommandesEntrees(char** commandes, int nbCommandes);
 
 #endif

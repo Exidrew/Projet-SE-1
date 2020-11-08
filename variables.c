@@ -6,29 +6,46 @@
 #include "headers/variables.h"
 #include "headers/liste_chaine.h"
 
-list_var setVariable(char** tabcmd, list_var variables) {
-    char* commande;
-    char* nomsVariables[1024], *valeursVariables[1024];
-    commande = gestionEspacesCommande(tabcmd);
-
-    gererVariableDepuisCommande(commande, nomsVariables, '$', '=');
-    // for (int i = 0; nomsVariables[i] != NULL; i++) {
-    //     printf("Le nom de la %dieme variable : %s\n", i, nomsVariables[i]);
-    // }
-
-    gererVariableDepuisCommande(commande, valeursVariables, '=', '$');
-    // for (int i = 0; valeursVariables[i] != NULL; i++) {
-    //     printf("La valeur de la %dieme variable : %s\n", i, valeursVariables[i]);
-    // }
-    for (int i = 0; nomsVariables[i] != NULL; i++) {
-        if (valeursVariables[i] == NULL) exit(1);
-        variables = ajouterEnFin(variables, nomsVariables[i], valeursVariables[i]);
+char* retirerSet(char* commande) {
+    while (*commande != ' ') {
+        commande++;
     }
+    commande++;
+
+    return commande;
+}
+
+list_var setVariable(char* commande, list_var variables) {
+    char nomVariable[1024], valeurVariable[1024], *cmd;
+
+    printf("Entre setVariable avec la commande : %s\n", commande);
+    commande = retirerSet(commande);
+    printf("Après : %s\n", commande);
+
+    cmd = gererVariableDepuisCommande2(commande, nomVariable, '=');
+    gererVariableDepuisCommande2(cmd, valeurVariable, ';');
+
+    printf("Nom : %s\n", nomVariable);
+    printf("Valeur : %s\n", valeurVariable);
+    variables = ajouter(variables, nomVariable, valeurVariable);
 
     printf("Affichage depuis le fils : \n");
     afficher_variables(variables);
 
     return variables;
+}
+
+char* gererVariableDepuisCommande2(char* commande, char tab[1024], char fin) {
+    int i, sizeCommande = strlen(commande);
+
+    for (i = 0; i < sizeCommande; i++) {
+        if (commande[0] == fin) break;
+        tab[i] = commande[0];
+        commande++;
+    }
+    commande++; // Retrait du '='
+    tab[i] = '\0';
+    return commande;
 }
 
 char** gererVariableDepuisCommande(char* commande, char** tab, char debut, char fin) {
@@ -55,14 +72,4 @@ char** gererVariableDepuisCommande(char* commande, char** tab, char debut, char 
     if(fin == '$') tab[nbVariable] = nom;
 
     return tab;
-}
-
-char* gestionEspacesCommande(char** tabcmd) {
-    char* commande = (char*) calloc(2048,sizeof(char));
-    for (int i = 0; tabcmd[i] != NULL; i++) {
-        commande = strcat(commande, tabcmd[i]);
-    }
-    commande[strlen(commande)] = '\0';
-    commande = (char*) realloc(commande, (strlen(commande)+1) * sizeof(char));
-    return commande;
 }

@@ -12,7 +12,7 @@ struct var_locale
 typedef var_locale* list_var;
 
 
-list_var ajouterEnFin(list_var liste, char *nom, char *valeur);
+list_var ajouter(list_var liste, char *nom, char *valeur);
 
 list_var supprimerVar(list_var liste, char *nom);
 
@@ -21,5 +21,7 @@ list_var var_existe(list_var liste, char *nom);
 void afficher_variables(list_var liste);
 
 int tailleChaine(var_locale* liste);
+
+void freeVariables(list_var liste);
 
 #endif

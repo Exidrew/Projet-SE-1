@@ -4,16 +4,18 @@
 #include "liste_chaine.h"
 
 #define FAIL_EXEC 127
-#define sizelgcmd 4096
-#define size 1024
+#define CMD_EXIT "exit"
 
 #define ROUGE(message) "\033[01;31m"message"\033[0m"
 #define VERT(message) "\033[01;32m"message"\033[0m"
 
+#define estCommande(commande, programme)\
+    !strncmp(commande, programme, strlen(programme))
+
 int tubeSetVariable[2];
 
-void afficherRetour(char** tabcmd);
-void demanderCommande(char** tabcmd);
-void executerCommande(char** tabcmd);
+void afficherRetour(char** tabcmd, int nbCommandes);
+void executerCommande(char** tabcmd, int nbCommandes);
+void freeCommandes(char** commandes, int nbCommandes);
 
 #endif

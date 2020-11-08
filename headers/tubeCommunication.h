@@ -1,7 +1,7 @@
 #ifndef TUBE_COMMUNICATION
 #define TUBE_COMMUNICATION
 
-int creerTubeDeCommunication(int* tubeDescriptor);
+int creerTubeDeCommunication(int tubeDescriptor[2]);
 void ecrireVersSortieStandard(int tubeDescriptor[2]);
 void lireDepuisEntreeStandard(int tubeDescriptor[2]);
 void fermerCoteTubes(int nbArgs, ...);

@@ -12,11 +12,12 @@
 
 #define ERR -1
 
-int creerTubeDeCommunication(int* tubeDescriptor) {
+int creerTubeDeCommunication(int tubeDescriptor[2]) {
     int idPipe = pipe(tubeDescriptor);
 
     if (idPipe == ERR) {
         perror("Pipe cannot be created");
+        free(tubeDescriptor);
         exit(1);
     }
 
@@ -92,7 +93,9 @@ void lireVariableDepuisTube(int tubeDescriptor[2]) {
         read(tubeDescriptor[0], &size, sizeof(int));
         char*valeur = (char*) malloc(size * sizeof(char) + 1);
         read(tubeDescriptor[0], valeur, size * sizeof(char) + 1);
-        listeVariables = ajouterEnFin(listeVariables, nom, valeur);
+        listeVariables = ajouter(listeVariables, nom, valeur);
+        free(nom);
+        free(valeur);
     }
     close(tubeDescriptor[0]);
 }
