@@ -8,6 +8,8 @@ char** allouerMemoireCommandes();
 void afficherLesCommandesEntrees(char** commandes, int nbCommandes);
 char** demanderCommande(char** commandeSansEspaces, int* nbCommandes);
 char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int* nbCommandes);
-void viderCommande(char** commandes, int nbCommande) ;
-
+void viderCommande(char** commandes, int nbCommande);
+int getPwd(char *repertory);
+int getComputerName(char *hostName);
+void affichageLigneShell();
 #endif

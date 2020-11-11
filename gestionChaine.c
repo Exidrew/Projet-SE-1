@@ -2,8 +2,13 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <limits.h>
+#include <unistd.h>
 
 #include "headers/gestionChaine.h"
+
+#define BLEU(m) "\033[01;34m"m"\033[0m"
+#define VERT(m) "\033[01;32m"m"\033[0m"
 
 char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int* nbCommandes) {
     int i, nbEspace = 0, j = 0, indexCommandes = 0;
@@ -35,9 +40,36 @@ char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int*
     return commandeSansEspaces;
 }
 
+void affichageLigneShell(){
+    char repertory[100];
+    char hostName[100];
+    getPwd(repertory);
+    getComputerName(hostName);
+    
+    printf(VERT("%s"), hostName);
+    putchar(':');
+    printf(BLEU("%s"), repertory);
+    putchar('$');
+    putchar(' ');
+}
+
+int getPwd(char *repertory){
+    if(getcwd(repertory, UCHAR_MAX) == NULL){
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
+int getComputerName(char *hostName){
+    if(gethostname(hostName, UCHAR_MAX) == -1){
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}   
+
 char** demanderCommande(char** commandeSansEspaces, int* nbCommandes) {
     char commandeEntree[sizelgcmd], **commandes;
-    putchar('>');
+    affichageLigneShell();
     fgets(commandeEntree, sizelgcmd-1, stdin);
 
     commandes = retirerEspaces(commandeEntree, commandeSansEspaces, nbCommandes);
