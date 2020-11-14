@@ -83,15 +83,17 @@ void ecrireVariableVersTube(int tubeDescriptor[2], var_locale* variables) {
 }
 
 void lireVariableDepuisTube(int tubeDescriptor[2]) {
-    int size = 0, nbVariables = 0;
+    int size = 1, nbVariables = 0;
     close(tubeDescriptor[1]);
     read(tubeDescriptor[0], &nbVariables, sizeof(int));
     for (int i = 0; i < nbVariables; i++) {
         read(tubeDescriptor[0], &size, sizeof(int));
-        char *nom = (char*) malloc(size * sizeof(char) + 1);
+        char* nom = (char*) calloc(size, sizeof(char) + 1);
+        if (nom == NULL) perror("Problème de pointeur pour le nom"), free(nom), exit(3);
         read(tubeDescriptor[0], nom, size * sizeof(char) + 1);
         read(tubeDescriptor[0], &size, sizeof(int));
-        char*valeur = (char*) malloc(size * sizeof(char) + 1);
+        char* valeur = (char*) calloc(size, sizeof(char) + 1);
+        if (nom == NULL) perror("Problème de pointeur pour la valeur"), free(valeur), exit(4);
         read(tubeDescriptor[0], valeur, size * sizeof(char) + 1);
         listeVariables = ajouter(listeVariables, nom, valeur);
         free(nom);

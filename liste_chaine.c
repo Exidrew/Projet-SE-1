@@ -9,9 +9,13 @@ list_var ajouter(list_var liste, char nom[1024], char valeur[1024])
     for (int i = 0; i < strlen(nom); i++) nouvelleVar_locale->nom[i] = nom[i];
     for (int i = 0; i < strlen(valeur); i++) nouvelleVar_locale->valeur[i] = valeur[i];
     var_locale* variableExistante = var_existe(liste, nom);
-    if(variableExistante != NULL){
-        for (int i = 0; i < 1024; i++) variableExistante->valeur[i] = valeur[i];
-        return nouvelleVar_locale;
+
+    if (variableExistante != NULL){
+        memset(variableExistante->valeur, '\0', strlen(variableExistante->valeur));
+        for (int i = 0; i < strlen(valeur); i++) variableExistante->valeur[i] = valeur[i];
+
+        free(nouvelleVar_locale);
+        return liste;
     }
 
     nouvelleVar_locale->suivant = liste;
