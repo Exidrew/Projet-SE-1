@@ -33,7 +33,6 @@ void executerSetVariable(char* tabcmd) {
 void executerCommande(char** tabcmd, int nbCommandes) {
     afficherLesCommandesEntrees(tabcmd, nbCommandes);
     for (int i = 0; i <= nbCommandes; i++) {
-        printf("Entre\n");
         if (estCommande(tabcmd[i], CMD_SETVARIABLE)) {
             executerSetVariable(tabcmd[i]);
         }
@@ -80,7 +79,6 @@ int main(void) {
         }
         if(!pid) executerCommande(commandes, nbCommandes);
         else {
-            printf("nbCommandes : %d\n", nbCommandes);
             afficherRetour(commandes, nbCommandes);
             lireVariableDepuisTube(tubeSetVariable);
             fermerTube(tubeSetVariable);
