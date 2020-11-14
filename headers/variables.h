@@ -4,11 +4,16 @@
 #include "liste_chaine.h"
 
 #define CMD_SETVARIABLE "set"
+#define CMD_DELVARIABLE "del"
 
 var_locale* listeVariables;
 
 list_var setVariable(char* tabcmd, list_var variables);
+
+list_var delVariable(char* tabcmd, list_var variables);
+
 char* gestionEspacesCommande(char** tabcmd);
+
 /*
     Fonction qui va ajouter les chaines commencant par début et terminant par fin
     dans le tableau tab

@@ -6,7 +6,7 @@
 #include "headers/variables.h"
 #include "headers/liste_chaine.h"
 
-char* retirerSet(char* commande) {
+char* retirerAppel(char* commande) {
     while (*commande != ' ') {
         commande++;
     }
@@ -19,7 +19,7 @@ list_var setVariable(char* commande, list_var variables) {
     char nomVariable[1024], valeurVariable[1024], *cmd;
 
     printf("Entre setVariable avec la commande : %s\n", commande);
-    commande = retirerSet(commande);
+    commande = retirerAppel(commande);
     printf("Après : %s\n", commande);
 
     cmd = gererVariableDepuisCommande2(commande, nomVariable, '=');
@@ -32,6 +32,17 @@ list_var setVariable(char* commande, list_var variables) {
     printf("Affichage depuis le fils : \n");
     afficher_variables(variables);
 
+    return variables;
+}
+
+list_var delVariable(char* commande, list_var variables) {
+    commande = retirerAppel(commande);
+
+    variables = supprimerVar(variables, commande);
+
+    printf("Affichage depuis le fils : \n");
+    afficher_variables(variables);
+    
     return variables;
 }
 

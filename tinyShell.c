@@ -28,14 +28,19 @@ void afficherRetour(char** tabcmd, int nbCommandes) {
 
 void executerSetVariable(char* tabcmd) {
     listeVariables = setVariable(tabcmd, listeVariables);
+    ecrireVariableVersTube(tubeSetVariable, listeVariables);
+}
+
+void executerDelVariable(char* tabcmd) {
+    listeVariables = delVariable(tabcmd, listeVariables);
+    ecrireVariableVersTube(tubeSetVariable, listeVariables);
 }
 
 void executerCommande(char** tabcmd, int nbCommandes) {
     afficherLesCommandesEntrees(tabcmd, nbCommandes);
     for (int i = 0; i <= nbCommandes; i++) {
-        if (estCommande(tabcmd[i], CMD_SETVARIABLE)) {
-            executerSetVariable(tabcmd[i]);
-        }
+        if (estCommande(tabcmd[i], CMD_SETVARIABLE)) executerSetVariable(tabcmd[i]);
+        else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) executerDelVariable(tabcmd[i]);
         else {
             execlp(*tabcmd, *tabcmd, NULL);
             freeCommandes(tabcmd);
@@ -44,7 +49,6 @@ void executerCommande(char** tabcmd, int nbCommandes) {
             exit(FAIL_EXEC);
         }
     }
-    ecrireVariableVersTube(tubeSetVariable, listeVariables);
     freeCommandes(tabcmd);
     freeVariables(listeVariables);
     exit(0);
