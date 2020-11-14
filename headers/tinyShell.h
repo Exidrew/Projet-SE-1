@@ -16,6 +16,6 @@ int tubeSetVariable[2];
 
 void afficherRetour(char** tabcmd, int nbCommandes);
 void executerCommande(char** tabcmd, int nbCommandes);
-void freeCommandes(char** commandes, int nbCommandes);
+void freeCommandes(char** commandes);
 
 #endif

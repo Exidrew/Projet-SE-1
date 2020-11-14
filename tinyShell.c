@@ -37,20 +37,20 @@ void executerCommande(char** tabcmd, int nbCommandes) {
             executerSetVariable(tabcmd[i]);
         }
         else {
-            execvp(*tabcmd, tabcmd);
-            syserror(2);
-            freeCommandes(tabcmd, nbCommandes);
+            execlp(*tabcmd, *tabcmd, NULL);
+            freeCommandes(tabcmd);
             freeVariables(listeVariables);
+            syserror(2);
             exit(FAIL_EXEC);
         }
     }
     ecrireVariableVersTube(tubeSetVariable, listeVariables);
-    freeCommandes(tabcmd, nbCommandes);
+    freeCommandes(tabcmd);
     freeVariables(listeVariables);
     exit(0);
 }
 
-void freeCommandes(char** commandes, int nbCommandes) {
+void freeCommandes(char** commandes) {
     int i;
     for (i = 0; i < sizelgcmd; i++) {
         free(commandes[i]);
@@ -69,12 +69,12 @@ int main(void) {
         creerTubeDeCommunication(tubeSetVariable);
         commandes = demanderCommande(commandes, &nbCommandes);
         if (!strcmp(*commandes, CMD_EXIT)) {
-            freeCommandes(commandes, nbCommandes);
+            freeCommandes(commandes);
             freeVariables(listeVariables);
             exit(0);
         }
         if ((pid = fork()) == ERR) {
-            freeCommandes(commandes, nbCommandes);
+            freeCommandes(commandes);
             fatalsyserror(1);
         }
         if(!pid) executerCommande(commandes, nbCommandes);
@@ -83,11 +83,11 @@ int main(void) {
             lireVariableDepuisTube(tubeSetVariable);
             fermerTube(tubeSetVariable);
             afficher_variables(listeVariables);
-            viderCommande(commandes, nbCommandes);
+            viderCommande(commandes);
         }
     }
     fermerTube(tubeSetVariable);
-    freeCommandes(commandes, nbCommandes);
+    freeCommandes(commandes);
     freeVariables(listeVariables);
     exit(0);
 }

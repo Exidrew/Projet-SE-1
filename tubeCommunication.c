@@ -83,7 +83,7 @@ void ecrireVariableVersTube(int tubeDescriptor[2], var_locale* variables) {
 }
 
 void lireVariableDepuisTube(int tubeDescriptor[2]) {
-    int size, nbVariables;
+    int size = 0, nbVariables = 0;
     close(tubeDescriptor[1]);
     read(tubeDescriptor[0], &nbVariables, sizeof(int));
     for (int i = 0; i < nbVariables; i++) {

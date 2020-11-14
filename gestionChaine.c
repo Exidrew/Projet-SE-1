@@ -90,7 +90,7 @@ void afficherEnBrutLesCommandesEntrees(char** commandes, int nbCommandes) {
     }
 }
 
-void viderCommande(char** commandes, int nbCommande) {
+void viderCommande(char** commandes) {
     int i;
     for (i = 0; i < sizelgcmd; i++) {
         memset(commandes[i], '\0', sizeWord);
@@ -104,7 +104,7 @@ char** allouerMemoireCommandes() {
 
     for (i = 0; i < sizelgcmd; i++) {
         cmd[i] = (char*) calloc(sizeWord, sizeof(char));
-        if (cmd[i] == NULL) viderCommande(cmd, i), exit(EXIT_FAILURE);
+        if (cmd[i] == NULL) viderCommande(cmd), exit(EXIT_FAILURE);
     }
     
     return cmd;
