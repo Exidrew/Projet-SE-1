@@ -1,12 +1,10 @@
 #ifndef DEF_VARIABLES
 #define DEF_VARIABLES
 
-#include "liste_chaine.h"
+#include "variables.h"
 
 #define CMD_SETVARIABLE "set"
 #define CMD_DELVARIABLE "del"
-
-var_locale* listeVariables;
 
 /* Ajout d'une variable locale en fonction d'une commande */
 void setVariableLocale(char* tabcmd, TableauVariables* variables);

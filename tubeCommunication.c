@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <string.h>
 
+#include "headers/variables.h"
 #include "headers/variablesLocales.h"
 #include "headers/tubeCommunication.h"
 
@@ -65,24 +66,23 @@ void lireDepuisTube(int tubeDescriptor[2], char* str, int maxLength) {
     close(tubeDescriptor[0]);
 }
 
-void ecrireVariableVersTube(int tubeDescriptor[2], var_locale* variables) {
+void ecrireVariableVersTube(int tubeDescriptor[2], TableauVariables* tab) {
     int size;
-    int nbVariables = tailleChaine(variables);
+    int nbVariables = tab->nbVar;
     close(tubeDescriptor[0]);
     write(tubeDescriptor[1], &nbVariables, sizeof(int));
-    while(variables != NULL && variables->nom != NULL) {
-        size = strlen(variables->nom);
+    while(tab->variables != NULL && tab->variables->nom != NULL) {
+        size = strlen(tab->variables->nom);
         write(tubeDescriptor[1], &size, sizeof(int));
-        write(tubeDescriptor[1], variables->nom, size * sizeof(char) + 1);
-        size = strlen(variables->valeur);
+        write(tubeDescriptor[1], tab->variables->nom, size * sizeof(char) + 1);
+        size = strlen(tab->variables->valeur);
         write(tubeDescriptor[1], &size, sizeof(int));
-        write(tubeDescriptor[1], variables->valeur, size * sizeof(char) + 1);
-        variables = variables->suivant;
+        write(tubeDescriptor[1], tab->variables->valeur, size * sizeof(char) + 1);
     }
     close(tubeDescriptor[1]);
 }
 
-void lireVariableDepuisTube(int tubeDescriptor[2]) {
+void lireVariableDepuisTube(int tubeDescriptor[2], TableauVariables* tab) {
     int size = 1, nbVariables = 0;
     close(tubeDescriptor[1]);
     read(tubeDescriptor[0], &nbVariables, sizeof(int));
@@ -95,7 +95,7 @@ void lireVariableDepuisTube(int tubeDescriptor[2]) {
         char* valeur = (char*) calloc(size, sizeof(char) + 1);
         if (nom == NULL) perror("Problème de pointeur pour la valeur"), free(valeur), exit(4);
         read(tubeDescriptor[0], valeur, size * sizeof(char) + 1);
-        listeVariables = ajouter(listeVariables, nom, valeur);
+        ajouterVariable(tab, nom, valeur);
         free(nom);
         free(valeur);
     }

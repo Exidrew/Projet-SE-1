@@ -1,3 +1,6 @@
+#ifndef VARIABLES_H
+#define VARIABLES_H
+
 typedef struct variables {
     char nom[1024];
     char valeur[1024];
@@ -23,3 +26,5 @@ void supprimerVariable(TableauVariables* variables, char* nom);
 
 /* Libère la mémoire allouée aux variables. */
 void freeVariables(TableauVariables* variables);
+
+#endif

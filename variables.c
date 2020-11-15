@@ -4,23 +4,23 @@
 
 #include "headers/variables.h"
 
+#define NOT_EXIST -1
 #define TRUE 1
 #define FALSE 0
 
 int existe(TableauVariables* variables, char* nom) {
     int i;
-    Variables* var = variables->variables;
     for (i = 0; i < variables->nbVar; i++) {
-        if (!strcmp(var[i].nom, nom)) {
+        if (!strcmp(variables->variables[i].nom, nom)) {
             return i;
         }
     }
-    return FALSE;
+    return NOT_EXIST;
 }
 
 void ajouterVariable(TableauVariables* variables, char* nom, char* valeur) {
     int i, ind;
-    if ((ind = existe(variables, nom))) {
+    if ((ind = existe(variables, nom)) != NOT_EXIST) {
         for (i = 0; i < strlen(valeur); i++) variables->variables[ind].valeur[i] = valeur[i];
         return;
     }

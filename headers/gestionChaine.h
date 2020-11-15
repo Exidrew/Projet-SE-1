@@ -6,6 +6,7 @@
 
 char** allouerMemoireCommandes();
 void afficherLesCommandesEntrees(char** commandes, int nbCommandes);
+void afficherEnBrutLesCommandesEntrees(char** commandes, int nbCommandes);
 char** demanderCommande(char** commandeSansEspaces, int* nbCommandes);
 char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int* nbCommandes);
 void viderCommande(char** commandes);

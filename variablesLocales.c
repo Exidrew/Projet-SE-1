@@ -37,10 +37,10 @@ void setVariableLocale(char* commande, TableauVariables* variables) {
 void delVariableLocale(char* commande, TableauVariables* variables) {
     commande = retirerAppel(commande);
 
-    variables = supprimerVar(variables, commande);
+    supprimerVariable(variables, commande);
 
     printf("Affichage depuis le fils : \n");
-    afficher_variables(variables);
+    afficherVariables(variables);
 }
 
 char* gererVariableLocaleDepuisCommande(char* commande, char tab[1024], char fin) {

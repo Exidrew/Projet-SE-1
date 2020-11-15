@@ -1,8 +1,6 @@
 #ifndef DEF_TINYSHELLH
 #define DEF_TINYSHELLH
 
-#include "liste_chaine.h"
-
 #define FAIL_EXEC 127
 #define CMD_EXIT "exit"
 
@@ -11,8 +9,6 @@
 
 #define estCommande(commande, programme)\
     !strncmp(commande, programme, strlen(programme))
-
-int tubeSetVariable[2];
 
 void afficherRetour(char** tabcmd, int nbCommandes);
 void executerSetVariable(char* tabcmd);
