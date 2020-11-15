@@ -8,9 +8,9 @@
 
 var_locale* listeVariables;
 
-list_var setVariableLocale(char* tabcmd, list_var variables);
+void setVariableLocale(char* tabcmd, TableauVariables* variables);
 
-list_var delVariableLocale(char* tabcmd, list_var variables);
+void delVariableLocale(char* tabcmd, TableauVariables* variables);
 
 char* gestionEspacesCommande(char** tabcmd);
 

@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 #include "headers/variablesLocales.h"
-#include "headers/liste_chaine.h"
+#include "headers/variables.h"
 
 char* retirerAppel(char* commande) {
     while (*commande != ' ') {
@@ -15,7 +15,7 @@ char* retirerAppel(char* commande) {
     return commande;
 }
 
-list_var setVariableLocale(char* commande, list_var variables) {
+void setVariableLocale(char* commande, TableauVariables* variables) {
     char nomVariable[1024], valeurVariable[1024], *cmd;
 
     printf("Entre setVariable avec la commande : %s\n", commande);
@@ -28,23 +28,19 @@ list_var setVariableLocale(char* commande, list_var variables) {
 
     printf("Nom : %s\n", nomVariable);
     printf("Valeur : %s\n", valeurVariable);
-    variables = ajouter(variables, nomVariable, valeurVariable);
+    ajouterVariable(variables, nomVariable, valeurVariable);
 
     printf("Affichage depuis le fils : \n");
-    afficher_variables(variables);
-
-    return variables;
+    afficherVariables(variables);
 }
 
-list_var delVariableLocale(char* commande, list_var variables) {
+void delVariableLocale(char* commande, TableauVariables* variables) {
     commande = retirerAppel(commande);
 
     variables = supprimerVar(variables, commande);
 
     printf("Affichage depuis le fils : \n");
     afficher_variables(variables);
-    
-    return variables;
 }
 
 char* gererVariableLocaleDepuisCommande(char* commande, char tab[1024], char fin) {
