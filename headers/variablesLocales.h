@@ -8,19 +8,15 @@
 
 var_locale* listeVariables;
 
+/* Ajout d'une variable locale en fonction d'une commande */
 void setVariableLocale(char* tabcmd, TableauVariables* variables);
 
+/* Suppression d'une variable locale en fonction d'une commande */
 void delVariableLocale(char* tabcmd, TableauVariables* variables);
-
-char* gestionEspacesCommande(char** tabcmd);
 
 /*
     Fonction qui va ajouter les chaines terminant par fin dans le tableau tab
 */
 char* gererVariableLocaleDepuisCommande(char* commande, char tab[1024], char fin);
-
-void afficherLesCommandesEntrees(char** commandes, int nbCommandes);
-
-void afficherEnBrutLesCommandesEntrees(char** commandes, int nbCommandes);
 
 #endif
