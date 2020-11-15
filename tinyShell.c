@@ -10,7 +10,7 @@
 #include "headers/tinyShell.h"
 #include "headers/error.h"
 #include "headers/gestionChaine.h"
-#include "headers/variables.h"
+#include "headers/variablesLocales.h"
 #include "headers/tubeCommunication.h"
 
 void afficherRetour(char** tabcmd, int nbCommandes) {
@@ -26,21 +26,21 @@ void afficherRetour(char** tabcmd, int nbCommandes) {
     else puts(ROUGE("Abnormal exit"));
 }
 
-void executerSetVariable(char* tabcmd) {
-    listeVariables = setVariable(tabcmd, listeVariables);
+void executerSetVariableLocale(char* tabcmd) {
+    listeVariables = setVariableLocale(tabcmd, listeVariables);
     ecrireVariableVersTube(tubeSetVariable, listeVariables);
 }
 
-void executerDelVariable(char* tabcmd) {
-    listeVariables = delVariable(tabcmd, listeVariables);
+void executerDelVariableLocale(char* tabcmd) {
+    listeVariables = delVariableLocale(tabcmd, listeVariables);
     ecrireVariableVersTube(tubeSetVariable, listeVariables);
 }
 
 void executerCommande(char** tabcmd, int nbCommandes) {
     afficherLesCommandesEntrees(tabcmd, nbCommandes);
     for (int i = 0; i <= nbCommandes; i++) {
-        if (estCommande(tabcmd[i], CMD_SETVARIABLE)) executerSetVariable(tabcmd[i]);
-        else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) executerDelVariable(tabcmd[i]);
+        if (estCommande(tabcmd[i], CMD_SETVARIABLE)) executerSetVariableLocale(tabcmd[i]);
+        else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) executerDelVariableLocale(tabcmd[i]);
         else {
             execlp(*tabcmd, *tabcmd, NULL);
             freeCommandes(tabcmd);

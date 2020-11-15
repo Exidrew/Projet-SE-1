@@ -7,7 +7,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include "headers/variables.h"
+#include "headers/variablesLocales.h"
 #include "headers/tubeCommunication.h"
 
 #define ERR -1
