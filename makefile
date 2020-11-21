@@ -1,5 +1,5 @@
 CC = gcc
-SOURCES = tinyShell.c gestionChaine.c variablesLocales.c variables.c tubeCommunication.c cd.c
+SOURCES = error.c tinyShell.c gestionChaine.c variablesLocales.c variables.c tubeCommunication.c cd.c
 FLAGS = -Wall
 DEBUG_FLAGS = -Wall -g
 

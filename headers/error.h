@@ -21,15 +21,6 @@
 #define SHM_DETACH_FAIL 6
 #define SHM_DELETE_FAIL 7
 
-char* errormsg[] = {
-    "No error", // 0
-    ROUGE("Imposible to fork process"), // 1
-    ROUGE("Exec failed"), // 2
-    ROUGE("Shared Memory key creation failed"), //3
-    ROUGE("Shared Memory creation failed"), // 4
-    ROUGE("Failed to attach pointer to shared memory"), //5
-    ROUGE("Shared Memory detachment failed"), // 6
-    ROUGE("Shared Memory deletion failed") // 7
-};
+extern char* errormsg[];
 
 #endif
