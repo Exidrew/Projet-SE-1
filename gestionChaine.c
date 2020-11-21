@@ -85,7 +85,7 @@ void afficherLesCommandesEntrees(char** commandes, int nbCommandes) {
 }
 
 void afficherEnBrutLesCommandesEntrees(char** commandes, int nbCommandes) {
-    for (int i = 0; i <= nbCommandes && commandes[i] != NULL; i++) {
+    for (int i = 0; i < nbCommandes && commandes[i] != NULL; i++) {
         printf("%s; ", commandes[i]);
     }
 }
