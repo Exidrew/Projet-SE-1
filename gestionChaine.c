@@ -36,7 +36,7 @@ char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int*
         }
     }
 
-    *nbCommandes = indexCommandes;
+    *nbCommandes = indexCommandes+1; // +1 car on commence l'index à 0
     return commandeSansEspaces;
 }
 
@@ -79,7 +79,7 @@ char** demanderCommande(char** commandeSansEspaces, int* nbCommandes) {
 
 void afficherLesCommandesEntrees(char** commandes, int nbCommandes) {
     printf("Voici les commandes entrées : \n");
-    for (int i = 0; i <= nbCommandes && commandes[i] != NULL; i++) {
+    for (int i = 0; i < nbCommandes && commandes[i] != NULL; i++) {
         printf("- %s\n", commandes[i]);
     }
 }

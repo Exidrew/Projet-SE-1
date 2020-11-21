@@ -20,6 +20,8 @@ int idTab, idVar;
 key_t clefTab, clefVar;
 TableauVariables* tab;
 
+extern char** environ;
+
 void afficherRetour(char** tabcmd, int nbCommandes) {
     int status;
     wait(&status);
@@ -35,7 +37,7 @@ void afficherRetour(char** tabcmd, int nbCommandes) {
 
 void executerCommande(char** tabcmd, int nbCommandes) {
     afficherLesCommandesEntrees(tabcmd, nbCommandes);
-    for (int i = 0; i <= nbCommandes; i++) {
+    for (int i = 0; i < nbCommandes; i++) {
         if (estCommande(tabcmd[i], CMD_SETVARIABLE)) setVariableLocale(tabcmd[i], tab);
         else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) delVariableLocale(tabcmd[i], tab);
         else {
@@ -67,6 +69,7 @@ int main(void) {
     allouerMemoirePartagee(clefTab, idTab, 0, TableauVariables, tab, 1);
     allouerMemoirePartagee(clefVar, idVar, 1, Variables, tab->variables, 5);
     commandes = allouerMemoireCommandes();
+
     for(;;) {
         commandes = demanderCommande(commandes, &nbCommandes);
         if (!strcmp(*commandes, CMD_EXIT)) {
