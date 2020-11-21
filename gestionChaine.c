@@ -4,7 +4,6 @@
 #include <string.h>
 #include <limits.h>
 #include <unistd.h>
-#include <regex.h>
 
 #include "headers/gestionChaine.h"
 
