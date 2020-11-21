@@ -4,16 +4,13 @@
 #define FAIL_EXEC 127
 #define CMD_EXIT "exit"
 
-#define ROUGE(message) "\033[01;31m"message"\033[0m"
-#define VERT(message) "\033[01;32m"message"\033[0m"
-
 #define estCommande(commande, programme)\
     !strncmp(commande, programme, strlen(programme))
 
-void afficherRetour(char** tabcmd, int nbCommandes);
+void afficherRetour(char** tabcmd, int nbCommandes, int status);
 void executerSetVariable(char* tabcmd);
 void executerDelVariable(char* tabcmd);
-void executerCommande(char** tabcmd, int nbCommandes);
+void executerCommande(char** tabcmd, int nbCommandes, int* status);
 void freeCommandes(char** commandes);
 
 #endif

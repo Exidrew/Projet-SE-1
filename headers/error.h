@@ -3,6 +3,9 @@
 
 #define ERR -1
 
+#define ROUGE(message) "\033[01;31m"message"\033[0m"
+#define VERT(message) "\033[01;32m"message"\033[0m"
+
 #define syserror(x) perror(errormsg[x]);
 #define fatalsyserror(x) {\
     syserror(x);\

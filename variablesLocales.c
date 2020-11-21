@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "headers/error.h"
 #include "headers/variablesLocales.h"
 #include "headers/variables.h"
 
@@ -15,32 +16,35 @@ char* retirerAppel(char* commande) {
     return commande;
 }
 
-void setVariableLocale(char* commande, TableauVariables* variables) {
+int setVariableLocale(char* commande, TableauVariables* variables) {
     char nomVariable[1024], valeurVariable[1024], *cmd;
-
     printf("Entre setVariable avec la commande : %s\n", commande);
     commande = retirerAppel(commande);
     printf("Après : %s\n", commande);
 
-    // Ajout des noms dans le tableau des noms, puis les valeurs dans tab des valeurs
+
     cmd = gererVariableLocaleDepuisCommande(commande, nomVariable, '=');
     gererVariableLocaleDepuisCommande(cmd, valeurVariable, ';');
+    return setenv(nomVariable, valeurVariable, 1);
 
-    printf("Nom : %s\n", nomVariable);
-    printf("Valeur : %s\n", valeurVariable);
-    ajouterVariable(variables, nomVariable, valeurVariable);
 
-    printf("Affichage depuis le fils : \n");
-    afficherVariables(variables);
+    // // Ajout des noms dans le tableau des noms, puis les valeurs dans tab des valeurs
+    // cmd = gererVariableLocaleDepuisCommande(commande, nomVariable, '=');
+    // gererVariableLocaleDepuisCommande(cmd, valeurVariable, ';');
+
+    // printf("Nom : %s\n", nomVariable);
+    // printf("Valeur : %s\n", valeurVariable);
+    // ajouterVariable(variables, nomVariable, valeurVariable);
 }
 
-void delVariableLocale(char* commande, TableauVariables* variables) {
+int delVariableLocale(char* commande, TableauVariables* variables) {
     commande = retirerAppel(commande);
 
     supprimerVariable(variables, commande);
 
     printf("Affichage depuis le fils : \n");
     afficherVariables(variables);
+    return 0;
 }
 
 char* gererVariableLocaleDepuisCommande(char* commande, char tab[1024], char fin) {

@@ -23,8 +23,7 @@ TableauVariables* tab;
 
 extern char** environ;
 
-void afficherRetour(char** tabcmd, int nbCommandes) {
-    int status;
+void afficherRetour(char** tabcmd, int nbCommandes,int status) {
     wait(&status);
     if (WIFEXITED(status)) {
         if ((status = WEXITSTATUS(status)) != FAIL_EXEC) {
@@ -36,12 +35,12 @@ void afficherRetour(char** tabcmd, int nbCommandes) {
     else puts(ROUGE("Abnormal exit"));
 }
 
-void executerCommande(char** tabcmd, int nbCommandes) {
+void executerCommande(char** tabcmd, int nbCommandes, int* status) {
     afficherLesCommandesEntrees(tabcmd, nbCommandes);
     for (int i = 0; i < nbCommandes; i++) {
-        if (estCommande(tabcmd[i], CMD_SETVARIABLE)) setVariableLocale(tabcmd[i], tab);
-        else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) delVariableLocale(tabcmd[i], tab);
-        else if (estCommande(tabcmd[i], CMD_CD)) exit(executerCd(tabcmd[i], nbCommandes));
+        if (estCommande(tabcmd[i], CMD_SETVARIABLE)) *status = setVariableLocale(tabcmd[i], tab);
+        else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i], tab);
+        else if (estCommande(tabcmd[i], CMD_CD)) executerCd(tabcmd[i], nbCommandes);
         else {
             execlp(*tabcmd, *tabcmd, NULL);
             freeCommandes(tabcmd);
@@ -50,9 +49,6 @@ void executerCommande(char** tabcmd, int nbCommandes) {
             exit(FAIL_EXEC);
         }
     }
-    shmdt(tab->variables);
-    shmdt(tab);
-    exit(0);
 }
 
 void freeCommandes(char** commandes) {
@@ -63,10 +59,17 @@ void freeCommandes(char** commandes) {
     free(commandes);
 }
 
+void freeTout(char** commandes) {
+    detruireMemoirePartagee(idVar, tab->variables);
+    detruireMemoirePartagee(idTab, tab);
+    freeCommandes(commandes);
+}
+
 int main(void) {
     char** commandes;
     pid_t pid;
     int nbCommandes;
+    int status;
 
     allouerMemoirePartagee(clefTab, idTab, 0, TableauVariables, tab, 1);
     allouerMemoirePartagee(clefVar, idVar, 1, Variables, tab->variables, 5);
@@ -80,21 +83,11 @@ int main(void) {
             freeCommandes(commandes);
             exit(0);
         }
-        if ((pid = fork()) == ERR) {
-            detruireMemoirePartagee(idVar, tab->variables);
-            detruireMemoirePartagee(idTab, tab);
-            freeCommandes(commandes);
-            fatalsyserror(1);
-        }
-        if(!pid) executerCommande(commandes, nbCommandes);
-        else {
-            afficherRetour(commandes, nbCommandes);
-            afficherVariables(tab);
-            viderCommande(commandes);
-        }
+        executerCommande(commandes, nbCommandes, &status);
+        afficherRetour(commandes, nbCommandes, status);
+        afficherVariables(tab);
+        viderCommande(commandes);
     }
-    detruireMemoirePartagee(idVar, tab->variables);
-    detruireMemoirePartagee(idTab, tab);
-    freeCommandes(commandes);
+    freeTout(commandes);
     exit(0);
 }
