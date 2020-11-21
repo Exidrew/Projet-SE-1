@@ -14,3 +14,6 @@ clean :
 
 debug :
 	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./build-debug
+
+gc : gestionChaine.c
+	$(CC) $(DEBUG_FLAGS) $^ -o gc

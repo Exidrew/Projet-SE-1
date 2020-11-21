@@ -26,25 +26,12 @@ int setVariableLocale(char* commande, TableauVariables* variables) {
     cmd = gererVariableLocaleDepuisCommande(commande, nomVariable, '=');
     gererVariableLocaleDepuisCommande(cmd, valeurVariable, ';');
     return setenv(nomVariable, valeurVariable, 1);
-
-
-    // // Ajout des noms dans le tableau des noms, puis les valeurs dans tab des valeurs
-    // cmd = gererVariableLocaleDepuisCommande(commande, nomVariable, '=');
-    // gererVariableLocaleDepuisCommande(cmd, valeurVariable, ';');
-
-    // printf("Nom : %s\n", nomVariable);
-    // printf("Valeur : %s\n", valeurVariable);
-    // ajouterVariable(variables, nomVariable, valeurVariable);
 }
 
 int delVariableLocale(char* commande, TableauVariables* variables) {
     commande = retirerAppel(commande);
-
-    supprimerVariable(variables, commande);
-
-    printf("Affichage depuis le fils : \n");
-    afficherVariables(variables);
-    return 0;
+    printf("Le nom : %s\n", commande);
+    return unsetenv(commande);
 }
 
 char* gererVariableLocaleDepuisCommande(char* commande, char tab[1024], char fin) {

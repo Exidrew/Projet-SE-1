@@ -110,11 +110,11 @@ char** allouerMemoireCommandes() {
     return cmd;
 }
 
-// int main(void) {
-//     char** commandes = allouerMemoireCommandes();
-//     int nbCommandes;
-//     printf("Programme lancé ...\n");
-//     nbCommandes = demanderCommande(commandes);
-
-//     afficherLesCommandesEntrees(commandes, nbCommandes);
-// }
+int main(void) {
+    char** commandes = allouerMemoireCommandes();
+    int nbCommandes;
+    printf("Programme lancé ...\n");
+    nbCommandes = demanderCommande(commandes, &nbCommandes);
+    commandes = remplacerLesVariablesDansLesCommandes(commandes, nbCommandes);
+    afficherLesCommandesEntrees(commandes, nbCommandes);
+}
