@@ -17,10 +17,6 @@
 #include "headers/variablesLocales.h"
 #include "headers/cd.h"
 
-int idTab, idVar;
-key_t clefTab, clefVar;
-TableauVariables* tab;
-
 extern char** environ;
 
 void afficherRetour(char** tabcmd, int nbCommandes,int status) {
@@ -36,18 +32,28 @@ void afficherRetour(char** tabcmd, int nbCommandes,int status) {
 }
 
 void executerCommande(char** tabcmd, int nbCommandes, int* status) {
-    afficherLesCommandesEntrees(tabcmd, nbCommandes);
+    tabcmd = remplacerLesVariablesDansLesCommandes(tabcmd, nbCommandes);
+    printf("Continue\n");
+    //afficherLesCommandesEntrees(tabcmd, nbCommandes);
     for (int i = 0; i < nbCommandes; i++) {
-        if (estCommande(tabcmd[i], CMD_SETVARIABLE)) *status = setVariableLocale(tabcmd[i], tab);
-        else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i], tab);
-        else if (estCommande(tabcmd[i], CMD_CD)) executerCd(tabcmd[i], nbCommandes);
-        else {
-            execlp(*tabcmd, *tabcmd, NULL);
-            freeCommandes(tabcmd);
-            freeVariables(tab);
-            syserror(2);
-            exit(FAIL_EXEC);
+        if (tabcmd == NULL || tabcmd[i] == NULL) {
+            printf("Entre ici\n");
+            *status = -1;
+            return;
         }
+
+        if (estCommande(tabcmd[i], CMD_SETVARIABLE)) *status = setVariableLocale(tabcmd[i]);
+        else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i]);
+        else if (estCommande(tabcmd[i], CMD_CD)) executerCd(tabcmd[i], nbCommandes);
+        // else {
+        //     printf("ENTRE DANS LE ELSE");
+        //     execlp(*tabcmd, *tabcmd, NULL);
+        //     printf("ENTRE DANS LE EXECLP");
+        //     freeCommandes(tabcmd);
+        //     freeVariables(tab);
+        //     syserror(2);
+        //     exit(FAIL_EXEC);
+        // }
     }
 }
 
@@ -60,33 +66,26 @@ void freeCommandes(char** commandes) {
 }
 
 void freeTout(char** commandes) {
-    detruireMemoirePartagee(idVar, tab->variables);
-    detruireMemoirePartagee(idTab, tab);
     freeCommandes(commandes);
 }
 
 int main(void) {
     char** commandes;
-    pid_t pid;
     int nbCommandes;
     int status;
 
-    allouerMemoirePartagee(clefTab, idTab, 0, TableauVariables, tab, 1);
-    allouerMemoirePartagee(clefVar, idVar, 1, Variables, tab->variables, 5);
     commandes = allouerMemoireCommandes();
 
     for(;;) {
         commandes = demanderCommande(commandes, &nbCommandes);
         if (!strcmp(*commandes, CMD_EXIT)) {
-            detruireMemoirePartagee(idVar, tab->variables);
-            detruireMemoirePartagee(idTab, tab);
             freeCommandes(commandes);
             exit(0);
         }
         executerCommande(commandes, nbCommandes, &status);
         afficherRetour(commandes, nbCommandes, status);
-        afficherVariables(tab);
-        viderCommande(commandes);
+        printf("Test\n");
+        if (commandes != NULL) viderCommande(commandes);
     }
     freeTout(commandes);
     exit(0);

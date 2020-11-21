@@ -9,6 +9,7 @@ void afficherLesCommandesEntrees(char** commandes, int nbCommandes);
 void afficherEnBrutLesCommandesEntrees(char** commandes, int nbCommandes);
 char** demanderCommande(char** commandeSansEspaces, int* nbCommandes);
 char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int* nbCommandes);
+char* retirerEspaceCommandeUnique(char* commande);
 char** remplacerLesVariablesDansLesCommandes(char** commandes, int nbCommandes);
 void viderCommande(char** commandes);
 int getPwd(char *repertory);

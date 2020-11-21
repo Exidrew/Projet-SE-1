@@ -7,10 +7,10 @@
 #define CMD_DELVARIABLE "del"
 
 /* Ajout d'une variable locale en fonction d'une commande */
-int setVariableLocale(char* tabcmd, TableauVariables* variables);
+int setVariableLocale(char* tabcmd);
 
 /* Suppression d'une variable locale en fonction d'une commande */
-int delVariableLocale(char* tabcmd, TableauVariables* variables);
+int delVariableLocale(char* tabcmd);
 
 /*
     Fonction qui va ajouter les chaines terminant par fin dans le tableau tab
