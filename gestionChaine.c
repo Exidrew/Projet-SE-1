@@ -116,5 +116,6 @@ int main(void) {
     printf("Programme lancé ...\n");
     nbCommandes = demanderCommande(commandes, &nbCommandes);
     commandes = remplacerLesVariablesDansLesCommandes(commandes, nbCommandes);
+    printf("test");
     afficherLesCommandesEntrees(commandes, nbCommandes);
 }
