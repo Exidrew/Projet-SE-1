@@ -15,6 +15,7 @@
 #include "headers/gestionChaine.h"
 #include "headers/variables.h"
 #include "headers/variablesLocales.h"
+#include "headers/cd.h"
 
 int idTab, idVar;
 key_t clefTab, clefVar;
@@ -38,6 +39,7 @@ void executerCommande(char** tabcmd, int nbCommandes) {
     for (int i = 0; i <= nbCommandes; i++) {
         if (estCommande(tabcmd[i], CMD_SETVARIABLE)) setVariableLocale(tabcmd[i], tab);
         else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) delVariableLocale(tabcmd[i], tab);
+        else if (estCommande(tabcmd[i], CMD_CD)) exit(executerCd(tabcmd[i], nbCommandes));
         else {
             execlp(*tabcmd, *tabcmd, NULL);
             freeCommandes(tabcmd);
