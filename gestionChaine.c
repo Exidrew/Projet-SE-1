@@ -4,11 +4,10 @@
 #include <string.h>
 #include <limits.h>
 #include <unistd.h>
+#include <regex.h>
 
+#include "headers/error.h"
 #include "headers/gestionChaine.h"
-
-#define BLEU(m) "\033[01;34m"m"\033[0m"
-#define VERT(m) "\033[01;32m"m"\033[0m"
 
 int doitRetirerEspace(char* commande) {
     return (strncmp(commande, "test", strlen("test")));
@@ -157,9 +156,12 @@ char* remplacerDollarParVariable(char* commande) {
 
 char** remplacerLesVariablesDansLesCommandes(char** commandes, int nbCommandes) {
     int i;
+    regex_t regex;
+    const char* schema = " +\\$[a-zA-Z0-9_-]+";
+    if (regcomp(&regex, schema, REG_EXTENDED)) fatalsyserror(8);
     for (i=0; i < nbCommandes; i++) {
-    printf("La commande : %s\n", commandes[i]);
-        while (commandes[i] != NULL && strstr(commandes[i], " $")) {
+        printf("La commande : %s\n", commandes[i]);
+        while (commandes[i] != NULL && regexec(&regex, commandes[i], 0, NULL, 0) == 0) {
             printf("La commande %s correspond au regex\n", commandes[i]);
             commandes[i] = remplacerDollarParVariable(commandes[i]);
         }

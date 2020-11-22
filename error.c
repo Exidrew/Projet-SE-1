@@ -8,5 +8,6 @@ char* errormsg[] = {
     ROUGE("Shared Memory creation failed"), // 4
     ROUGE("Failed to attach pointer to shared memory"), //5
     ROUGE("Shared Memory detachment failed"), // 6
-    ROUGE("Shared Memory deletion failed") // 7
+    ROUGE("Shared Memory deletion failed"), // 7
+    ROUGE("Checking for variable failed") // 8
 };
