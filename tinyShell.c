@@ -28,11 +28,15 @@ void afficherRetour(char** tabcmd, int nbCommandes,int status) {
             printf(VERT("\b]=%d\n"), status);
         }
     }
-    else puts(ROUGE("Abnormal exit"));
+    else {
+        printf(ROUGE("Abnormal exit of ["));
+        afficherEnBrutLesCommandesEntrees(tabcmd, nbCommandes);
+        printf(ROUGE("\b]=%d\n"), status);
+    }
 }
 
 void executerCommande(char** tabcmd, int nbCommandes, int* status) {
-    tabcmd = remplacerLesVariablesDansLesCommandes(tabcmd, nbCommandes);
+    tabcmd = remplacerLesVariablesDansLesCommandes(tabcmd, nbCommandes, status);
     printf("Continue\n");
     //afficherLesCommandesEntrees(tabcmd, nbCommandes);
     for (int i = 0; i < nbCommandes; i++) {

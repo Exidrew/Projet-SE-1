@@ -160,14 +160,22 @@ char* remplacerDollarParVariable(char* commande) {
     return cmd;
 }
 
-char** remplacerLesVariablesDansLesCommandes(char** commandes, int nbCommandes) {
+char** remplacerLesVariablesDansLesCommandes(char** commandes, int nbCommandes, int* status) {
     int i;
     regex_t regex;
+    char* cmd = (char*) calloc(sizeWord, sizeof(char));
     const char* schema = " +\\$[a-zA-Z0-9_-]+";
     if (regcomp(&regex, schema, REG_EXTENDED)) fatalsyserror(8);
     for (i=0; i < nbCommandes; i++) {
         while (commandes[i] != NULL && regexec(&regex, commandes[i], 0, NULL, 0) == 0) {
-            commandes[i] = remplacerDollarParVariable(commandes[i]);
+            cmd = remplacerDollarParVariable(commandes[i]);
+            printf("La commande : %s\n", cmd);
+            if (cmd != NULL) commandes[i] = cmd;
+            else {
+                free(cmd);
+                *status = -1;
+                return commandes;
+            }
         }
     }
     return commandes;
