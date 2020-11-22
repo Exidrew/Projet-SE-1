@@ -115,11 +115,16 @@ char** allouerMemoireCommandes() {
     return cmd;
 }
 
-char* chercherNomVariableRemplacer(char* commande, char* nom) {
-    int i, j, k = 0;
-    for(i=0; commande[i] != '$'; i++);
+char* chercherNomVariableRemplacer(char* commande, char* nom, int* index) {
+    int i=0, j, k = 0;
 
-    // On commence à i+1 pour virer le '$'
+    while (commande[i] != '$') {
+        if (i < strlen(commande) && !isspace(commande[i]) && commande[i+1] == '$') i++;
+        i++;
+    }
+
+    *index = i;
+    // On commence à m+1 pour virer le " $"
     for(j=i+1; commande[j]; j++) {
         nom[k] = commande[j];
         k++;
@@ -129,28 +134,29 @@ char* chercherNomVariableRemplacer(char* commande, char* nom) {
 }
 
 char* remplacerDollarParVariable(char* commande) {
-    int i, j, k;
+    int j, k, m, index;
     char* valeur;
     char* nom = (char*) calloc(sizeWord, sizeof(char));
     char* cmd = (char*) calloc(sizeWord, sizeof(char));
 
-    printf("Entre dans le remplacement\n");
     
-    nom = chercherNomVariableRemplacer(commande, nom);
-    printf("Le nom : %s\n", nom);
+    nom = chercherNomVariableRemplacer(commande, nom,&index);
 
-    for(i=0; commande[i] != '$'; i++) cmd[i] = commande[i];
+    for(m=0; commande[m] && m < index; m++) {
+        cmd[m] = commande[m];
+    }
 
     if ((valeur = getenv(nom)) == NULL) {
         return NULL;
     } else {
-        for(j=0; valeur[j]; j++) cmd[i++] = valeur[j];
-        i = strlen(valeur) - strlen(nom);
+        for(j=0; valeur[j]; j++) {
+            cmd[m++] = valeur[j];
+        }
     }
-    for(k=i; commande[k]; k++) cmd[k] = commande[k];
-    cmd[k-1] = '\0';
 
-    printf("La commande apres traitement : %s\n", cmd);
+    for(k=m; commande[k+strlen(nom)]; k++) cmd[k] = commande[k+strlen(nom)];
+    cmd[k] = '\0';
+
     return cmd;
 }
 
@@ -160,9 +166,7 @@ char** remplacerLesVariablesDansLesCommandes(char** commandes, int nbCommandes) 
     const char* schema = " +\\$[a-zA-Z0-9_-]+";
     if (regcomp(&regex, schema, REG_EXTENDED)) fatalsyserror(8);
     for (i=0; i < nbCommandes; i++) {
-        printf("La commande : %s\n", commandes[i]);
         while (commandes[i] != NULL && regexec(&regex, commandes[i], 0, NULL, 0) == 0) {
-            printf("La commande %s correspond au regex\n", commandes[i]);
             commandes[i] = remplacerDollarParVariable(commandes[i]);
         }
     }
