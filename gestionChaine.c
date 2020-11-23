@@ -133,21 +133,20 @@ char* chercherNomVariableRemplacer(char* commande, char* nom, int* index) {
     return nom;
 }
 
-char* remplacerDollarParVariable(char* commande) {
+void remplacerDollarParVariable(char* commande, char* cmd) {
     int j, k, m, index;
     char* valeur;
     char* nom = (char*) calloc(sizeWord, sizeof(char));
-    char* cmd = (char*) calloc(sizeWord, sizeof(char));
 
     
-    nom = chercherNomVariableRemplacer(commande, nom,&index);
+    nom = chercherNomVariableRemplacer(commande, nom, &index);
 
     for(m=0; commande[m] && m < index; m++) {
         cmd[m] = commande[m];
     }
 
     if ((valeur = getenv(nom)) == NULL) {
-        return NULL;
+        cmd = NULL;
     } else {
         for(j=0; valeur[j]; j++) {
             cmd[m++] = valeur[j];
@@ -157,20 +156,27 @@ char* remplacerDollarParVariable(char* commande) {
     for(k=m; commande[k+strlen(nom)]; k++) cmd[k] = commande[k+strlen(nom)];
     cmd[k] = '\0';
 
-    return cmd;
+    free(nom);
 }
 
 char** remplacerLesVariablesDansLesCommandes(char** commandes, int nbCommandes, int* status) {
-    int i;
+    int i,j;
     regex_t regex;
     char* cmd = (char*) calloc(sizeWord, sizeof(char));
-    const char* schema = " +\\$[a-zA-Z0-9_-]+";
-    if (regcomp(&regex, schema, REG_EXTENDED)) fatalsyserror(8);
+    const char schema[19] = " +\\$[a-zA-Z0-9_-]+";
+    if (regcomp(&regex, schema, REG_EXTENDED)) {
+        regfree(&regex);
+        fatalsyserror(8);
+    }
     for (i=0; i < nbCommandes; i++) {
         while (commandes[i] != NULL && regexec(&regex, commandes[i], 0, NULL, 0) == 0) {
-            cmd = remplacerDollarParVariable(commandes[i]);
-            printf("La commande : %s\n", cmd);
-            if (cmd != NULL) commandes[i] = cmd;
+            remplacerDollarParVariable(commandes[i], cmd);
+            if (cmd != NULL) {
+                memset(commandes[i], '\0', sizeWord);
+                for (j=0; cmd[j]; j++) {
+                    commandes[i][j] = cmd[j];
+                }
+            }
             else {
                 free(cmd);
                 *status = -1;
@@ -178,6 +184,8 @@ char** remplacerLesVariablesDansLesCommandes(char** commandes, int nbCommandes, 
             }
         }
     }
+    if (cmd != NULL) free(cmd);
+    regfree(&regex);
     return commandes;
 }
 
