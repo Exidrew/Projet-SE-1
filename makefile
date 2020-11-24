@@ -10,7 +10,7 @@ ts : $(SOURCES)
 	$(CC) $(FLAGS) $^ -o $@
 
 clean :
-	rm -f *.o *.exe ts
+	rm -f *.o *.exe ts build-debug
 
 debug :
 	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./build-debug
