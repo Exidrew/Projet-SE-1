@@ -70,12 +70,12 @@ int getComputerName(char *hostName){
     return EXIT_SUCCESS;
 }   
 
-char** demanderCommande(char** commandeSansEspaces, int* nbCommandes) {
+char** demanderCommande(char** commande, int* nbCommandes) {
     char commandeEntree[sizelgcmd], **commandes;
     affichageLigneShell();
     fgets(commandeEntree, sizelgcmd-1, stdin);
 
-    commandes = retirerEspaces(commandeEntree, commandeSansEspaces, nbCommandes);
+    commandes = retirerEspaces(commandeEntree, commande, nbCommandes);
 
     return commandes;
 }
