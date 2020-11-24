@@ -48,15 +48,28 @@ void executerCommande(char** tabcmd, int nbCommandes, int* status) {
         else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i]);
         else if (estCommande(tabcmd[i], CMD_PRINTVARIABLE)) *status = afficherVariablesLocales();
         else if (estCommande(tabcmd[i], CMD_CD)) executerCd(tabcmd[i], nbCommandes);
-        // else {
-        //     printf("ENTRE DANS LE ELSE");
-        //     execlp(*tabcmd, *tabcmd, NULL);
-        //     printf("ENTRE DANS LE EXECLP");
-        //     freeCommandes(tabcmd);
-        //     freeVariables(tab);
-        //     syserror(2);
-        //     exit(FAIL_EXEC);
-        // }
+        else executerProgrammeExterne(tabcmd[i]);
+    }
+}
+
+void recupererNomProgramme(char nomProgramme[100], char* commande) {
+    int i;
+    for (i = 0; commande[i] != ' ' && commande[i] != '\n' && commande[i] != '\0'; i++) {
+        nomProgramme[i] = commande[i];
+    } 
+}
+
+void executerProgrammeExterne(char* commande) {
+    char repertory[100], nomProgramme[100];
+    getPwd(repertory);
+    strcat(repertory, "/");
+    recupererNomProgramme(nomProgramme, commande);
+    strcat(repertory, nomProgramme);
+
+    if(fork()==0) {
+        char* arg[2] = {commande, NULL};
+        execvp(repertory, arg);
+        syserror(EXEC_FAIL);
     }
 }
 

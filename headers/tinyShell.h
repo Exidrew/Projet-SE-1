@@ -3,6 +3,7 @@
 
 #define FAIL_EXEC 127
 #define CMD_EXIT "exit"
+#define CMD_MYPS "myps"
 
 #define estCommande(commande, programme)\
     !strncmp(commande, programme, strlen(programme))
@@ -12,5 +13,6 @@ void executerSetVariable(char* tabcmd);
 void executerDelVariable(char* tabcmd);
 void executerCommande(char** tabcmd, int nbCommandes, int* status);
 void freeCommandes(char** commandes);
+void executerProgrammeExterne(char* commandes);
 
 #endif
