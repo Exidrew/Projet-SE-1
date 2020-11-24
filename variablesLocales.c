@@ -6,6 +6,7 @@
 #include "headers/error.h"
 #include "headers/variablesLocales.h"
 #include "headers/variables.h"
+#include "headers/gestionChaine.h"
 
 char* retirerAppel(char* commande) {
     while (*commande != ' ') {
@@ -16,21 +17,20 @@ char* retirerAppel(char* commande) {
     return commande;
 }
 
-int setVariableLocale(char* commande, TableauVariables* variables) {
+int setVariableLocale(char* commande) {
     char nomVariable[1024], valeurVariable[1024], *cmd;
-    printf("Entre setVariable avec la commande : %s\n", commande);
-    commande = retirerAppel(commande);
-    printf("Après : %s\n", commande);
 
+    commande = retirerAppel(commande);
 
     cmd = gererVariableLocaleDepuisCommande(commande, nomVariable, '=');
     gererVariableLocaleDepuisCommande(cmd, valeurVariable, ';');
+
     return setenv(nomVariable, valeurVariable, 1);
 }
 
-int delVariableLocale(char* commande, TableauVariables* variables) {
+int delVariableLocale(char* commande) {
     commande = retirerAppel(commande);
-    printf("Le nom : %s\n", commande);
+
     return unsetenv(commande);
 }
 
@@ -45,4 +45,14 @@ char* gererVariableLocaleDepuisCommande(char* commande, char tab[1024], char fin
     commande++; // Retrait du '='
     tab[i] = '\0';
     return commande;
+}
+
+int afficherVariablesLocales() {
+    int i;
+
+    for (i=0; environ[i] != NULL; i++) {
+        printf("%s\n", environ[i]);
+    }
+
+    return 0;
 }
