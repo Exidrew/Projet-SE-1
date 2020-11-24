@@ -95,7 +95,7 @@ void afficherEnBrutLesCommandesEntrees(char** commandes, int nbCommandes) {
 
 void viderCommande(char** commandes) {
     int i;
-    printf("Entre vider\n");
+
     for (i = 0; i < sizelgcmd; i++) {
         if (commandes[i] == NULL) commandes[i] = (char*) calloc(sizeWord, sizeof(char));
         memset(commandes[i], '\0', sizeWord);

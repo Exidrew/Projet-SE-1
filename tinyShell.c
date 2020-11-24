@@ -37,17 +37,16 @@ void afficherRetour(char** tabcmd, int nbCommandes,int status) {
 
 void executerCommande(char** tabcmd, int nbCommandes, int* status) {
     tabcmd = remplacerLesVariablesDansLesCommandes(tabcmd, nbCommandes, status);
-    printf("Continue\n");
     //afficherLesCommandesEntrees(tabcmd, nbCommandes);
     for (int i = 0; i < nbCommandes; i++) {
         if (tabcmd == NULL || tabcmd[i] == NULL) {
-            printf("Entre ici\n");
             *status = -1;
             return;
         }
 
         if (estCommande(tabcmd[i], CMD_SETVARIABLE)) *status = setVariableLocale(tabcmd[i]);
         else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i]);
+        else if (estCommande(tabcmd[i], CMD_PRINTVARIABLE)) *status = afficherVariablesLocales();
         else if (estCommande(tabcmd[i], CMD_CD)) executerCd(tabcmd[i], nbCommandes);
         // else {
         //     printf("ENTRE DANS LE ELSE");
@@ -88,7 +87,6 @@ int main(void) {
         }
         executerCommande(commandes, nbCommandes, &status);
         afficherRetour(commandes, nbCommandes, status);
-        printf("Test\n");
         if (commandes != NULL) viderCommande(commandes);
     }
     freeTout(commandes);
