@@ -29,7 +29,6 @@ void afficherArgumentMyPs(int argc, char* argv[]) {
 
 char* getDetailsProcessus(DirEnt* directory, char* message) {
     int lenName = strlen(directory->d_name);
-
     message = (char*) realloc(message, (strlen(message) + lenName + 2) * sizeof(char));
     if (message == NULL) fatalsyserror(10);
 
