@@ -27,20 +27,34 @@ void afficherArgumentMyPs(int argc, char* argv[]) {
     for (i=0; i < argc; i++) printf("- %s\n", argv[i]);
 }
 
+char* getDetailsProcessus(DirEnt* directory, char* message) {
+    int lenName = strlen(directory->d_name);
+
+    message = (char*) realloc(message, (strlen(message) + lenName + 2) * sizeof(char));
+    if (message == NULL) fatalsyserror(10);
+
+    message = strcat(message, directory->d_name);
+    message = strcat(message, "\n");
+    return message;
+}
+
 int main(int argc, char* argv[]) {
     DIR* rep = null;
-    DirEnt* directoryEntity = (DirEnt*) calloc(1, sizeof(DirEnt));
+    DirEnt* directoryEntity;
+    char* details;
+    if ((details = (char*) calloc(10, sizeof(char))) == NULL) fatalsyserror(10);
     
-    if ((rep = opendir("/proc")) == null) fatalsyserror(PS_FAIL_OPENDIR);
+    if ((rep = opendir(DIR_PROC)) == null) fatalsyserror(PS_FAIL_OPENDIR);
 
     while ((directoryEntity = readdir(rep)) != null) {
         if (estNombre(directoryEntity->d_name)) {
-            printf("Le fichier lu : %s\n", directoryEntity->d_name);
+            details = getDetailsProcessus(directoryEntity, details);
         }
     }
+    printf("%s", details);
 
+    free(details);
     if (closedir(rep) == ERR) fatalsyserror(PS_FAIL_CLOSEDIR);
-    free(directoryEntity);
 
     return 0;
 }

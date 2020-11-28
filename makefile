@@ -13,6 +13,12 @@ ts : $(SOURCES)
 myps : $(PSSOURCES)
 	$(CC) $(FLAGS) $^ -o $@
 
+myps-build-debug : $(PSSOURCES)
+	$(CC) $(DEBUG_FLAGS) $^ -o mypsdebug
+
+debugmyps :
+	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./mypsdebug
+
 clean :
 	rm -f *.o *.exe ts build-debug
 
