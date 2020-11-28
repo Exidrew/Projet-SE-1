@@ -21,6 +21,8 @@
 #define SHM_ATTACH_FAIL 5
 #define SHM_DETACH_FAIL 6
 #define SHM_DELETE_FAIL 7
+#define PS_FAIL_OPENDIR 8
+#define PS_FAIL_CLOSEDIR 9
 
 extern char* errormsg[];
 

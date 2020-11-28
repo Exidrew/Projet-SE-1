@@ -61,6 +61,10 @@ void recupererNomProgramme(char nomProgramme[100], char* commande) {
 
 void executerProgrammeExterne(char* commande) {
     char repertory[100], nomProgramme[100];
+    // Ces memset evites une fuite de memoire valgrind
+    memset(repertory, '\0', 100);
+    memset(nomProgramme, '\0', 100);
+    
     getPwd(repertory);
     strcat(repertory, "/");
     recupererNomProgramme(nomProgramme, commande);
