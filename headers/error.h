@@ -29,6 +29,9 @@
 
 #define MEM_FAILED_ALLOCATION 10
 
+#define FILE_FAILED_OPEN 11
+#define FILE_FAILED_CLOSE 12
+
 extern char* errormsg[];
 
 #endif

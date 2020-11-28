@@ -3,6 +3,7 @@
 
 #define null NULL
 #define DIR_PROC "/proc"
+#define DIR_STATUS "status"
 
 typedef struct dirent DirEnt;
 

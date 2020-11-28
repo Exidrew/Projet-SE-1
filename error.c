@@ -11,5 +11,7 @@ char* errormsg[] = {
     ROUGE("Shared Memory deletion failed"), // 7
     ROUGE("Open directory failed"), // 8
     ROUGE("Close directory failed"), // 9
-    ROUGE("Failed dynamic memory allocation") //10
+    ROUGE("Failed dynamic memory allocation"), //10
+    ROUGE("Failed open file"), // 11
+    ROUGE("Failed close file")
 };
