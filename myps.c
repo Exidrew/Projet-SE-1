@@ -81,39 +81,49 @@ char* getCmdLine(char* pid) {
     return cmd;
 }
 
-char* getDetailsProcessus(DirEnt* directory, char* message) {
-    int lenPID = strlen(directory->d_name);
+void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     char* cmdline = getCmdLine(directory->d_name);
-    int totalLen = strlen(message) + lenPID + strlen(cmdline) + 4;
-    message = (char*) realloc(message, totalLen * sizeof(char));
-    if (message == null) fatalsyserror(MEM_FAILED_ALLOCATION);
+    int lenPID = strlen(directory->d_name);
+    int lencmdline = strlen(cmdline);
+    data->pid = (char*) calloc((lenPID + 1), sizeof(char));
+    data->cmdline = (char*) calloc((lencmdline + 1), sizeof(char));
 
-    message = strcat(message, directory->d_name);
-    message = strcat(message, " ");
-    message = strcat(message, cmdline);
-    message = strcat(message, "\n");
+    if (data->pid == null || data->cmdline == null) fatalsyserror(MEM_FAILED_ALLOCATION);
+    strcpy(data->pid, directory->d_name);
+    strcpy(data->cmdline, cmdline);
 
     free(cmdline);
-    return message;
+}
+
+void freeListProcData(ProcData** list, int nbData) {
+    int i;
+    // Commence à 1 car on commence à allouer à 1 dans le main
+    for (i=1; i < nbData; i++){
+        free(list[i]->pid);
+        free(list[i]->cmdline);
+        free(list[i]);
+    }
+    free(list);
 }
 
 int main(int argc, char* argv[]) {
     DIR* rep = null;
     DirEnt* directoryEntity;
-    char* details;
-    if ((details = (char*) calloc(10, sizeof(char))) == NULL) fatalsyserror(MEM_FAILED_ALLOCATION);
-    
+    ProcData** listProcData = (ProcData**) calloc(1, sizeof(ProcData*));
+    int nbProcData = 1;
+
     if ((rep = opendir(DIR_PROC)) == null) fatalsyserror(PS_FAIL_OPENDIR);
 
     while ((directoryEntity = readdir(rep)) != null) {
         if (estNombre(directoryEntity->d_name)) {
-            details = getDetailsProcessus(directoryEntity, details);
+            listProcData = (ProcData**) realloc(listProcData, (nbProcData + 1) * sizeof(ProcData*));
+            listProcData[nbProcData] = (ProcData*) calloc(1, sizeof(ProcData));
+            getDetailsProcessus(directoryEntity, listProcData[nbProcData]);
+            printf("%s %s\n", listProcData[nbProcData]->pid, listProcData[nbProcData]->cmdline);
+            nbProcData++;
         }
     }
-    printf("%s", details);
-
-    free(details);
     if (closedir(rep) == ERR) fatalsyserror(PS_FAIL_CLOSEDIR);
-
+    freeListProcData(listProcData, nbProcData);
     return 0;
 }
