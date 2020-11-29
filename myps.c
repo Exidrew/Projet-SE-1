@@ -9,6 +9,7 @@
 
 #include "headers/error.h"
 #include "headers/myps.h"
+#include "headers/procdata.h"
 
 #define true 1
 #define false 0
@@ -44,25 +45,6 @@ char* getStatusPath(char* pid) {
     path = strcat(path, DIR_STATUS);
 
     return path;
-}
-
-void setProcDatas(ProcData* data, char* pid, char* cmdline, char* statut) {
-    int lenPID, lenCmdLine, lenStatut;
-
-    lenPID = strlen(pid);
-    data->pid = (char*) calloc((lenPID + 1), sizeof(char));
-    if (data->pid == null) fatalsyserror(MEM_FAILED_ALLOCATION);
-    strcpy(data->pid, pid);
-
-    lenCmdLine = strlen(cmdline);
-    data->cmdline = (char*) calloc((lenCmdLine + 1), sizeof(char));
-    if (data->cmdline == null) fatalsyserror(MEM_FAILED_ALLOCATION);
-    strcpy(data->cmdline, cmdline);
-
-    lenStatut = strlen(statut);
-    data->statut = (char*) calloc((lenStatut + 1), sizeof(char));
-    if (data->statut == null) fatalsyserror(MEM_FAILED_ALLOCATION);
-    strcpy(data->statut, statut);
 }
 
 char* searchInFile(char* contain, int fileDescriptor) {
@@ -143,7 +125,7 @@ int main(int argc, char* argv[]) {
             listProcData = (ProcData**) realloc(listProcData, (nbProcData + 1) * sizeof(ProcData*));
             listProcData[nbProcData] = (ProcData*) calloc(1, sizeof(ProcData));
             getDetailsProcessus(directoryEntity, listProcData[nbProcData]);
-            printf("%s %s %s\n", listProcData[nbProcData]->pid, listProcData[nbProcData]->cmdline, listProcData[nbProcData]->statut);
+            afficherDetailsProcessus(listProcData[nbProcData]);
             nbProcData++;
         }
     }

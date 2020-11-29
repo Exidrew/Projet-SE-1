@@ -1,6 +1,6 @@
 CC = gcc
 SOURCES = error.c tinyShell.c gestionChaine.c variablesLocales.c variables.c tubeCommunication.c cd.c
-PSSOURCES = myps.c error.c
+PSSOURCES = myps.c procdata.c error.c
 FLAGS = -Wall
 DEBUG_FLAGS = -Wall -g
 

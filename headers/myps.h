@@ -5,12 +5,6 @@
 #define DIR_PROC "/proc"
 #define DIR_STATUS "status"
 
-typedef struct procdata {
-    char* pid;
-    char* cmdline;
-    char* statut;
-} ProcData;
-
 typedef struct dirent DirEnt;
 
 #endif
