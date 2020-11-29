@@ -8,6 +8,7 @@
 typedef struct procdata {
     char* pid;
     char* cmdline;
+    char* statut;
 } ProcData;
 
 typedef struct dirent DirEnt;

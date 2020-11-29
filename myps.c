@@ -46,8 +46,8 @@ char* getStatusPath(char* pid) {
     return path;
 }
 
-void setProcDatas(ProcData* data, char* pid, char* cmdline) {
-    int lenPID, lenCmdLine;
+void setProcDatas(ProcData* data, char* pid, char* cmdline, char* statut) {
+    int lenPID, lenCmdLine, lenStatut;
 
     lenPID = strlen(pid);
     data->pid = (char*) calloc((lenPID + 1), sizeof(char));
@@ -58,6 +58,11 @@ void setProcDatas(ProcData* data, char* pid, char* cmdline) {
     data->cmdline = (char*) calloc((lenCmdLine + 1), sizeof(char));
     if (data->cmdline == null) fatalsyserror(MEM_FAILED_ALLOCATION);
     strcpy(data->cmdline, cmdline);
+
+    lenStatut = strlen(statut);
+    data->statut = (char*) calloc((lenStatut + 1), sizeof(char));
+    if (data->statut == null) fatalsyserror(MEM_FAILED_ALLOCATION);
+    strcpy(data->statut, statut);
 }
 
 char* searchInFile(char* contain, int fileDescriptor) {
@@ -91,27 +96,26 @@ char* searchInFile(char* contain, int fileDescriptor) {
         theData[j] = line[i];
     }
 
+    lseek(fileDescriptor, 0, SEEK_SET);
     free(line);
     return theData;
 }
 
-
-
 void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     int fileDescriptor;
-    char* cmdline;
+    char* cmdline, *statut;
     char* path = getStatusPath(directory->d_name);
 
     if ((fileDescriptor = open(path, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
 
     cmdline = searchInFile("Name:", fileDescriptor);
+    statut = searchInFile("State:", fileDescriptor);
 
     if ((close(fileDescriptor)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
 
-    setProcDatas(data, directory->d_name, cmdline);
+    setProcDatas(data, directory->d_name, cmdline, statut);
 
-    free(cmdline);
-    free(path);
+    free(cmdline), free(path), free(statut);
 }
 
 void freeListProcData(ProcData** list, int nbData) {
@@ -120,6 +124,7 @@ void freeListProcData(ProcData** list, int nbData) {
     for (i=1; i < nbData; i++){
         free(list[i]->pid);
         free(list[i]->cmdline);
+        free(list[i]->statut);
         free(list[i]);
     }
     free(list);
@@ -138,7 +143,7 @@ int main(int argc, char* argv[]) {
             listProcData = (ProcData**) realloc(listProcData, (nbProcData + 1) * sizeof(ProcData*));
             listProcData[nbProcData] = (ProcData*) calloc(1, sizeof(ProcData));
             getDetailsProcessus(directoryEntity, listProcData[nbProcData]);
-            printf("%s %s\n", listProcData[nbProcData]->pid, listProcData[nbProcData]->cmdline);
+            printf("%s %s %s\n", listProcData[nbProcData]->pid, listProcData[nbProcData]->cmdline, listProcData[nbProcData]->statut);
             nbProcData++;
         }
     }
