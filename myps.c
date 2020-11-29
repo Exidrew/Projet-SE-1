@@ -46,15 +46,60 @@ char* getStatusPath(char* pid) {
     return path;
 }
 
-char* getCmdLine(char* pid) {
-    int fileDescriptor, index = 0, lenCmdLine = 0, i,j=0;
-    char* path;
-    path = getStatusPath(pid);
+void setProcDatas(ProcData* data, char* pid, char* cmdline) {
+    int lenPID, lenCmdLine;
+
+    lenPID = strlen(pid);
+    data->pid = (char*) calloc((lenPID + 1), sizeof(char));
+    if (data->pid == null) fatalsyserror(MEM_FAILED_ALLOCATION);
+    strcpy(data->pid, pid);
+
+    lenCmdLine = strlen(cmdline);
+    data->cmdline = (char*) calloc((lenCmdLine + 1), sizeof(char));
+    if (data->cmdline == null) fatalsyserror(MEM_FAILED_ALLOCATION);
+    strcpy(data->cmdline, cmdline);
+}
+
+char* searchInFile(char* contain, int fileDescriptor) {
+    char* line = (char*) calloc(2, sizeof(char));
+    int lenLine, index = 0, i, j = 0, totalLen = 0;
+    char car;
+    char* theData;
+    
+    while (strncmp(line, contain, strlen(contain)) != 0) {
+        lenLine = 0;
+        lseek(fileDescriptor, totalLen, SEEK_SET);
+        car = '\0';
+        while (car != '\n' && read(fileDescriptor, &car, 1) != EOF) {
+            line[lenLine] = car;
+            line = (char*) realloc(line, (lenLine + 2) * sizeof(char));
+            lenLine++;
+            if (line == null) fatalsyserror(MEM_FAILED_ALLOCATION);
+        }
+        line[lenLine-1] = '\0';
+        totalLen += lenLine;
+    }
+
+    // Suppression des espaces
+    while (!isspace(line[index])) index++;
+    index++;
+
+    // Copie de la commande (pour retirer le prefixe)
+    // Important pour free cmdline correctement
+    theData = (char*) calloc(lenLine, sizeof(char));
+    for(i=index; line[i]; i++,j++) {
+        theData[j] = line[i];
+    }
+
+    free(line);
+    return theData;
+}
+
+char* getCmdLine(char* pid, int fileDescriptor) {
+    int index = 0, lenCmdLine = 0, i,j=0;
     char car = '\0';
     char* cmdline = (char*) calloc(2, sizeof(char));
     char* cmd;
-
-    if ((fileDescriptor = open(path, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
 
     while (car != '\n' && read(fileDescriptor, &car, 1) != EOF) {
         cmdline[lenCmdLine] = car;
@@ -75,24 +120,25 @@ char* getCmdLine(char* pid) {
         cmd[j] = cmdline[i];
     }
 
-    if ((close(fileDescriptor)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
-    free(path);
     free(cmdline);
     return cmd;
 }
 
 void getDetailsProcessus(DirEnt* directory, ProcData* data) {
-    char* cmdline = getCmdLine(directory->d_name);
-    int lenPID = strlen(directory->d_name);
-    int lencmdline = strlen(cmdline);
-    data->pid = (char*) calloc((lenPID + 1), sizeof(char));
-    data->cmdline = (char*) calloc((lencmdline + 1), sizeof(char));
+    int fileDescriptor;
+    char* cmdline;
+    char* path = getStatusPath(directory->d_name);
 
-    if (data->pid == null || data->cmdline == null) fatalsyserror(MEM_FAILED_ALLOCATION);
-    strcpy(data->pid, directory->d_name);
-    strcpy(data->cmdline, cmdline);
+    if ((fileDescriptor = open(path, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
+
+    cmdline = searchInFile("Name:", fileDescriptor);
+
+    if ((close(fileDescriptor)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
+
+    setProcDatas(data, directory->d_name, cmdline);
 
     free(cmdline);
+    free(path);
 }
 
 void freeListProcData(ProcData** list, int nbData) {
