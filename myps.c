@@ -47,22 +47,46 @@ char* getStatusPath(char* pid) {
     return path;
 }
 
+char* retirerKb(char* rss) {
+    int i,j = 0;
+    // -3 car on retire " kb"
+    char* new = (char*) calloc(strlen(rss)-3, sizeof(char));
+
+    for (i=0; isspace(rss[i]); i++);
+    for (i=i; !isspace(rss[i]);i++) {
+        new[j++] = rss[i];
+    }
+    new[j] = '\0';
+
+    rss = strcpy(rss, new);
+    free(new);
+    return rss;
+}
+
 char* searchInFile(char* contain, int fileDescriptor) {
     char* line = (char*) calloc(2, sizeof(char));
     int lenLine, index = 0, i, j = 0, totalLen = 0;
     char car;
     char* theData;
+    ssize_t fin;
     
     while (strncmp(line, contain, strlen(contain)) != 0) {
         lenLine = 0;
         lseek(fileDescriptor, totalLen, SEEK_SET);
         car = '\0';
-        while (car != '\n' && read(fileDescriptor, &car, 1) != EOF) {
+        while (car != '\n' && (fin = read(fileDescriptor, &car, 1)) != EOF) {
             line[lenLine] = car;
             line = (char*) realloc(line, (lenLine + 2) * sizeof(char));
             lenLine++;
             if (line == null) fatalsyserror(MEM_FAILED_ALLOCATION);
+            if (car == '\0') break;
         }
+        if (car == '\0') {
+            lseek(fileDescriptor, 0, SEEK_SET);
+            free(line);
+            theData = (char*) calloc(5, sizeof(char));
+            return theData;
+        };
         line[lenLine-1] = '\0';
         totalLen += lenLine;
     }
@@ -83,21 +107,30 @@ char* searchInFile(char* contain, int fileDescriptor) {
     return theData;
 }
 
+char* getRss(int fileDescriptor) {
+    char* rss;
+    rss = searchInFile("VmRSS:", fileDescriptor);
+    if (!strlen(rss)) strcpy(rss, "0");
+    else rss = retirerKb(rss);
+    return rss;
+}
+
 void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     int fileDescriptor;
-    char* cmdline, *statut;
+    char* cmdline, *statut, *rss;
     char* path = getStatusPath(directory->d_name);
 
     if ((fileDescriptor = open(path, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
 
     cmdline = searchInFile("Name:", fileDescriptor);
     statut = searchInFile("State:", fileDescriptor);
+    rss = getRss(fileDescriptor);
 
     if ((close(fileDescriptor)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
 
-    setProcDatas(data, directory->d_name, cmdline, statut);
+    setProcDatas(data, directory->d_name, cmdline, statut, rss);
 
-    free(cmdline), free(path), free(statut);
+    free(cmdline), free(path), free(statut), free(rss);
 }
 
 int main(int argc, char* argv[]) {

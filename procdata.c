@@ -37,20 +37,35 @@ void setProcStatut(ProcData* data, char* statut) {
     strcpy(data->statut, statut);
 }
 
+void setProcRss(ProcData* data, char* rss) {
+    int lenRss;
+
+    lenRss = strlen(rss);
+    data->rss = (char*) calloc((lenRss + 1), sizeof(char));
+    if (data->rss == NULL) fatalsyserror(MEM_FAILED_ALLOCATION);
+    strcpy(data->rss, rss);
+}
+
 //#####################################################################//
 //                          Fonctions publiques                        //
 //#####################################################################//
 
-void setProcDatas(ProcData* data, char* pid, char* cmdline, char* statut) {
+void setProcDatas(ProcData* data, char* pid, char* cmdline, char* statut, char* rss) {
     setProcPid(data, pid);
     setProcCmd(data, cmdline);
     setProcStatut(data, statut);
+    setProcRss(data, rss);
 }
 
 void afficherDetailsProcessus(ProcData* data) {
-    char* message = "%s %s %s\n";
+    char* message = "%s %s %s %s\n";
 
-    printf(message, data->pid, data->cmdline, data->statut);
+    printf(message,
+                data->pid,
+                data->cmdline,
+                data->statut,
+                data->rss
+    );
 }
 
 void afficherTousLesProcessus(ProcData** list, int nbData) {
@@ -67,6 +82,7 @@ void freeListProcData(ProcData** list, int nbData) {
         free(list[i]->pid);
         free(list[i]->cmdline);
         free(list[i]->statut);
+        free(list[i]->rss);
         free(list[i]);
     }
     free(list);
