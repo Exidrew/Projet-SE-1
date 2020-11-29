@@ -95,34 +95,7 @@ char* searchInFile(char* contain, int fileDescriptor) {
     return theData;
 }
 
-char* getCmdLine(char* pid, int fileDescriptor) {
-    int index = 0, lenCmdLine = 0, i,j=0;
-    char car = '\0';
-    char* cmdline = (char*) calloc(2, sizeof(char));
-    char* cmd;
 
-    while (car != '\n' && read(fileDescriptor, &car, 1) != EOF) {
-        cmdline[lenCmdLine] = car;
-        cmdline = (char*) realloc(cmdline, (lenCmdLine + 2) * sizeof(char));
-        lenCmdLine++;
-        if (cmdline == null) fatalsyserror(MEM_FAILED_ALLOCATION);
-    }
-    cmdline[lenCmdLine-1] = '\0';
-
-    // Suppression des espaces
-    while (!isspace(cmdline[index])) index++;
-    index++;
-
-    // Copie de la commande (pour retirer le "name: ")
-    // Important pour free cmdline correctement
-    cmd = (char*) calloc(lenCmdLine, sizeof(char));
-    for(i=index; cmdline[i]; i++,j++) {
-        cmd[j] = cmdline[i];
-    }
-
-    free(cmdline);
-    return cmd;
-}
 
 void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     int fileDescriptor;
