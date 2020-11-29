@@ -49,5 +49,25 @@ void setProcDatas(ProcData* data, char* pid, char* cmdline, char* statut) {
 
 void afficherDetailsProcessus(ProcData* data) {
     char* message = "%s %s %s\n";
+
     printf(message, data->pid, data->cmdline, data->statut);
+}
+
+void afficherTousLesProcessus(ProcData** list, int nbData) {
+    int i;
+    if (list != NULL) {
+        for (i=0; i < nbData; i++) afficherDetailsProcessus(list[i]);
+    }
+}
+
+void freeListProcData(ProcData** list, int nbData) {
+    int i;
+
+    for (i=0; i < nbData; i++){
+        free(list[i]->pid);
+        free(list[i]->cmdline);
+        free(list[i]->statut);
+        free(list[i]);
+    }
+    free(list);
 }

@@ -100,36 +100,26 @@ void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     free(cmdline), free(path), free(statut);
 }
 
-void freeListProcData(ProcData** list, int nbData) {
-    int i;
-    // Commence à 1 car on commence à allouer à 1 dans le main
-    for (i=1; i < nbData; i++){
-        free(list[i]->pid);
-        free(list[i]->cmdline);
-        free(list[i]->statut);
-        free(list[i]);
-    }
-    free(list);
-}
-
 int main(int argc, char* argv[]) {
     DIR* rep = null;
     DirEnt* directoryEntity;
     ProcData** listProcData = (ProcData**) calloc(1, sizeof(ProcData*));
-    int nbProcData = 1;
+    int nbProcData = 0;
 
     if ((rep = opendir(DIR_PROC)) == null) fatalsyserror(PS_FAIL_OPENDIR);
 
     while ((directoryEntity = readdir(rep)) != null) {
         if (estNombre(directoryEntity->d_name)) {
-            listProcData = (ProcData**) realloc(listProcData, (nbProcData + 1) * sizeof(ProcData*));
+            listProcData = (ProcData**) realloc(listProcData, (nbProcData + 2) * sizeof(ProcData*));
             listProcData[nbProcData] = (ProcData*) calloc(1, sizeof(ProcData));
             getDetailsProcessus(directoryEntity, listProcData[nbProcData]);
-            afficherDetailsProcessus(listProcData[nbProcData]);
             nbProcData++;
         }
     }
     if (closedir(rep) == ERR) fatalsyserror(PS_FAIL_CLOSEDIR);
+
+    afficherTousLesProcessus(listProcData, nbProcData);
+
     freeListProcData(listProcData, nbProcData);
     return 0;
 }
