@@ -173,7 +173,6 @@ void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     rss = getRss(fileDescriptorStatus);
     getTimes(fileDescriptorStat, &userTime, &systemTime, &cutime, &cstime, &startTime);
 
-
     if ((close(fileDescriptorStatus)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
     if ((close(fileDescriptorProcStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
     if ((close(fileDescriptorStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
