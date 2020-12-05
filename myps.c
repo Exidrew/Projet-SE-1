@@ -117,7 +117,7 @@ char* getRss(int fileDescriptor) {
 }
 
 char* getNextLigne(int fileDescriptor) {
-    char* ligne = (char*) calloc(2, sizeof(char)), car;
+    char* ligne = (char*) calloc(2, sizeof(char)), car = '\0';
     int lenLigne = 0;
 
     while (car != '\n' && read(fileDescriptor, &car, 1) != EOF) {
@@ -138,6 +138,7 @@ void getTimes(int fileDescriptorStat, int *userTime, int* systemTime, int* cutim
                         "%d %d %*d %*d %*d %*d %d", userTime, systemTime, cutime, cstime, startTime);
 
     lseek(fileDescriptorStat, 0, SEEK_SET);
+    free(description);
 }
 
 float getPourcentageCPU(float startTime, float usageTime) {
@@ -180,7 +181,7 @@ void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     pourcentageCPU = getPourcentageCPU((float)startTime, userTime);
     setProcDatas(data, directory->d_name, cmdline, statut, rss, pourcentageCPU);
 
-    free(cmdline), free(statusPath), free(statut), free(rss);
+    free(cmdline), free(statusPath), free(statPath), free(statut), free(rss);
 }
 
 int main(int argc, char* argv[]) {
