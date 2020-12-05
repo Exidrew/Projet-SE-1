@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <fcntl.h>
+#include <time.h>
 
 #include "headers/error.h"
 #include "headers/myps.h"
@@ -155,11 +156,26 @@ int getProcTimes(int fileDescriptorStat) {
     return procTimes;
 }
 
-float getPourcentageCPU(int cpuUsage1, int procTimes1) {
-    float pourcentage;
-    int nombreProcesseurs = sysconf(_SC_NPROCESSORS_ONLN);
+void getTimes(int fileDescriptorStat, int *userTime, int* systemTime, int* cutime, int* cstime, int* startTime) {
+    char* description = getNextLigne(fileDescriptorStat);
 
-    pourcentage = (nombreProcesseurs * procTimes1 * 100) / (float) cpuUsage1;
+    sscanf(description, "%*d %*s %*c %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %d %d"
+                        "%d %d %*d %*d %*d %*d %d", userTime, systemTime, cutime, cstime, startTime);
+
+    lseek(fileDescriptorStat, 0, SEEK_SET);
+}
+
+float getPourcentageCPU(float startTime, float usageTime) {
+    float pourcentage;
+    int secondes;
+    struct timespec spec;
+    clock_gettime(CLOCK_BOOTTIME, &spec);
+
+    secondes = (spec.tv_sec - (startTime / sysconf(_SC_CLK_TCK))) / sysconf(_SC_CLK_TCK);
+
+    if (secondes == 0) return 0.0;
+
+    pourcentage = (((usageTime / sysconf(_SC_CLK_TCK)) * 1000) / sysconf(_SC_CLK_TCK)) / secondes;
 
     return pourcentage;
 }
@@ -167,7 +183,7 @@ float getPourcentageCPU(int cpuUsage1, int procTimes1) {
 void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     int fileDescriptorStatus, fileDescriptorProcStat, fileDescriptorStat;
     char* cmdline, *statut, *rss;
-    int cpuUsage1 = 0, procTimes1 = 0;
+    int userTime, systemTime, cutime, cstime, startTime, usageTime;
     float pourcentageCPU = 0;
     char* statusPath = getPath(directory->d_name, DIR_STATUS);
     char* statPath = getPath(directory->d_name, DIR_STAT);
@@ -176,19 +192,18 @@ void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     if ((fileDescriptorProcStat = open(DIR_PROC_STAT, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
     if ((fileDescriptorStat = open(statPath, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
 
-    cpuUsage1 = getCpuUsage(fileDescriptorProcStat);
-    procTimes1 = getProcTimes(fileDescriptorStat);
-
     cmdline = searchInFile("Name:", fileDescriptorStatus);
     statut = searchInFile("State:", fileDescriptorStatus);
     rss = getRss(fileDescriptorStatus);
+    getTimes(fileDescriptorStat, &userTime, &systemTime, &cutime, &cstime, &startTime);
 
 
     if ((close(fileDescriptorStatus)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
     if ((close(fileDescriptorProcStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
     if ((close(fileDescriptorStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
 
-    pourcentageCPU = getPourcentageCPU(cpuUsage1, procTimes1);
+    usageTime = userTime + systemTime + cstime + cutime;
+    pourcentageCPU = getPourcentageCPU((float)startTime, (float)usageTime);
     setProcDatas(data, directory->d_name, cmdline, statut, rss, pourcentageCPU);
 
     free(cmdline), free(statusPath), free(statut), free(rss);
