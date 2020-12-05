@@ -29,7 +29,7 @@ void afficherArgumentMyPs(int argc, char* argv[]) {
     for (i=0; i < argc; i++) printf("- %s\n", argv[i]);
 }
 
-char* getStatusPath(char* pid) {
+char* getPath(char* pid, char* but) {
     int procLen = strlen(DIR_PROC);
     int pidLen = strlen(pid);
     int statusLen = strlen(DIR_STATUS);
@@ -42,7 +42,7 @@ char* getStatusPath(char* pid) {
     path = strcat(path, "/");
     path = strcat(path, pid);
     path = strcat(path, "/");
-    path = strcat(path, DIR_STATUS);
+    path = strcat(path, but);
 
     return path;
 }
@@ -115,22 +115,83 @@ char* getRss(int fileDescriptor) {
     return rss;
 }
 
+char* getNextLigne(int fileDescriptor) {
+    char* ligne = (char*) calloc(2, sizeof(char)), car;
+    int lenLigne = 0;
+
+    while (car != '\n' && read(fileDescriptor, &car, 1) != EOF) {
+        ligne[lenLigne] = car;
+        ligne = (char*) realloc(ligne, (lenLigne + 2) * sizeof(char));
+        lenLigne++;
+        if (ligne == null) fatalsyserror(MEM_FAILED_ALLOCATION);
+        if (car == '\0') break;
+    }
+    ligne[lenLigne-1] = '\0';
+    return ligne;
+}
+
+int getCpuUsage(int fileDescriptorProcStat) {
+    int user, nice, system, idle, cpuUsage;
+    char *description = getNextLigne(fileDescriptorProcStat);
+
+    sscanf(description, "%*s %d %d %d %d", &user, &nice, &system, &idle);
+    cpuUsage = user + nice + system + idle;
+
+    lseek(fileDescriptorProcStat, 0, SEEK_SET);
+
+    return cpuUsage;
+}
+
+int getProcTimes(int fileDescriptorStat) {
+    int userTime, systemTime;
+    int procTimes;
+    char* description = getNextLigne(fileDescriptorStat);
+
+    sscanf(description, "%*d %*s %*c %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %d %d", &userTime, &systemTime);
+    procTimes = userTime + systemTime;
+
+    lseek(fileDescriptorStat, 0, SEEK_SET);
+
+    return procTimes;
+}
+
+float getPourcentageCPU(int cpuUsage1, int procTimes1) {
+    float pourcentage;
+    int nombreProcesseurs = sysconf(_SC_NPROCESSORS_ONLN);
+
+    pourcentage = (nombreProcesseurs * procTimes1 * 100) / (float) cpuUsage1;
+
+    return pourcentage;
+}
+
 void getDetailsProcessus(DirEnt* directory, ProcData* data) {
-    int fileDescriptor;
+    int fileDescriptorStatus, fileDescriptorProcStat, fileDescriptorStat;
     char* cmdline, *statut, *rss;
-    char* path = getStatusPath(directory->d_name);
+    int cpuUsage1 = 0, procTimes1 = 0;
+    float pourcentageCPU = 0;
+    char* statusPath = getPath(directory->d_name, DIR_STATUS);
+    char* statPath = getPath(directory->d_name, DIR_STAT);
 
-    if ((fileDescriptor = open(path, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
+    if ((fileDescriptorStatus = open(statusPath, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
+    if ((fileDescriptorProcStat = open(DIR_PROC_STAT, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
+    if ((fileDescriptorStat = open(statPath, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
 
-    cmdline = searchInFile("Name:", fileDescriptor);
-    statut = searchInFile("State:", fileDescriptor);
-    rss = getRss(fileDescriptor);
+    cpuUsage1 = getCpuUsage(fileDescriptorProcStat);
+    procTimes1 = getProcTimes(fileDescriptorStat);
 
-    if ((close(fileDescriptor)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
+    cmdline = searchInFile("Name:", fileDescriptorStatus);
+    statut = searchInFile("State:", fileDescriptorStatus);
+    rss = getRss(fileDescriptorStatus);
 
-    setProcDatas(data, directory->d_name, cmdline, statut, rss);
 
-    free(cmdline), free(path), free(statut), free(rss);
+    if ((close(fileDescriptorStatus)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
+    if ((close(fileDescriptorProcStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
+    if ((close(fileDescriptorStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
+
+    pourcentageCPU = getPourcentageCPU(cpuUsage1, procTimes1);
+    setProcDatas(data, directory->d_name, cmdline, statut, rss, pourcentageCPU);
+
+    free(cmdline), free(statusPath), free(statut), free(rss);
 }
 
 int main(int argc, char* argv[]) {

@@ -5,11 +5,6 @@
 #include "headers/error.h"
 #include "headers/procdata.h"
 
-
-//#####################################################################//
-//                          Fonctions privées                          //
-//#####################################################################//
-
 void setProcPid(ProcData* data, char* pid) {
     int lenPID;
 
@@ -46,25 +41,27 @@ void setProcRss(ProcData* data, char* rss) {
     strcpy(data->rss, rss);
 }
 
-//#####################################################################//
-//                          Fonctions publiques                        //
-//#####################################################################//
+void setProcCpuUsage(ProcData* data, float cpu) {
+    data->cpu = cpu;
+}
 
-void setProcDatas(ProcData* data, char* pid, char* cmdline, char* statut, char* rss) {
+void setProcDatas(ProcData* data, char* pid, char* cmdline, char* statut, char* rss, float cpu) {
     setProcPid(data, pid);
     setProcCmd(data, cmdline);
     setProcStatut(data, statut);
     setProcRss(data, rss);
+    setProcCpuUsage(data, cpu);
 }
 
 void afficherDetailsProcessus(ProcData* data) {
-    char* message = "%s %s %s %s\n";
+    char* message = "%s %s %s %s %f\n";
 
     printf(message,
                 data->pid,
                 data->cmdline,
                 data->statut,
-                data->rss
+                data->rss,
+                data->cpu
     );
 }
 
