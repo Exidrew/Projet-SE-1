@@ -131,31 +131,6 @@ char* getNextLigne(int fileDescriptor) {
     return ligne;
 }
 
-int getCpuUsage(int fileDescriptorProcStat) {
-    int user, nice, system, idle, cpuUsage;
-    char *description = getNextLigne(fileDescriptorProcStat);
-
-    sscanf(description, "%*s %d %d %d %d", &user, &nice, &system, &idle);
-    cpuUsage = user + nice + system + idle;
-
-    lseek(fileDescriptorProcStat, 0, SEEK_SET);
-
-    return cpuUsage;
-}
-
-int getProcTimes(int fileDescriptorStat) {
-    int userTime, systemTime;
-    int procTimes;
-    char* description = getNextLigne(fileDescriptorStat);
-
-    sscanf(description, "%*d %*s %*c %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %d %d", &userTime, &systemTime);
-    procTimes = userTime + systemTime;
-
-    lseek(fileDescriptorStat, 0, SEEK_SET);
-
-    return procTimes;
-}
-
 void getTimes(int fileDescriptorStat, int *userTime, int* systemTime, int* cutime, int* cstime, int* startTime) {
     char* description = getNextLigne(fileDescriptorStat);
 
