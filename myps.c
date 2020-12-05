@@ -152,13 +152,13 @@ float getPourcentageCPU(float startTime, float usageTime) {
 
     pourcentage = (((usageTime / sysconf(_SC_CLK_TCK)) * 1000) / sysconf(_SC_CLK_TCK)) / secondes;
 
-    return pourcentage;
+    return pourcentage / 10;
 }
 
 void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     int fileDescriptorStatus, fileDescriptorProcStat, fileDescriptorStat;
     char* cmdline, *statut, *rss;
-    int userTime, systemTime, cutime, cstime, startTime, usageTime;
+    int userTime, systemTime, cutime, cstime, startTime;
     float pourcentageCPU = 0;
     char* statusPath = getPath(directory->d_name, DIR_STATUS);
     char* statPath = getPath(directory->d_name, DIR_STAT);
@@ -177,8 +177,7 @@ void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     if ((close(fileDescriptorProcStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
     if ((close(fileDescriptorStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
 
-    usageTime = userTime + systemTime + cstime + cutime;
-    pourcentageCPU = getPourcentageCPU((float)startTime, (float)usageTime);
+    pourcentageCPU = getPourcentageCPU((float)startTime, userTime);
     setProcDatas(data, directory->d_name, cmdline, statut, rss, pourcentageCPU);
 
     free(cmdline), free(statusPath), free(statut), free(rss);
