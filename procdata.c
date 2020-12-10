@@ -54,7 +54,7 @@ void setProcDatas(ProcData* data, char* pid, char* cmdline, char* statut, char* 
 }
 
 void afficherDetailsProcessus(ProcData* data) {
-    char* message = "%s %s %s %s %f\n";
+    char* message = "%s %s %s %s %.2f%%\n";
 
     printf(message,
                 data->pid,
