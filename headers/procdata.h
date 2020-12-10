@@ -7,7 +7,7 @@ typedef struct procdata {
     char* statut;
     char* rss;
     float cpu;
-    int vmz;
+    int virtualMemSize;
 } ProcData;
 
 // Set toutes les informations du processus
