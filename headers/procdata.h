@@ -7,10 +7,11 @@ typedef struct procdata {
     char* statut;
     char* rss;
     float cpu;
+    int vmz;
 } ProcData;
 
 // Set toutes les informations du processus
-void setProcDatas(ProcData* data, char* pid, char* cmdline, char* statut, char* rss, float cpu);
+void setProcDatas(ProcData* data, char* userName, char* pid, char* cmdline, char* statut, char* rss, float cpu, int vmz);
 
 void afficherDetailsProcessus(ProcData* data);
 

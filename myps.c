@@ -7,6 +7,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <time.h>
+#include <pwd.h>
 
 #include "headers/error.h"
 #include "headers/myps.h"
@@ -131,7 +132,7 @@ char* getNextLigne(int fileDescriptor) {
     return ligne;
 }
 
-void getTimes(int fileDescriptorStat, int *userTime, int* systemTime, int* cutime, int* cstime, int* startTime) {
+void getStatDesc(int fileDescriptorStat, int *userTime, int* systemTime, int* cutime, int* cstime, int* startTime) {
     char* description = getNextLigne(fileDescriptorStat);
 
     sscanf(description, "%*d %*s %*c %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %d %d"
@@ -156,10 +157,36 @@ float getPourcentageCPU(float startTime, float usageTime) {
     return pourcentage / 10;
 }
 
+int getVSZ(int fileDescriptorStatus) {
+    int virtualMemSize = 0;
+    char* vsz = searchInFile("VmSize:", fileDescriptorStatus);
+
+    if (strlen(vsz) > 0) {
+        virtualMemSize = atoi(vsz);
+    }
+    
+    return virtualMemSize;
+}
+
+int getUID(int fileDescriptorStatus) {
+    int uid;
+    char* ligne = searchInFile("Uid:", fileDescriptorStatus);
+    
+    sscanf(ligne, "%d %*d %*d %*d", &uid);
+    return uid;
+}
+
+char* getUserName(uid_t uid) {
+    char *name = (char*) calloc(strlen(getpwuid(uid)->pw_name), sizeof(char));
+    name = strcpy(name, getpwuid(uid)->pw_name);
+    return name;
+}
+
 void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     int fileDescriptorStatus, fileDescriptorProcStat, fileDescriptorStat;
-    char* cmdline, *statut, *rss;
-    int userTime, systemTime, cutime, cstime, startTime;
+    char* cmdline, *statut, *rss, *userName;
+    int userTime, systemTime, cutime, cstime, startTime, virtualMemSize;
+    uid_t uid;
     float pourcentageCPU = 0;
     char* statusPath = getPath(directory->d_name, DIR_STATUS);
     char* statPath = getPath(directory->d_name, DIR_STAT);
@@ -168,17 +195,21 @@ void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     if ((fileDescriptorProcStat = open(DIR_PROC_STAT, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
     if ((fileDescriptorStat = open(statPath, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
 
+    uid = getUID(fileDescriptorStatus);
+    userName = getUserName(uid);
     cmdline = searchInFile("Name:", fileDescriptorStatus);
     statut = searchInFile("State:", fileDescriptorStatus);
+    virtualMemSize = getVSZ(fileDescriptorStatus);
     rss = getRss(fileDescriptorStatus);
-    getTimes(fileDescriptorStat, &userTime, &systemTime, &cutime, &cstime, &startTime);
+    getStatDesc(fileDescriptorStat, &userTime, &systemTime, &cutime, &cstime, &startTime);
+    
 
     if ((close(fileDescriptorStatus)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
     if ((close(fileDescriptorProcStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
     if ((close(fileDescriptorStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
 
     pourcentageCPU = getPourcentageCPU((float)startTime, userTime);
-    setProcDatas(data, directory->d_name, cmdline, statut, rss, pourcentageCPU);
+    setProcDatas(data, userName, directory->d_name, cmdline, statut, rss, pourcentageCPU, virtualMemSize);
 
     free(cmdline), free(statusPath), free(statPath), free(statut), free(rss);
 }

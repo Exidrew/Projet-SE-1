@@ -45,23 +45,29 @@ void setProcCpuUsage(ProcData* data, float cpu) {
     data->cpu = cpu;
 }
 
-void setProcDatas(ProcData* data, char* pid, char* cmdline, char* statut, char* rss, float cpu) {
+void setProcvirtualMemSize(ProcData* data, int virtualMemSize) {
+    data->virtualMemSize = virtualMemSize;
+}
+
+void setProcDatas(ProcData* data, char* userName, char* pid, char* cmdline, char* statut, char* rss, float cpu, int virtualMemSize) {
     setProcPid(data, pid);
     setProcCmd(data, cmdline);
     setProcStatut(data, statut);
     setProcRss(data, rss);
     setProcCpuUsage(data, cpu);
+    setProcvirtualMemSize(data, virtualMemSize);
 }
 
 void afficherDetailsProcessus(ProcData* data) {
-    char* message = "%s %s %s %s %.2f%%\n";
+    char* message = "%s %s %s %s %.2f%% %d\n";
 
     printf(message,
                 data->pid,
                 data->cmdline,
                 data->statut,
                 data->rss,
-                data->cpu
+                data->cpu,
+                data->virtualMemSize
     );
 }
 

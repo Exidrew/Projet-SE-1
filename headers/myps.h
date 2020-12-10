@@ -8,5 +8,6 @@
 #define DIR_PROC_STAT "/proc/stat"
 
 typedef struct dirent DirEnt;
+typedef struct passwd User;
 
 #endif

@@ -31,6 +31,7 @@
 
 #define FILE_FAILED_OPEN 11
 #define FILE_FAILED_CLOSE 12
+#define ERROR_USER_NAME 13
 
 extern char* errormsg[];
 
