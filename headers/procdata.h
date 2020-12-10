@@ -2,6 +2,7 @@
 #define PROCDATA_H
 
 typedef struct procdata {
+    char* userName;
     char* pid;
     char* cmdline;
     char* statut;

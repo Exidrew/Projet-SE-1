@@ -49,8 +49,18 @@ void setProcvirtualMemSize(ProcData* data, int virtualMemSize) {
     data->virtualMemSize = virtualMemSize;
 }
 
+void setUserName(ProcData* data, char* userName) {
+    int lenUserName;
+
+    lenUserName = strlen(userName);
+    data->userName = (char*) calloc((lenUserName + 1), sizeof(char));
+    if (data->userName == NULL) fatalsyserror(MEM_FAILED_ALLOCATION);
+    strcpy(data->userName, userName);
+}
+
 void setProcDatas(ProcData* data, char* userName, char* pid, char* cmdline, char* statut, char* rss, float cpu, int virtualMemSize) {
     setProcPid(data, pid);
+    setUserName(data, userName);
     setProcCmd(data, cmdline);
     setProcStatut(data, statut);
     setProcRss(data, rss);
@@ -59,9 +69,10 @@ void setProcDatas(ProcData* data, char* userName, char* pid, char* cmdline, char
 }
 
 void afficherDetailsProcessus(ProcData* data) {
-    char* message = "%s %s %s %s %.2f%% %d\n";
+    char* message = "%s %s %s %s %s %.2f%% %d\n";
 
     printf(message,
+                data->userName,
                 data->pid,
                 data->cmdline,
                 data->statut,
@@ -82,6 +93,7 @@ void freeListProcData(ProcData** list, int nbData) {
     int i;
 
     for (i=0; i < nbData; i++){
+        free(list[i]->userName);
         free(list[i]->pid);
         free(list[i]->cmdline);
         free(list[i]->statut);

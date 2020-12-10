@@ -165,6 +165,7 @@ int getVSZ(int fileDescriptorStatus) {
         virtualMemSize = atoi(vsz);
     }
     
+    free(vsz);
     return virtualMemSize;
 }
 
@@ -173,11 +174,13 @@ int getUID(int fileDescriptorStatus) {
     char* ligne = searchInFile("Uid:", fileDescriptorStatus);
     
     sscanf(ligne, "%d %*d %*d %*d", &uid);
+
+    free(ligne);
     return uid;
 }
 
 char* getUserName(uid_t uid) {
-    char *name = (char*) calloc(strlen(getpwuid(uid)->pw_name), sizeof(char));
+    char *name = (char*) calloc(strlen(getpwuid(uid)->pw_name) + 1, sizeof(char));
     name = strcpy(name, getpwuid(uid)->pw_name);
     return name;
 }
@@ -212,6 +215,7 @@ void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     setProcDatas(data, userName, directory->d_name, cmdline, statut, rss, pourcentageCPU, virtualMemSize);
 
     free(cmdline), free(statusPath), free(statPath), free(statut), free(rss);
+    free(userName);
 }
 
 int main(int argc, char* argv[]) {
