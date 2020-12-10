@@ -7,6 +7,8 @@
 #define DIR_STAT "stat"
 #define DIR_PROC_STAT "/proc/stat"
 
+#define toString(x) #x
+
 typedef struct dirent DirEnt;
 typedef struct passwd User;
 

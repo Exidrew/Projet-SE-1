@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include <pwd.h>
+#include <linux/kdev_t.h>
 
 #include "headers/error.h"
 #include "headers/myps.h"
@@ -132,11 +133,11 @@ char* getNextLigne(int fileDescriptor) {
     return ligne;
 }
 
-void getStatDesc(int fileDescriptorStat, int *userTime, int* systemTime, int* cutime, int* cstime, int* startTime) {
+void getStatDesc(int fileDescriptorStat, int* tty, int *userTime, int* systemTime, int* cutime, int* cstime, int* startTime) {
     char* description = getNextLigne(fileDescriptorStat);
 
-    sscanf(description, "%*d %*s %*c %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %d %d"
-                        "%d %d %*d %*d %*d %*d %d", userTime, systemTime, cutime, cstime, startTime);
+    sscanf(description, "%*d %*s %*c %*d %*d %*d %d %*d %*d %*d %*d %*d %*d %d %d"
+                        "%d %d %*d %*d %*d %*d %d", tty, userTime, systemTime, cutime, cstime, startTime);
 
     lseek(fileDescriptorStat, 0, SEEK_SET);
     free(description);
@@ -185,10 +186,25 @@ char* getUserName(uid_t uid) {
     return name;
 }
 
+char* getTtyName(int tty) {
+    int isTty = isatty(tty), majeur = MAJOR(tty), mineur = MINOR(tty);
+    int taille;
+    char* name = (char*) calloc(20, sizeof(char));
+
+    if (majeur && mineur) {
+        taille = snprintf(NULL, 0, "%s%d", "tty", mineur);
+        snprintf(name, (taille + 1) * sizeof(char), "%s%d", "tty", mineur);
+    }
+    else if (isTty) strcpy(name, ttyname(tty));
+    else strcpy(name, "?");
+
+    return name;
+}
+
 void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     int fileDescriptorStatus, fileDescriptorProcStat, fileDescriptorStat;
-    char* cmdline, *statut, *rss, *userName;
-    int userTime, systemTime, cutime, cstime, startTime, virtualMemSize;
+    char* cmdline, *statut, *rss, *userName, *ttyName;
+    int userTime, systemTime, cutime, cstime, startTime, virtualMemSize, tty;
     uid_t uid;
     float pourcentageCPU = 0;
     char* statusPath = getPath(directory->d_name, DIR_STATUS);
@@ -204,18 +220,18 @@ void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     statut = searchInFile("State:", fileDescriptorStatus);
     virtualMemSize = getVSZ(fileDescriptorStatus);
     rss = getRss(fileDescriptorStatus);
-    getStatDesc(fileDescriptorStat, &userTime, &systemTime, &cutime, &cstime, &startTime);
-    
+    getStatDesc(fileDescriptorStat, &tty, &userTime, &systemTime, &cutime, &cstime, &startTime);
 
     if ((close(fileDescriptorStatus)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
     if ((close(fileDescriptorProcStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
     if ((close(fileDescriptorStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
 
+    ttyName = getTtyName(tty);
+    printf("pid : %s tty : %s\n", directory->d_name, ttyName);
     pourcentageCPU = getPourcentageCPU((float)startTime, userTime);
     setProcDatas(data, userName, directory->d_name, cmdline, statut, rss, pourcentageCPU, virtualMemSize);
-
     free(cmdline), free(statusPath), free(statPath), free(statut), free(rss);
-    free(userName);
+    free(userName), free(ttyName);
 }
 
 int main(int argc, char* argv[]) {
