@@ -6,6 +6,7 @@
 #define DIR_STATUS "status"
 #define DIR_STAT "stat"
 #define DIR_PROC_STAT "/proc/stat"
+#define DIR_UPTIME "/proc/uptime"
 
 #define toString(x) #x
 

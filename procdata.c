@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <time.h>
 
 #include "headers/error.h"
 #include "headers/procdata.h"
@@ -72,7 +75,32 @@ void setTime(ProcData* data, int time) {
     data->minutes = (int) time / 60;
 }
 
-void setProcDatas(ProcData* data, char* userName, char* pid, char* cmdline, char* statut, char* rss, float cpu, int virtualMemSize, char* ttyName, int time) {
+void getDiffTime(Time a, Time b, Time* result) {
+    do {
+        result->tv_sec = a.tv_sec - b.tv_sec;
+    } while (0);
+}
+
+void setStartTime(ProcData* data, int startTime, Time bootTime) {
+    int heures, minutes;
+    Time start, result;
+    time_t timeRaw;
+
+    startTime = startTime / sysconf(_SC_CLK_TCK);
+    start.tv_sec = startTime;
+
+    timeRaw = time(NULL);
+
+    getDiffTime(bootTime, start, &result);
+
+    heures = localtime(&timeRaw)->tm_hour - (result.tv_sec / 3600);
+    minutes = localtime(&timeRaw)->tm_min - (result.tv_sec % 60);
+
+    data->startTimeHeures = heures;
+    data->startTimeMinutes = abs(minutes);
+}
+
+void setProcDatas(ProcData* data, char* userName, Time bootTime, char* pid, char* cmdline, char* statut, char* rss, float cpu, int virtualMemSize, char* ttyName, int time, int startTime) {
     setProcPid(data, pid);
     setUserName(data, userName);
     setProcCmd(data, cmdline);
@@ -82,10 +110,11 @@ void setProcDatas(ProcData* data, char* userName, char* pid, char* cmdline, char
     setProcvirtualMemSize(data, virtualMemSize);
     setTtyName(data, ttyName);
     setTime(data, time);
+    setStartTime(data, startTime, bootTime);
 }
 
 void afficherDetailsProcessus(ProcData* data) {
-    char* message = "%s %s %s %s %s %.2f%% %d %s %d:%02d\n";
+    char* message = "%s %s %s %s %s %.2f%% %d %s %d:%02d %d:%02d\n";
 
     printf(message,
                 data->userName,
@@ -97,7 +126,9 @@ void afficherDetailsProcessus(ProcData* data) {
                 data->virtualMemSize,
                 data->ttyName,
                 data->minutes,
-                data->secondes
+                data->secondes,
+                data->startTimeHeures,
+                data->startTimeMinutes
     );
 }
 

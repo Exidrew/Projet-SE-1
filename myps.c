@@ -211,7 +211,7 @@ int getTime(int userTime, int systemTime) {
     return (userTime + systemTime) / sysconf(_SC_CLK_TCK);
 }
 
-void getDetailsProcessus(DirEnt* directory, ProcData* data) {
+void getDetailsProcessus(DirEnt* directory, ProcData* data, Time bootTime) {
     int fileDescriptorStatus, fileDescriptorProcStat, fileDescriptorStat;
     char* cmdline, *statut, *rss, *userName, *ttyName;
     int userTime, systemTime, cutime, cstime, startTime, virtualMemSize, tty;
@@ -233,14 +233,14 @@ void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     rss = getRss(fileDescriptorStatus);
     getStatDesc(fileDescriptorStat, &tty, &userTime, &systemTime, &cutime, &cstime, &startTime);
 
-    if ((close(fileDescriptorStatus)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
-    if ((close(fileDescriptorProcStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
-    if ((close(fileDescriptorStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
+    if (close(fileDescriptorStatus) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
+    if (close(fileDescriptorProcStat) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
+    if (close(fileDescriptorStat) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
 
     ttyName = getTtyName(tty);
     pourcentageCPU = getPourcentageCPU((float)startTime, userTime);
     time = getTime(userTime, systemTime);
-    setProcDatas(data, userName, directory->d_name, cmdline, statut, rss, pourcentageCPU, virtualMemSize, ttyName, time);
+    setProcDatas(data, userName, bootTime, directory->d_name, cmdline, statut, rss, pourcentageCPU, virtualMemSize, ttyName, time, startTime);
     free(cmdline), free(statusPath), free(statPath), free(statut), free(rss);
     free(userName), free(ttyName);
 }
@@ -250,6 +250,9 @@ int main(int argc, char* argv[]) {
     DirEnt* directoryEntity;
     ProcData** listProcData = (ProcData**) calloc(1, sizeof(ProcData*));
     int nbProcData = 0;
+    Time bootTime;
+
+    clock_gettime(CLOCK_MONOTONIC, &bootTime);
 
     if ((rep = opendir(DIR_PROC)) == null) fatalsyserror(PS_FAIL_OPENDIR);
 
@@ -257,7 +260,7 @@ int main(int argc, char* argv[]) {
         if (estNombre(directoryEntity->d_name)) {
             listProcData = (ProcData**) realloc(listProcData, (nbProcData + 2) * sizeof(ProcData*));
             listProcData[nbProcData] = (ProcData*) calloc(1, sizeof(ProcData));
-            getDetailsProcessus(directoryEntity, listProcData[nbProcData]);
+            getDetailsProcessus(directoryEntity, listProcData[nbProcData], bootTime);
             nbProcData++;
         }
     }
