@@ -188,23 +188,34 @@ char* getUserName(uid_t uid) {
 
 char* getTtyName(int tty) {
     int isTty = isatty(tty), majeur = MAJOR(tty), mineur = MINOR(tty);
-    int taille;
+    int taille, i, ind = 0;
     char* name = (char*) calloc(20, sizeof(char));
+    char* ttyName = (char*) calloc(20, sizeof(char));
 
     if (majeur && mineur) {
         taille = snprintf(NULL, 0, "%s%d", "tty", mineur);
         snprintf(name, (taille + 1) * sizeof(char), "%s%d", "tty", mineur);
     }
-    else if (isTty) strcpy(name, ttyname(tty));
+    else if (isTty) {
+        strcpy(ttyName, ttyname(tty));
+        taille = strlen("/dev/");
+        for (i=taille; i < strlen(ttyName); i++) name[ind++] = ttyName[i];
+    }
     else strcpy(name, "?");
 
+    free(ttyName);
     return name;
+}
+
+int getTime(int userTime, int systemTime) {
+    return (userTime + systemTime) / sysconf(_SC_CLK_TCK);
 }
 
 void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     int fileDescriptorStatus, fileDescriptorProcStat, fileDescriptorStat;
     char* cmdline, *statut, *rss, *userName, *ttyName;
     int userTime, systemTime, cutime, cstime, startTime, virtualMemSize, tty;
+    int time;
     uid_t uid;
     float pourcentageCPU = 0;
     char* statusPath = getPath(directory->d_name, DIR_STATUS);
@@ -227,9 +238,9 @@ void getDetailsProcessus(DirEnt* directory, ProcData* data) {
     if ((close(fileDescriptorStat)) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
 
     ttyName = getTtyName(tty);
-    printf("pid : %s tty : %s\n", directory->d_name, ttyName);
     pourcentageCPU = getPourcentageCPU((float)startTime, userTime);
-    setProcDatas(data, userName, directory->d_name, cmdline, statut, rss, pourcentageCPU, virtualMemSize);
+    time = getTime(userTime, systemTime);
+    setProcDatas(data, userName, directory->d_name, cmdline, statut, rss, pourcentageCPU, virtualMemSize, ttyName, time);
     free(cmdline), free(statusPath), free(statPath), free(statut), free(rss);
     free(userName), free(ttyName);
 }

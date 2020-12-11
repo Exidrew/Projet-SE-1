@@ -58,7 +58,21 @@ void setUserName(ProcData* data, char* userName) {
     strcpy(data->userName, userName);
 }
 
-void setProcDatas(ProcData* data, char* userName, char* pid, char* cmdline, char* statut, char* rss, float cpu, int virtualMemSize) {
+void setTtyName(ProcData* data, char* ttyName) {
+    int lenTtyName;
+
+    lenTtyName = strlen(ttyName);
+    data->ttyName = (char*) calloc((lenTtyName + 1), sizeof(char));
+    if (data->ttyName == NULL) fatalsyserror(MEM_FAILED_ALLOCATION);
+    strcpy(data->ttyName, ttyName);
+}
+
+void setTime(ProcData* data, int time) {
+    data->secondes = time % 60;
+    data->minutes = (int) time / 60;
+}
+
+void setProcDatas(ProcData* data, char* userName, char* pid, char* cmdline, char* statut, char* rss, float cpu, int virtualMemSize, char* ttyName, int time) {
     setProcPid(data, pid);
     setUserName(data, userName);
     setProcCmd(data, cmdline);
@@ -66,10 +80,12 @@ void setProcDatas(ProcData* data, char* userName, char* pid, char* cmdline, char
     setProcRss(data, rss);
     setProcCpuUsage(data, cpu);
     setProcvirtualMemSize(data, virtualMemSize);
+    setTtyName(data, ttyName);
+    setTime(data, time);
 }
 
 void afficherDetailsProcessus(ProcData* data) {
-    char* message = "%s %s %s %s %s %.2f%% %d\n";
+    char* message = "%s %s %s %s %s %.2f%% %d %s %d:%02d\n";
 
     printf(message,
                 data->userName,
@@ -78,7 +94,10 @@ void afficherDetailsProcessus(ProcData* data) {
                 data->statut,
                 data->rss,
                 data->cpu,
-                data->virtualMemSize
+                data->virtualMemSize,
+                data->ttyName,
+                data->minutes,
+                data->secondes
     );
 }
 
@@ -98,6 +117,7 @@ void freeListProcData(ProcData** list, int nbData) {
         free(list[i]->cmdline);
         free(list[i]->statut);
         free(list[i]->rss);
+        free(list[i]->ttyName);
         free(list[i]);
     }
     free(list);
