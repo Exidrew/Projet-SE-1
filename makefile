@@ -4,33 +4,29 @@ PSSOURCES = myps.c procdata.c error.c
 FLAGS = -Wall
 DEBUG_FLAGS = -Wall -g
 
-make all $(SOURCES) $(PSSOURCES)
-
-build-debug : $(SOURCES)
+make ts : $(SOURCES) $(PSSOURCES)
 	make clear
-	$(CC) $(DEBUG_FLAGS) $^ -o build-debug
-
-ts : $(SOURCES)
+	$(CC) $(FLAGS) $(SOURCES) -o $@
+	$(CC) $(FLAGS) $(PSSOURCES) -o $@
+	
+ts-debug : $(SOURCES) $(PSSOURCES)
 	make clear
-	$(CC) $(FLAGS) $^ -o $@
+	$(CC) $(DEBUG_FLAGS) $(SOURCES) -o ts-debug
+	$(CC) $(DEBUG_FLAGS) $(PSSOURCES) -o myps-debug
 
 myps : $(PSSOURCES)
 	make clear
 	$(CC) $(FLAGS) $^ -o $@
 
-myps-build-debug : $(PSSOURCES)
+myps-debug : $(PSSOURCES)
 	make clear
-	$(CC) $(DEBUG_FLAGS) $^ -o mypsdebug
+	$(CC) $(DEBUG_FLAGS) $^ -o $@
 
 debugmyps :
-	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./mypsdebug
+	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./myps-debug
 
-debug :
-	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./build-debug
-
-gc : gestionChaine.c
-	make clear
-	$(CC) $(DEBUG_FLAGS) $^ -o gc
+debugts :
+	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./ts-debug
 
 clear :
-	rm build-debug myps mypsdebug ts 2>/dev/null || true
+	rm build-debug myps mypsdebug ts 2> /dev/null || true
