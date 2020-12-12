@@ -103,6 +103,9 @@ void executerProgrammeExterne(char* commande) {
             syserror(EXEC_FAIL);
         }
     }
+    for (i=0; i < 64; i++) {
+        free(args[i]);
+    }
 }
 
 void freeCommandes(char** commandes) {
