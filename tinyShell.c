@@ -19,10 +19,14 @@
 
 extern char** environ;
 
-void afficherRetour(char** tabcmd, int nbCommandes,int status) {
-    wait(&status);
+void afficherRetour(char** tabcmd, int nbCommandes, int status) {
+    int i, retour = 0;
+    for (i=0; i < nbCommandes; i++) {
+        wait(&status);
+        if (retour != FAIL_EXEC) retour = WEXITSTATUS(status);
+    }
     if (WIFEXITED(status)) {
-        if ((status = WEXITSTATUS(status)) != FAIL_EXEC) {
+        if (retour != FAIL_EXEC) {
             printf(VERT("exit status of ["));
             afficherEnBrutLesCommandesEntrees(tabcmd, nbCommandes);
             printf(VERT("\b]=%d\n"), status);
