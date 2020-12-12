@@ -211,7 +211,21 @@ int getTime(int userTime, int systemTime) {
     return (userTime + systemTime) / sysconf(_SC_CLK_TCK);
 }
 
-void getDetailsProcessus(DirEnt* directory, ProcData* data, Time bootTime) {
+int getTotalMemory() {
+    int fileDescriptor, memory;
+    char* ligne;
+
+    if ((fileDescriptor = open(DIR_MEMORY, O_RDONLY)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
+    ligne = searchInFile("MemTotal:", fileDescriptor);
+    if (close(fileDescriptor) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
+
+    sscanf(ligne, "%d %*s", &memory);
+
+    free(ligne);
+    return memory;
+}
+
+void getDetailsProcessus(DirEnt* directory, ProcData* data, Time bootTime, int totalMemory) {
     int fileDescriptorStatus, fileDescriptorProcStat, fileDescriptorStat;
     char* cmdline, *statut, *rss, *userName, *ttyName;
     int userTime, systemTime, cutime, cstime, startTime, virtualMemSize, tty;
@@ -240,7 +254,7 @@ void getDetailsProcessus(DirEnt* directory, ProcData* data, Time bootTime) {
     ttyName = getTtyName(tty);
     pourcentageCPU = getPourcentageCPU((float)startTime, userTime);
     time = getTime(userTime, systemTime);
-    setProcDatas(data, userName, bootTime, directory->d_name, cmdline, statut, rss, pourcentageCPU, virtualMemSize, ttyName, time, startTime);
+    setProcDatas(data, userName, bootTime, totalMemory, directory->d_name, cmdline, statut, rss, pourcentageCPU, virtualMemSize, ttyName, time, startTime);
     free(cmdline), free(statusPath), free(statPath), free(statut), free(rss);
     free(userName), free(ttyName);
 }
@@ -249,10 +263,11 @@ int main(int argc, char* argv[]) {
     DIR* rep = null;
     DirEnt* directoryEntity;
     ProcData** listProcData = (ProcData**) calloc(1, sizeof(ProcData*));
-    int nbProcData = 0;
+    int nbProcData = 0, totalMemory;
     Time bootTime;
 
     clock_gettime(CLOCK_MONOTONIC, &bootTime);
+    totalMemory = getTotalMemory();
 
     if ((rep = opendir(DIR_PROC)) == null) fatalsyserror(PS_FAIL_OPENDIR);
 
@@ -260,13 +275,14 @@ int main(int argc, char* argv[]) {
         if (estNombre(directoryEntity->d_name)) {
             listProcData = (ProcData**) realloc(listProcData, (nbProcData + 2) * sizeof(ProcData*));
             listProcData[nbProcData] = (ProcData*) calloc(1, sizeof(ProcData));
-            getDetailsProcessus(directoryEntity, listProcData[nbProcData], bootTime);
+            getDetailsProcessus(directoryEntity, listProcData[nbProcData], bootTime, totalMemory);
             nbProcData++;
         }
     }
     if (closedir(rep) == ERR) fatalsyserror(PS_FAIL_CLOSEDIR);
 
     afficherTousLesProcessus(listProcData, nbProcData);
+
 
     freeListProcData(listProcData, nbProcData);
     return 0;

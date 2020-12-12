@@ -7,6 +7,7 @@
 #define DIR_STAT "stat"
 #define DIR_PROC_STAT "/proc/stat"
 #define DIR_UPTIME "/proc/uptime"
+#define DIR_MEMORY "/proc/meminfo"
 
 #define toString(x) #x
 

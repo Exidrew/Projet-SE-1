@@ -100,13 +100,23 @@ void setStartTime(ProcData* data, int startTime, Time bootTime) {
     data->startTimeMinutes = abs(minutes);
 }
 
-void setProcDatas(ProcData* data, char* userName, Time bootTime, char* pid, char* cmdline, char* statut, char* rss, float cpu, int virtualMemSize, char* ttyName, int time, int startTime) {
+void setProcMemUsage(ProcData* data, char* rss, int totalMemory) {
+    float pourcentage = 0;
+    int mem = atoi(rss);
+
+    pourcentage = (mem / (float) totalMemory);
+
+    data->memUsage = pourcentage;
+}
+
+void setProcDatas(ProcData* data, char* userName, Time bootTime, int totalMemory, char* pid, char* cmdline, char* statut, char* rss, float cpu, int virtualMemSize, char* ttyName, int time, int startTime) {
     setProcPid(data, pid);
     setUserName(data, userName);
     setProcCmd(data, cmdline);
     setProcStatut(data, statut);
     setProcRss(data, rss);
     setProcCpuUsage(data, cpu);
+    setProcMemUsage(data, rss, totalMemory);
     setProcvirtualMemSize(data, virtualMemSize);
     setTtyName(data, ttyName);
     setTime(data, time);
@@ -114,26 +124,28 @@ void setProcDatas(ProcData* data, char* userName, Time bootTime, char* pid, char
 }
 
 void afficherDetailsProcessus(ProcData* data) {
-    char* message = "%s %s %s %s %s %.2f%% %d %s %d:%02d %d:%02d\n";
+    char* message = "%s %s %.2f %.2f %d %s %s %s %d:%2d %d:%2d %s\n";
 
     printf(message,
                 data->userName,
                 data->pid,
-                data->cmdline,
-                data->statut,
-                data->rss,
                 data->cpu,
+                data->memUsage,
                 data->virtualMemSize,
+                data->rss,
                 data->ttyName,
+                data->statut,
+                data->startTimeHeures,
+                data->startTimeMinutes,
                 data->minutes,
                 data->secondes,
-                data->startTimeHeures,
-                data->startTimeMinutes
+                data->cmdline
     );
 }
 
 void afficherTousLesProcessus(ProcData** list, int nbData) {
     int i;
+    printf("USER PID %%CPU %%MEM VSZ RSS TYY STAT START TIME COMMAND\n");
     if (list != NULL) {
         for (i=0; i < nbData; i++) afficherDetailsProcessus(list[i]);
     }

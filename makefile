@@ -6,8 +6,8 @@ DEBUG_FLAGS = -Wall -g
 
 make ts : $(SOURCES) $(PSSOURCES)
 	make clear
-	$(CC) $(FLAGS) $(SOURCES) -o $@
-	$(CC) $(FLAGS) $(PSSOURCES) -o $@
+	$(CC) $(FLAGS) $(SOURCES) -o ts
+	$(CC) $(FLAGS) $(PSSOURCES) -o myps
 	
 ts-debug : $(SOURCES) $(PSSOURCES)
 	make clear
@@ -29,4 +29,4 @@ debugts :
 	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./ts-debug
 
 clear :
-	rm build-debug myps mypsdebug ts 2> /dev/null || true
+	rm build-debug myps myps-debug ts ts-debug 2> /dev/null || true

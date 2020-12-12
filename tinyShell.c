@@ -59,21 +59,50 @@ void recupererNomProgramme(char nomProgramme[100], char* commande) {
     }
 }
 
+void recupererArguments(char* args[], char* commande) {
+    int i, indice = 0, ind = 0;
+    int passeNom = 0;
+    for (i=0; i < strlen(commande); i++) {
+        if (isspace(commande[i])) {
+            if (!passeNom) passeNom = 1;
+            else {
+                indice++;
+                ind = 0;
+            }
+            continue;
+        }
+        if (passeNom) {
+            args[indice][ind++] = commande[i];
+        }
+    }
+}
+
 void executerProgrammeExterne(char* commande) {
     char repertory[100], nomProgramme[100];
     // Ces memset evites une fuite de memoire valgrind
     memset(repertory, '\0', 100);
     memset(nomProgramme, '\0', 100);
     
-    getPwd(repertory);
-    strcat(repertory, "/");
-    recupererNomProgramme(nomProgramme, commande);
-    strcat(repertory, nomProgramme);
+    if (!strncmp(commande, "my", 2)) {
+        getPwd(repertory);
+        strcat(repertory, "/");
+        recupererNomProgramme(nomProgramme, commande);
+        strcat(repertory, nomProgramme);
 
-    if(fork()==0) {
-        char* arg[2] = {commande, NULL};
-        execvp(repertory, arg);
-        syserror(EXEC_FAIL);
+        if(fork()==0) {
+            char* cmd[2] = {commande, NULL};
+            execvp(repertory, cmd);
+            syserror(EXEC_FAIL);
+        }
+    } else {
+        recupererNomProgramme(nomProgramme, commande);
+        strcpy(repertory, nomProgramme);
+
+        if(fork()==0) {
+            char* cmd[2] = {commande, NULL};
+            execvp(repertory, cmd);
+            syserror(EXEC_FAIL);
+        }
     }
 }
 
