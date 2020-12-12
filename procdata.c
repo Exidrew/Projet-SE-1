@@ -124,7 +124,7 @@ void setProcDatas(ProcData* data, char* userName, Time bootTime, int totalMemory
 }
 
 void afficherDetailsProcessus(ProcData* data) {
-    char* message = "%s %s %.2f %.2f %d %s %s %s %d:%2d %d:%2d %s\n";
+    char* message = "%s\t\t\t%s\t%.2f\t%.2f\t%d\t%s\t%s\t%s\t\t%d:%2d\t%d:%2d\t%s\n";
 
     printf(message,
                 data->userName,
@@ -145,7 +145,7 @@ void afficherDetailsProcessus(ProcData* data) {
 
 void afficherTousLesProcessus(ProcData** list, int nbData) {
     int i;
-    printf("USER PID %%CPU %%MEM VSZ RSS TYY STAT START TIME COMMAND\n");
+    printf("USER\t\t\tPID\t%%CPU\t%%MEM\tVSZ\tRSS\tTYY\tSTAT\t\t\tSTART\tTIME\tCOMMAND\n");
     if (list != NULL) {
         for (i=0; i < nbData; i++) afficherDetailsProcessus(list[i]);
     }
