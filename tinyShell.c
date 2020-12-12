@@ -37,6 +37,7 @@ void afficherRetour(char** tabcmd, int nbCommandes,int status) {
 
 void executerCommande(char** tabcmd, int nbCommandes, int* status) {
     pid_t pid = getpid();
+    int redirection = 0;
     tabcmd = remplacerLesVariablesDansLesCommandes(tabcmd, nbCommandes, status);
     //afficherLesCommandesEntrees(tabcmd, nbCommandes);
     for (int i = 0; i < nbCommandes; i++) {
@@ -45,6 +46,12 @@ void executerCommande(char** tabcmd, int nbCommandes, int* status) {
                 *status = -1;
                 return;
             }
+
+            if (i+1 < nbCommandes && !strcmp(tabcmd[i+1], "|")) redirection = 1;
+            else redirection = 0;
+
+            if (redirection) printf("Redirection !\n");
+
             if (estSeparateur(tabcmd[i])) continue;
             else if (estCommande(tabcmd[i], CMD_SETVARIABLE)) *status = setVariableLocale(tabcmd[i]);
             else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i]);

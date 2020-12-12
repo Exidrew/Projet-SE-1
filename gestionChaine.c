@@ -42,12 +42,14 @@ char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int*
             commandeSansEspaces[indexCommandes][i-1] = '\0';
             indexCommandes++;
             commandeSansEspaces[indexCommandes] = strcpy(commandeSansEspaces[indexCommandes], "|");
+            printf("La commande : <%s>\n", commandeSansEspaces[indexCommandes]);
             indexCommandes++;
-            nbEspace = 0;
+            nbEspace++;
             i++;
             if (i+1 < strlen(commande) && isspace(commande[i+1]))
                 i++;
             j = 0;
+
             continue;
         }
         if (nbEspace < 1) {
