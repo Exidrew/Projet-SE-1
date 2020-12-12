@@ -36,19 +36,24 @@ void afficherRetour(char** tabcmd, int nbCommandes,int status) {
 }
 
 void executerCommande(char** tabcmd, int nbCommandes, int* status) {
+    pid_t pid = getpid();
     tabcmd = remplacerLesVariablesDansLesCommandes(tabcmd, nbCommandes, status);
     //afficherLesCommandesEntrees(tabcmd, nbCommandes);
     for (int i = 0; i < nbCommandes; i++) {
-        if (tabcmd == NULL || tabcmd[i] == NULL) {
-            *status = -1;
-            return;
+        if (getpid() == pid) {
+            if (tabcmd == NULL || tabcmd[i] == NULL) {
+                *status = -1;
+                return;
+            }
+            if (estSeparateur(tabcmd[i])) continue;
+            else if (estCommande(tabcmd[i], CMD_SETVARIABLE)) *status = setVariableLocale(tabcmd[i]);
+            else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i]);
+            else if (estCommande(tabcmd[i], CMD_PRINTVARIABLE)) *status = afficherVariablesLocales();
+            else if (estCommande(tabcmd[i], CMD_CD)) executerCd(tabcmd[i], nbCommandes);
+            else executerProgrammeExterne(tabcmd[i]);
+        } else {
+            exit(0);
         }
-
-        if (estCommande(tabcmd[i], CMD_SETVARIABLE)) *status = setVariableLocale(tabcmd[i]);
-        else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i]);
-        else if (estCommande(tabcmd[i], CMD_PRINTVARIABLE)) *status = afficherVariablesLocales();
-        else if (estCommande(tabcmd[i], CMD_CD)) executerCd(tabcmd[i], nbCommandes);
-        else executerProgrammeExterne(tabcmd[i]);
     }
 }
 
@@ -133,6 +138,7 @@ int main(void) {
             freeCommandes(commandes);
             exit(0);
         }
+        afficherLesCommandesEntrees(commandes, nbCommandes);
         executerCommande(commandes, nbCommandes, &status);
         afficherRetour(commandes, nbCommandes, status);
         if (commandes != NULL) viderCommande(commandes);

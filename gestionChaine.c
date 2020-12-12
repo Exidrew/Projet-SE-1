@@ -25,17 +25,51 @@ char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int*
             j = 0;
             continue;
         }
+        if (!strncmp(commande + i, "||", 2) || !strncmp(commande + i, "&&", 2)) {
+            indexCommandes++;
+            if (commande[i] == '|') commandeSansEspaces[indexCommandes] = strcpy(commandeSansEspaces[indexCommandes], "||");
+            else if (commande[i] == '&') commandeSansEspaces[indexCommandes] = strcpy(commandeSansEspaces[indexCommandes], "&&");
+            indexCommandes++;
+            i++;
+            nbEspace = 0;
+            if (i+1 < strlen(commande) && isspace(commande[i+1]))
+                i++;
+            j = 0;
+            continue;
+        }
+        else if (!strncmp(commande + i,"|",1) && (i+1 < strlen(commande) && commande[i+1] != '|')) {
+            // Retire un espace très gênant
+            commandeSansEspaces[indexCommandes][i-1] = '\0';
+            indexCommandes++;
+            commandeSansEspaces[indexCommandes] = strcpy(commandeSansEspaces[indexCommandes], "|");
+            indexCommandes++;
+            nbEspace = 0;
+            i++;
+            if (i+1 < strlen(commande) && isspace(commande[i+1]))
+                i++;
+            j = 0;
+            continue;
+        }
         if (nbEspace < 1) {
-            commandeSansEspaces[indexCommandes][j] = commande[i];
-            j++;
-            if (isspace(commande[i]) && doitRetirerEspace(commandeSansEspaces[indexCommandes])) nbEspace++;
+            if (!strncmp(commande + i, " ||", 3) || !strncmp(commande + i, "||", 2) || !strncmp(commande + i, "|| ", 3)) continue;
+            else if (!strncmp(commande + i, " &&", 3) || !strncmp(commande + i, "&&", 2) || !strncmp(commande + i, "&& ", 3)) continue;
+            else if (commande[i] == '|') {
+                continue;
+            }
+            else {
+                commandeSansEspaces[indexCommandes][j] = commande[i];
+                j++;
+                if (isspace(commande[i]) && doitRetirerEspace(commandeSansEspaces[indexCommandes])) nbEspace++;
+            }
         }
         else {
             if (!isspace(commande[i])) {
                 commandeSansEspaces[indexCommandes][j] = commande[i];
                 j++;
             }
-            else if (doitRetirerEspace(commandeSansEspaces[indexCommandes])) nbEspace++;
+            else if (doitRetirerEspace(commandeSansEspaces[indexCommandes])) {
+                nbEspace++;
+            }
         }
     }
 
@@ -83,7 +117,7 @@ char** demanderCommande(char** commande, int* nbCommandes) {
 void afficherLesCommandesEntrees(char** commandes, int nbCommandes) {
     printf("Voici les commandes entrées : \n");
     for (int i = 0; i < nbCommandes && commandes[i] != NULL; i++) {
-        printf("- %s\n", commandes[i]);
+        printf("- <%s>\n", commandes[i]);
     }
 }
 
@@ -95,7 +129,6 @@ void afficherEnBrutLesCommandesEntrees(char** commandes, int nbCommandes) {
 
 void viderCommande(char** commandes) {
     int i;
-
     for (i = 0; i < sizelgcmd; i++) {
         if (commandes[i] == NULL) commandes[i] = (char*) calloc(sizeWord, sizeof(char));
         memset(commandes[i], '\0', sizeWord);

@@ -8,6 +8,10 @@
 #define estCommande(commande, programme)\
     !strncmp(commande, programme, strlen(programme))
 
+#define estSeparateur(commande)\
+    !strcmp(commande, "||") || !strcmp(commande, "&&") ||\
+    !strcmp(commande, "|")
+
 void afficherRetour(char** tabcmd, int nbCommandes, int status);
 void executerSetVariable(char* tabcmd);
 void executerDelVariable(char* tabcmd);
