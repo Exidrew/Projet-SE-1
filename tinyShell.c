@@ -59,29 +59,30 @@ void recupererNomProgramme(char nomProgramme[100], char* commande) {
     }
 }
 
-void recupererArguments(char* args[], char* commande) {
+int recupererArguments(char* args[], char* commande) {
     int i, indice = 0, ind = 0;
-    int passeNom = 0;
     for (i=0; i < strlen(commande); i++) {
         if (isspace(commande[i])) {
-            if (!passeNom) passeNom = 1;
-            else {
                 indice++;
                 ind = 0;
-            }
             continue;
         }
-        if (passeNom) {
-            args[indice][ind++] = commande[i];
-        }
+        args[indice][ind++] = commande[i];
     }
+    return indice;
 }
 
 void executerProgrammeExterne(char* commande) {
     char repertory[100], nomProgramme[100];
+    char* args[64];
+    int i, nbArgs;
     // Ces memset evites une fuite de memoire valgrind
     memset(repertory, '\0', 100);
     memset(nomProgramme, '\0', 100);
+    for (i=0; i < 64; i++) {
+        args[i] = (char*) calloc(100, sizeof(char));
+        memset(args[i], '\0', 100);
+    }
     
     if (!strncmp(commande, "my", 2)) {
         getPwd(repertory);
@@ -90,17 +91,15 @@ void executerProgrammeExterne(char* commande) {
         strcat(repertory, nomProgramme);
 
         if(fork()==0) {
-            char* cmd[2] = {commande, NULL};
-            execvp(repertory, cmd);
+            execlp(repertory, commande, NULL);
             syserror(EXEC_FAIL);
         }
     } else {
         recupererNomProgramme(nomProgramme, commande);
-        strcpy(repertory, nomProgramme);
-
+        nbArgs = recupererArguments(args, commande);
+        args[nbArgs+1] = NULL;
         if(fork()==0) {
-            char* cmd[2] = {commande, NULL};
-            execvp(repertory, cmd);
+            execvp(nomProgramme, args);
             syserror(EXEC_FAIL);
         }
     }
