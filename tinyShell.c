@@ -56,7 +56,7 @@ void recupererNomProgramme(char nomProgramme[100], char* commande) {
     int i;
     for (i = 0; commande[i] != ' ' && commande[i] != '\n' && commande[i] != '\0'; i++) {
         nomProgramme[i] = commande[i];
-    } 
+    }
 }
 
 void executerProgrammeExterne(char* commande) {
