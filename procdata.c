@@ -149,6 +149,7 @@ void afficherTousLesProcessus(ProcData** list, int nbData) {
     if (list != NULL) {
         for (i=0; i < nbData; i++) afficherDetailsProcessus(list[i]);
     }
+    printf("\n");
 }
 
 void freeListProcData(ProcData** list, int nbData) {

@@ -16,11 +16,11 @@
     !strcmp(commande, "||") || !strcmp(commande, "&&") ||\
     !strcmp(commande, "|")
 
-void afficherRetour(char** tabcmd, int nbCommandes, int status);
+void afficherRetour(char** tabcmd, int nbCommandes, int nbRedirection, int status);
 void executerSetVariable(char* tabcmd);
 void executerDelVariable(char* tabcmd);
-void executerCommande(char** tabcmd, int nbCommandes, int* status);
+int executerCommande(char** tabcmd, int nbCommandes, int* status);
 void freeCommandes(char** commandes);
-void executerProgrammeExterne(char* commandes, int redirection);
+void executerProgrammeExterne(char* commandes, int redirection, int finDeRedirection);
 
 #endif

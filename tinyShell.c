@@ -19,12 +19,15 @@
 
 extern char** environ;
 
-void afficherRetour(char** tabcmd, int nbCommandes, int status) {
+void afficherRetour(char** tabcmd, int nbCommandes, int nbRedirection, int status) {
     int i, retour = 0;
-    for (i=0; i < nbCommandes; i++) {
+    for (i=0; i < nbCommandes - nbRedirection; i++) {
+        printf("Boucle : %d\n", i);
         wait(&status);
         if (retour != FAIL_EXEC) retour = WEXITSTATUS(status);
+        printf("Nombre de commandes : %d\n", nbCommandes);
     }
+
     if (WIFEXITED(status)) {
         if (retour != FAIL_EXEC) {
             printf(VERT("exit status of ["));
@@ -37,36 +40,48 @@ void afficherRetour(char** tabcmd, int nbCommandes, int status) {
         afficherEnBrutLesCommandesEntrees(tabcmd, nbCommandes);
         printf(ROUGE("\b]=%d\n"), status);
     }
+    printf("Termine retour\n");
 }
 
-void executerCommande(char** tabcmd, int nbCommandes, int* status) {
+int executerCommande(char** tabcmd, int nbCommandes, int* status) {
     pid_t pid = getpid();
-    int redirection = 0;
+    int redirection = 0, finDeRedirection = 0, nbRedirection = 0;
     tabcmd = remplacerLesVariablesDansLesCommandes(tabcmd, nbCommandes, status);
     //afficherLesCommandesEntrees(tabcmd, nbCommandes);
     for (int i = 0; i < nbCommandes; i++) {
+        printf("nb : %d\n", nbCommandes);
         if (getpid() == pid) {
             if (tabcmd == NULL || tabcmd[i] == NULL) {
                 *status = -1;
-                return;
+                return nbRedirection;
             }
 
-            if (i+1 < nbCommandes && !strcmp(tabcmd[i+1], "|")) redirection += 1;
-            else redirection = 0;
+            if (i+1 < nbCommandes && !strcmp(tabcmd[i+1], "|")) {
+                redirection += 1;
+                nbRedirection += 1;
+            } else if (redirection) {
+                finDeRedirection = 1;
+                redirection = 0;
+            } else redirection = 0;
+
+            if (nbRedirection) wait(status);
+
+            printf("test\n");
 
             if (estSeparateur(tabcmd[i])) continue;
             else if (estCommande(tabcmd[i], CMD_SETVARIABLE)) *status = setVariableLocale(tabcmd[i]);
             else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i]);
             else if (estCommande(tabcmd[i], CMD_PRINTVARIABLE)) *status = afficherVariablesLocales();
             else if (estCommande(tabcmd[i], CMD_CD)) executerCd(tabcmd[i], nbCommandes);
-            else executerProgrammeExterne(tabcmd[i], redirection);
+            else executerProgrammeExterne(tabcmd[i], redirection, finDeRedirection);
         } else {
             exit(0);
         }
     }
+    return nbRedirection;
 }
 
-void executerProgrammeExterne(char* commande, int redirection) {
+void executerProgrammeExterne(char* commande, int redirection, int finDeRedirection) {
     char repertory[100], nomProgramme[100];
     char* args[64];
     int i, nbArgs, tube[2];
@@ -93,19 +108,32 @@ void executerProgrammeExterne(char* commande, int redirection) {
 
         if(fork()==0) {
             if (redirection) {
-                if (redirection % 2 == 0) {
-                    close(tube[1]);
-                    close(0);
+                if (redirection >= 2) {
+                    printf("Lecture ecriture\n");
+                    close(STDIN_FILENO);
                     dup(tube[0]);
-                    close(tube[0]);
+                    close(STDOUT_FILENO);
+                    dup(tube[1]);
+                    execlp(repertory, commande, "l", NULL);
+                    printf("fail ici\n");
                 } else {
                     close(tube[0]);
-                    close(1);
+                    close(STDOUT_FILENO);
                     dup(tube[1]);
                     close(tube[1]);
+                    execlp(repertory, commande, NULL);
+                    printf("fail ici\n");
                 }
-            }
-            execlp(repertory, commande, NULL);
+            } else if (finDeRedirection) {
+                printf("Fin de redirection\n");
+                close(tube[1]);
+                close(STDIN_FILENO);
+                dup(tube[0]);
+                close(tube[1]);
+                execlp(repertory, commande, "l", NULL);
+                printf("fail ici\n");
+            } else execlp(repertory, commande, NULL);
+            printf("fail ici\n");
             syserror(EXEC_FAIL);
         }
     } else {
@@ -116,19 +144,38 @@ void executerProgrammeExterne(char* commande, int redirection) {
         args[nbArgs+1] = NULL;
         if(fork()==0) {
             if (redirection) {
-                if (redirection % 2 == 0) {
-                    close(tube[1]);
-                    close(0);
+                if (redirection >= 2) {
+                    printf("Lecture ecriture\n");
+                    close(STDIN_FILENO);
                     dup(tube[0]);
                     close(tube[0]);
-                } else {
-                    close(tube[0]);
-                    close(1);
+                    close(STDOUT_FILENO);
                     dup(tube[1]);
                     close(tube[1]);
+                    execvp(nomProgramme, args);
+                    printf("fail ici\n");
+                } else {
+                    printf("Ecriture seulement\n");
+                    close(tube[0]);
+                    close(STDOUT_FILENO);
+                    dup(tube[1]);
+                    close(tube[1]);
+                    execvp(nomProgramme, args);
+                    printf("fail ici\n");
                 }
+            } else if (finDeRedirection) {
+                printf("Lecture uniquement\n");
+                close(tube[1]);
+                close(STDIN_FILENO);
+                dup(tube[0]);
+                close(tube[0]);
+                execvp(nomProgramme, args);
+                printf("fail ici\n");
+            } else {
+                printf("Entre dans else\n");
+                execvp(nomProgramme, args);
+                printf("fail ici\n");
             }
-            execvp(nomProgramme, args);
             syserror(EXEC_FAIL);
         }
     }
@@ -153,18 +200,21 @@ int main(void) {
     char** commandes;
     int nbCommandes;
     int status;
+    int nbRedirection;
 
     commandes = allouerMemoireCommandes();
 
     for(;;) {
+        printf("Commence nouvelle boucle\n");
         commandes = demanderCommande(commandes, &nbCommandes);
         if (!strcmp(*commandes, CMD_EXIT)) {
             freeCommandes(commandes);
             exit(0);
         }
         afficherLesCommandesEntrees(commandes, nbCommandes);
-        executerCommande(commandes, nbCommandes, &status);
-        afficherRetour(commandes, nbCommandes, status);
+        nbRedirection = executerCommande(commandes, nbCommandes, &status);
+        afficherRetour(commandes, nbCommandes, nbRedirection, status);
+        printf("Sort retour\n");
         if (commandes != NULL) viderCommande(commandes);
     }
     freeTout(commandes);

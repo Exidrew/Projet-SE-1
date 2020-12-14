@@ -263,9 +263,32 @@ int main(int argc, char* argv[]) {
     DIR* rep = null;
     DirEnt* directoryEntity;
     ProcData** listProcData = (ProcData**) calloc(1, sizeof(ProcData*));
-    int nbProcData = 0, totalMemory;
+    int nbProcData = 0, totalMemory, i, tailleMessage = 0, tailleActuelle = 1;
     Time bootTime;
+    char* in = (char*) calloc(1, sizeof(char));
+    char car = '\0';
+    char* arguments = (char*) calloc(1, sizeof(char));
 
+    for (i=0; i < argc; i++) {
+        printf("Argument %d = %s\n", i, argv[i]);
+    }
+
+    if (argc-1 > 0 && !strncmp(argv[argc-1], "l", strlen("l"))) {
+        printf("Lecture\n");
+        while (read(STDIN_FILENO, &car, 1) > 0) {
+            if (car == '\n' && in[tailleMessage-1] == '\n') break;
+            tailleMessage++;
+            if (tailleActuelle < tailleMessage) {
+                tailleActuelle *= 2;
+                in = realloc(in, tailleActuelle * sizeof(char));
+            }
+            in[tailleMessage-1] = car;
+        }
+        arguments = realloc(arguments, (strlen(argv[0]) + strlen(in) + 1) * sizeof(char));
+        strcat(arguments, " ");
+        strcat(arguments, in);
+    }
+    
     clock_gettime(CLOCK_MONOTONIC, &bootTime);
     totalMemory = getTotalMemory();
 
@@ -283,7 +306,7 @@ int main(int argc, char* argv[]) {
 
     afficherTousLesProcessus(listProcData, nbProcData);
 
-
     freeListProcData(listProcData, nbProcData);
+    free(in);
     return 0;
 }
