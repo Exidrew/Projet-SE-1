@@ -48,4 +48,8 @@ int getComputerName(char *hostName);
 
 /* Affiche le nom de l'ordinateur et le chemin dans le shell */
 void affichageLigneShell();
+
+int recupererArguments(char* args[], char* commande);
+
+void recupererNomProgramme(char nomProgramme[100], char* commande);
 #endif

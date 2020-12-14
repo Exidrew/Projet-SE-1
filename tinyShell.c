@@ -68,31 +68,11 @@ void executerCommande(char** tabcmd, int nbCommandes, int* status) {
     }
 }
 
-void recupererNomProgramme(char nomProgramme[100], char* commande) {
-    int i;
-    for (i = 0; commande[i] != ' ' && commande[i] != '\n' && commande[i] != '\0'; i++) {
-        nomProgramme[i] = commande[i];
-    }
-}
-
-int recupererArguments(char* args[], char* commande) {
-    int i, indice = 0, ind = 0;
-    for (i=0; i < strlen(commande); i++) {
-        if (isspace(commande[i])) {
-                indice++;
-                ind = 0;
-            continue;
-        }
-        args[indice][ind++] = commande[i];
-    }
-    return indice;
-}
-
 void executerProgrammeExterne(char* commande) {
     char repertory[100], nomProgramme[100];
     char* args[64];
     int i, nbArgs;
-    // Ces memset evites une fuite de memoire valgrind
+    // Ces memset evitent une fuite de memoire valgrind
     memset(repertory, '\0', 100);
     memset(nomProgramme, '\0', 100);
     for (i=0; i < 64; i++) {

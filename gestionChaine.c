@@ -224,6 +224,26 @@ char** remplacerLesVariablesDansLesCommandes(char** commandes, int nbCommandes, 
     return commandes;
 }
 
+void recupererNomProgramme(char nomProgramme[100], char* commande) {
+    int i;
+    for (i = 0; commande[i] != ' ' && commande[i] != '\n' && commande[i] != '\0'; i++) {
+        nomProgramme[i] = commande[i];
+    }
+}
+
+int recupererArguments(char* args[], char* commande) {
+    int i, indice = 0, ind = 0;
+    for (i=0; i < strlen(commande); i++) {
+        if (isspace(commande[i])) {
+                indice++;
+                ind = 0;
+            continue;
+        }
+        args[indice][ind++] = commande[i];
+    }
+    return indice;
+}
+
 // int main(void) {
 //     char** commandes = allouerMemoireCommandes();
 //     int nbCommandes;
