@@ -33,6 +33,8 @@
 #define FILE_FAILED_CLOSE 12
 #define ERROR_USER_NAME 13
 
+#define CREATION_PIPE_FAILED 14
+
 extern char* errormsg[];
 
 #endif

@@ -14,5 +14,6 @@ char* errormsg[] = {
     ROUGE("Failed dynamic memory allocation"), //10
     ROUGE("Failed open file"), // 11
     ROUGE("Failed close file"), // 12
-    ROUGE("Getting user's name failed")
+    ROUGE("Getting user's name failed"), // 13
+    ROUGE("Pipe creation failed")
 };

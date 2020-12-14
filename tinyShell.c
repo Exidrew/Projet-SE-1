@@ -51,27 +51,31 @@ void executerCommande(char** tabcmd, int nbCommandes, int* status) {
                 return;
             }
 
-            if (i+1 < nbCommandes && !strcmp(tabcmd[i+1], "|")) redirection = 1;
+            if (i+1 < nbCommandes && !strcmp(tabcmd[i+1], "|")) redirection += 1;
             else redirection = 0;
-
-            if (redirection) printf("Redirection !\n");
 
             if (estSeparateur(tabcmd[i])) continue;
             else if (estCommande(tabcmd[i], CMD_SETVARIABLE)) *status = setVariableLocale(tabcmd[i]);
             else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i]);
             else if (estCommande(tabcmd[i], CMD_PRINTVARIABLE)) *status = afficherVariablesLocales();
             else if (estCommande(tabcmd[i], CMD_CD)) executerCd(tabcmd[i], nbCommandes);
-            else executerProgrammeExterne(tabcmd[i]);
+            else executerProgrammeExterne(tabcmd[i], redirection);
         } else {
             exit(0);
         }
     }
 }
 
-void executerProgrammeExterne(char* commande) {
+void executerProgrammeExterne(char* commande, int redirection) {
     char repertory[100], nomProgramme[100];
     char* args[64];
-    int i, nbArgs;
+    int i, nbArgs, tube[2];
+
+    if (redirection) {
+        printf("Redirection !\n");
+        if (pipe(tube) == ERR) fatalsyserror(CREATION_PIPE_FAILED);
+    }
+
     // Ces memset evitent une fuite de memoire valgrind
     memset(repertory, '\0', 100);
     memset(nomProgramme, '\0', 100);
@@ -80,21 +84,50 @@ void executerProgrammeExterne(char* commande) {
         memset(args[i], '\0', 100);
     }
     
-    if (!strncmp(commande, "my", 2)) {
+    if (estCommandeMy(commande)) {
+        // Ici nos commandes qu'on a implémenté
         getPwd(repertory);
         strcat(repertory, "/");
         recupererNomProgramme(nomProgramme, commande);
         strcat(repertory, nomProgramme);
 
         if(fork()==0) {
+            if (redirection) {
+                if (redirection % 2 == 0) {
+                    close(tube[1]);
+                    close(0);
+                    dup(tube[0]);
+                    close(tube[0]);
+                } else {
+                    close(tube[0]);
+                    close(1);
+                    dup(tube[1]);
+                    close(tube[1]);
+                }
+            }
             execlp(repertory, commande, NULL);
             syserror(EXEC_FAIL);
         }
     } else {
+        // Ici on peut executer des commandes du shell de base
+        // On doit quand même gérer les redirections ici
         recupererNomProgramme(nomProgramme, commande);
         nbArgs = recupererArguments(args, commande);
         args[nbArgs+1] = NULL;
         if(fork()==0) {
+            if (redirection) {
+                if (redirection % 2 == 0) {
+                    close(tube[1]);
+                    close(0);
+                    dup(tube[0]);
+                    close(tube[0]);
+                } else {
+                    close(tube[0]);
+                    close(1);
+                    dup(tube[1]);
+                    close(tube[1]);
+                }
+            }
             execvp(nomProgramme, args);
             syserror(EXEC_FAIL);
         }
