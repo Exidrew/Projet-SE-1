@@ -13,7 +13,7 @@ int doitRetirerEspace(char* commande) {
     return (strncmp(commande, "test", strlen("test")));
 }
 
-char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int* nbCommandes) {
+char** gererChaine(char commande[sizelgcmd], char** commandeSansEspaces, int* nbCommandes) {
     int i, nbEspace = 0, j = 0, indexCommandes = 0;
     for (i = 0; i < strlen(commande); i++) {
         if (commande[i] == '\n') continue;
@@ -79,6 +79,28 @@ char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int*
     return commandeSansEspaces;
 }
 
+void contientRedirection(char* commande) {
+    regex_t regex;
+    const char schema[19] = " > | >> | 2> | 2>> | >& | >>& | < ";
+    if (regcomp(&regex, schema, REG_EXTENDED)) {
+        regfree(&regex);
+        fatalsyserror(8);
+    }
+
+    return !regexec(&regex, commande, 0, NULL, 0);
+}
+
+void mettreEnBackground(char* commande) {
+    regex_t regex;
+    const char schema[19] = " & *$";
+    if (regcomp(&regex, schema, REG_EXTENDED)) {
+        regfree(&regex);
+        fatalsyserror(8);
+    }
+
+    return !regexec(&regex, commande, 0, NULL, 0);
+}
+
 void affichageLigneShell(){
     char repertory[100];
     char hostName[100];
@@ -111,7 +133,7 @@ char** demanderCommande(char** commande, int* nbCommandes) {
     affichageLigneShell();
     fgets(commandeEntree, sizelgcmd-1, stdin);
 
-    commandes = retirerEspaces(commandeEntree, commande, nbCommandes);
+    commandes = gererChaine(commandeEntree, commande, nbCommandes);
 
     return commandes;
 }
