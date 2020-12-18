@@ -115,14 +115,14 @@ void executerProgrammeExterne(char* commande, int redirection, int finDeRedirect
                     close(STDOUT_FILENO);
                     dup(tube[1]);
                     execlp(repertory, commande, "l", NULL);
-                    printf("fail ici\n");
+                    printf("fail ici redirection >= 2\n");
                 } else {
                     close(tube[0]);
                     close(STDOUT_FILENO);
                     dup(tube[1]);
                     close(tube[1]);
                     execlp(repertory, commande, NULL);
-                    printf("fail ici\n");
+                    printf("fail ici redirection else\n");
                 }
             } else if (finDeRedirection) {
                 printf("Fin de redirection\n");
@@ -131,9 +131,9 @@ void executerProgrammeExterne(char* commande, int redirection, int finDeRedirect
                 dup(tube[0]);
                 close(tube[1]);
                 execlp(repertory, commande, "l", NULL);
-                printf("fail ici\n");
+                printf("fail ici fin redirection\n");
             } else execlp(repertory, commande, NULL);
-            printf("fail ici\n");
+            printf("fail ici else : %s\n", repertory);
             syserror(EXEC_FAIL);
         }
     } else {

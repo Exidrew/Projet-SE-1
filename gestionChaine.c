@@ -52,6 +52,42 @@ char** gererChaine(char commande[sizelgcmd], char** commandeSansEspaces, int* nb
 
             continue;
         }
+        if (!strncmp(commande + i, " > ", 3)) {
+            strcat(commandeSansEspaces[indexCommandes], " > ");
+            i += 2;
+            j += 3;
+            continue;
+        } else if (!strncmp(commande + i, " >> ", 4)) {
+            strcat(commandeSansEspaces[indexCommandes], " >> ");
+            i += 3;
+            j += 4;
+            continue;
+        } else if (!strncmp(commande + i, " 2> ", 4)) {
+            strcat(commandeSansEspaces[indexCommandes], " 2> ");
+            i += 3;
+            j += 4;
+            continue;
+        } else if (!strncmp(commande + i, " 2>> ", 5)) {
+            strcat(commandeSansEspaces[indexCommandes], " 2>> ");
+            i += 4;
+            j += 5;
+            continue;
+        } else if (!strncmp(commande + i, " >& ", 4)) {
+            strcat(commandeSansEspaces[indexCommandes], " >& ");
+            i += 3;
+            j += 4;
+            continue;
+        } else if (!strncmp(commande + i, " >>& ", 5)) {
+            strcat(commandeSansEspaces[indexCommandes], " >>& ");
+            i += 4;
+            j += 5;
+            continue;
+        } else if (!strncmp(commande + i, " < ", 3)) {
+            strcat(commandeSansEspaces[indexCommandes], " < ");
+            i += 2;
+            j += 3;
+            continue;
+        }
         if (nbEspace < 1) {
             if (!strncmp(commande + i, " ||", 3) || !strncmp(commande + i, "||", 2) || !strncmp(commande + i, "|| ", 3)) continue;
             else if (!strncmp(commande + i, " &&", 3) || !strncmp(commande + i, "&&", 2) || !strncmp(commande + i, "&& ", 3)) continue;
@@ -77,28 +113,6 @@ char** gererChaine(char commande[sizelgcmd], char** commandeSansEspaces, int* nb
 
     *nbCommandes = indexCommandes+1; // +1 car on commence l'index à 0
     return commandeSansEspaces;
-}
-
-void contientRedirection(char* commande) {
-    regex_t regex;
-    const char schema[19] = " > | >> | 2> | 2>> | >& | >>& | < ";
-    if (regcomp(&regex, schema, REG_EXTENDED)) {
-        regfree(&regex);
-        fatalsyserror(8);
-    }
-
-    return !regexec(&regex, commande, 0, NULL, 0);
-}
-
-void mettreEnBackground(char* commande) {
-    regex_t regex;
-    const char schema[19] = " & *$";
-    if (regcomp(&regex, schema, REG_EXTENDED)) {
-        regfree(&regex);
-        fatalsyserror(8);
-    }
-
-    return !regexec(&regex, commande, 0, NULL, 0);
 }
 
 void affichageLigneShell(){

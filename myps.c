@@ -13,6 +13,7 @@
 #include "headers/error.h"
 #include "headers/myps.h"
 #include "headers/procdata.h"
+#include "headers/redirections.h"
 
 #define true 1
 #define false 0
@@ -310,7 +311,11 @@ int main(int argc, char* argv[]) {
     }
     if (closedir(rep) == ERR) fatalsyserror(PS_FAIL_CLOSEDIR);
 
-    afficherTousLesProcessus(listProcData, nbProcData);
+    if (contientRedirection(argv[0])) {
+        printf("Redirection\n");
+        gererRedirection(argv[0]);
+        afficherTousLesProcessus(listProcData, nbProcData);
+    } else afficherTousLesProcessus(listProcData, nbProcData);
 
     freeListProcData(listProcData, nbProcData);
     free(in);

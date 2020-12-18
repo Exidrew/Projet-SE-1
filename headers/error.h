@@ -35,6 +35,8 @@
 
 #define CREATION_PIPE_FAILED 14
 
+#define REDIRECTION_FAILED 15
+
 extern char* errormsg[];
 
 #endif

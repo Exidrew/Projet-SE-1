@@ -52,4 +52,5 @@ void affichageLigneShell();
 int recupererArguments(char* args[], char* commande);
 
 void recupererNomProgramme(char nomProgramme[100], char* commande);
+
 #endif

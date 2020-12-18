@@ -15,5 +15,6 @@ char* errormsg[] = {
     ROUGE("Failed open file"), // 11
     ROUGE("Failed close file"), // 12
     ROUGE("Getting user's name failed"), // 13
-    ROUGE("Pipe creation failed")
+    ROUGE("Pipe creation failed"), // 14
+    ROUGE("Redirection failed")
 };
