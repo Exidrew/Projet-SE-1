@@ -14,6 +14,7 @@
 #include "headers/myps.h"
 #include "headers/procdata.h"
 #include "headers/redirections.h"
+#include "headers/tubeCommunication.h"
 
 #define true 1
 #define false 0
@@ -265,26 +266,11 @@ int main(int argc, char* argv[]) {
     DIR* rep = null;
     DirEnt* directoryEntity;
     ProcData** listProcData = (ProcData**) calloc(1, sizeof(ProcData*));
-    int nbProcData = 0, totalMemory, tailleMessage = 0, tailleActuelle = 1;
+    int nbProcData = 0, totalMemory;
     Time bootTime;
-    char* in = (char*) calloc(1, sizeof(char));
-    char car = '\0';
-    char* arguments = (char*) calloc(1, sizeof(char));
+    char* arguments = (char*) calloc(1, sizeof(char));;
 
-    if (argc-1 > 0 && !strncmp(argv[argc-1], "l", strlen("l"))) {
-        while (read(STDIN_FILENO, &car, 1) > 0) {
-            if (car == '\n' && in[tailleMessage-1] == '\n') break;
-            tailleMessage++;
-            if (tailleActuelle < tailleMessage) {
-                tailleActuelle *= 2;
-                in = realloc(in, tailleActuelle * sizeof(char));
-            }
-            in[tailleMessage-1] = car;
-        }
-        arguments = realloc(arguments, (strlen(argv[0]) + strlen(in) + 1) * sizeof(char));
-        strcat(arguments, " ");
-        strcat(arguments, in);
-    }
+    lectureArgumentsDepuisFd(arguments, STDIN_FILENO, argc, argv);
 
     if (contientRedirection(argv[0])) gererRedirection(argv[0]);
     
@@ -292,7 +278,7 @@ int main(int argc, char* argv[]) {
     totalMemory = getTotalMemory();
 
     if ((rep = opendir(DIR_PROC)) == null) fatalsyserror(PS_FAIL_OPENDIR);
-
+    
     while ((directoryEntity = readdir(rep)) != null) {
         if (estNombre(directoryEntity->d_name)) {
             listProcData = (ProcData**) realloc(listProcData, (nbProcData + 2) * sizeof(ProcData*));
@@ -306,7 +292,6 @@ int main(int argc, char* argv[]) {
     afficherTousLesProcessus(listProcData, nbProcData);
 
     freeListProcData(listProcData, nbProcData);
-    free(in);
     free(arguments);
     return 0;
 }

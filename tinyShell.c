@@ -16,6 +16,7 @@
 #include "headers/variables.h"
 #include "headers/variablesLocales.h"
 #include "headers/cd.h"
+#include "headers/tubeCommunication.h"
 
 extern char** environ;
 int tube[2];
@@ -58,7 +59,7 @@ int executerCommande(char** tabcmd, int nbCommandes, int* status) {
                 *status = -1;
                 return nbRedirection;
             }
-            
+
             if (i+1 < nbCommandes && !strcmp(tabcmd[i+1], "|")) {
                 redirection += 1;
                 nbRedirection += 1;
@@ -103,23 +104,14 @@ void executerProgrammeExterne(char* commande, int redirection, int finDeRedirect
         if(fork()==0) {
             if (redirection) {
                 if (redirection >= 2) {
-                    close(STDIN_FILENO);
-                    dup(tube[0]);
-                    close(STDOUT_FILENO);
-                    dup(tube[1]);
+                    lireEcrireVersStandard(tube);
                     *status = execlp(repertory, commande, "l", NULL);
                 } else {
-                    close(tube[0]);
-                    close(STDOUT_FILENO);
-                    dup(tube[1]);
-                    close(tube[1]);
+                    ecrireVersSortieStandard(tube);
                     *status = execlp(repertory, commande, NULL);
                 }
             } else if (finDeRedirection) {
-                close(tube[1]);
-                close(STDIN_FILENO);
-                dup(tube[0]);
-                close(tube[1]);
+                lireDepuisEntreeStandard(tube);
                 *status = execlp(repertory, commande, "l", NULL);
             } else *status = execlp(repertory, commande, NULL);
             fatalsyserror(EXEC_FAIL);
@@ -135,25 +127,14 @@ void executerProgrammeExterne(char* commande, int redirection, int finDeRedirect
             args[nbArgs+1] = NULL;
             if (redirection) {
                 if (redirection >= 2) {
-                    close(STDIN_FILENO);
-                    dup(tube[0]);
-                    close(tube[0]);
-                    close(STDOUT_FILENO);
-                    dup(tube[1]);
-                    close(tube[1]);
+                    lireEcrireVersStandard(tube);
                     *status = execvp(nomProgramme, args);
                 } else {
-                    close(tube[0]);
-                    close(STDOUT_FILENO);
-                    dup(tube[1]);
-                    close(tube[1]);
+                    ecrireVersSortieStandard(tube);
                     *status = execvp(nomProgramme, args);
                 }
             } else if (finDeRedirection) {
-                close(tube[1]);
-                close(STDIN_FILENO);
-                dup(tube[0]);
-                close(tube[0]);
+                lireDepuisEntreeStandard(tube);
                 *status = execvp(nomProgramme, args);
             } else *status = execvp(nomProgramme, args);
             for (i=0; i < 64; i++) free(args[i]);
