@@ -188,8 +188,8 @@ char* getUserName(uid_t uid) {
 }
 
 char* getTtyName(int tty) {
-    int isTty = isatty(tty), majeur = MAJOR(tty), mineur = MINOR(tty);
-    int taille, i, ind = 0;
+    int majeur = MAJOR(tty), mineur = MINOR(tty);
+    int taille;
     char* name = (char*) calloc(20, sizeof(char));
     char* ttyName = (char*) calloc(20, sizeof(char));
 
@@ -201,11 +201,6 @@ char* getTtyName(int tty) {
             taille = snprintf(NULL, 0, "%s%d", "pts/", mineur);
             snprintf(name, (taille + 1) * sizeof(char), "%s%d", "pts/", mineur);
         }
-    }
-    else if (isTty) {
-        strcpy(ttyName, ttyname(tty));
-        taille = strlen("/dev/");
-        for (i=taille; i < strlen(ttyName); i++) name[ind++] = ttyName[i];
     }
     else strcpy(name, "?");
 

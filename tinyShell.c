@@ -58,20 +58,14 @@ int executerCommande(char** tabcmd, int nbCommandes, int* status) {
                 *status = -1;
                 return nbRedirection;
             }
-            printf("Redirection : %d\n", redirection);
+            
             if (i+1 < nbCommandes && !strcmp(tabcmd[i+1], "|")) {
-                printf("Entre red\n");
                 redirection += 1;
                 nbRedirection += 1;
             } else if (redirection && strcmp(tabcmd[i], "|")) {
-                printf("else fin avec commande : <%s>\n", tabcmd[i]);
                 finDeRedirection = 1;
                 redirection = 0;
-            } else if (strcmp(tabcmd[i], "|")) {
-                printf("Entre else avec la commande <%s>\n", tabcmd[i]);
-                printf("resultat : %d\n", strcmp(tabcmd[i], "|"));
-                redirection = 0;
-            }
+            } else if (strcmp(tabcmd[i], "|")) redirection = 0;
 
             if (nbRedirection) wait(status);
 
