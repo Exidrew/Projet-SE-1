@@ -188,7 +188,7 @@ char* getUserName(uid_t uid) {
 }
 
 char* getTtyName(int tty) {
-    int majeur = MAJOR(tty), mineur = MINOR(tty);
+    int isTty = isatty(tty), majeur = MAJOR(tty), mineur = MINOR(tty);
     int taille, i, ind = 0;
     char* name = (char*) calloc(20, sizeof(char));
     char* ttyName = (char*) calloc(20, sizeof(char));
@@ -202,7 +202,7 @@ char* getTtyName(int tty) {
             snprintf(name, (taille + 1) * sizeof(char), "%s%d", "pts/", mineur);
         }
     }
-    else if (!isatty(tty)) {
+    else if (isTty) {
         strcpy(ttyName, ttyname(tty));
         taille = strlen("/dev/");
         for (i=taille; i < strlen(ttyName); i++) name[ind++] = ttyName[i];
@@ -270,15 +270,11 @@ int main(int argc, char* argv[]) {
     DIR* rep = null;
     DirEnt* directoryEntity;
     ProcData** listProcData = (ProcData**) calloc(1, sizeof(ProcData*));
-    int nbProcData = 0, totalMemory, i, tailleMessage = 0, tailleActuelle = 1;
+    int nbProcData = 0, totalMemory, tailleMessage = 0, tailleActuelle = 1;
     Time bootTime;
     char* in = (char*) calloc(1, sizeof(char));
     char car = '\0';
     char* arguments = (char*) calloc(1, sizeof(char));
-
-    for (i=0; i < argc; i++) {
-        printf("Argument %d = %s\n", i, argv[i]);
-    }
 
     if (argc-1 > 0 && !strncmp(argv[argc-1], "l", strlen("l"))) {
         while (read(STDIN_FILENO, &car, 1) > 0) {
@@ -295,10 +291,7 @@ int main(int argc, char* argv[]) {
         strcat(arguments, in);
     }
 
-    if (contientRedirection(argv[0])) {
-        printf("Redirection\n");
-        gererRedirection(argv[0]);
-    }
+    if (contientRedirection(argv[0])) gererRedirection(argv[0]);
     
     clock_gettime(CLOCK_MONOTONIC, &bootTime);
     totalMemory = getTotalMemory();

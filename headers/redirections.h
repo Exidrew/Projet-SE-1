@@ -30,4 +30,4 @@ int contientRedirection(char* commande);
 
 int mettreEnBackground(char* commande);
 
-#endif
+#endif 

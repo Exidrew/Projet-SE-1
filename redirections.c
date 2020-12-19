@@ -69,7 +69,7 @@ void gererRedirection(char* commande) {
 
     indexNomFichier = recupererTypeRedirection(commande, redirection);
     nomFichier = recupererNomFichier(commande + indexNomFichier);
-    
+
     if (!strcmp(redirection, STDOUT_ERASE)) flags = O_CREAT | O_WRONLY, type = SORTIE_FICHIER_ERASE, sortie = STDOUT_FILENO;
     else if (!strcmp(redirection, STDOUT_APPEND)) flags = O_APPEND | O_WRONLY, type = SORTIE_FICHIER_APPEND, sortie = STDOUT_FILENO;
     else if (!strcmp(redirection, STDERR_ERASE)) flags = O_CREAT | O_WRONLY, type = SORTIE_FICHIER_ERASE, sortie = STDERR_FILENO;
@@ -113,4 +113,4 @@ int mettreEnBackground(char* commande) {
     }
 
     return !regexec(&regex, commande, 0, NULL, 0);
-}
+} 
