@@ -268,7 +268,7 @@ int main(int argc, char* argv[]) {
     ProcData** listProcData = (ProcData**) calloc(1, sizeof(ProcData*));
     int nbProcData = 0, totalMemory;
     Time bootTime;
-    char* arguments = (char*) calloc(1, sizeof(char));;
+    char* arguments = (char*) calloc(1, sizeof(char));
 
     lectureArgumentsDepuisFd(arguments, STDIN_FILENO, argc, argv);
 
