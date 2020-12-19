@@ -29,4 +29,4 @@ debugts :
 	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./ts-debug
 
 clear :
-	rm build-debug myps myps-debug ts ts-debug 2> /dev/null || true
+	rm build-debug myps myps-debug ts ts-debug truc loltruc sortie 2> /dev/null || true
