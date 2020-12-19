@@ -9,5 +9,12 @@ char* errormsg[] = {
     ROUGE("Failed to attach pointer to shared memory"), //5
     ROUGE("Shared Memory detachment failed"), // 6
     ROUGE("Shared Memory deletion failed"), // 7
-    ROUGE("Checking for variable failed") // 8
+    ROUGE("Open directory failed"), // 8
+    ROUGE("Close directory failed"), // 9
+    ROUGE("Failed dynamic memory allocation"), //10
+    ROUGE("Failed open file"), // 11
+    ROUGE("Failed close file"), // 12
+    ROUGE("Getting user's name failed"), // 13
+    ROUGE("Pipe creation failed"), // 14
+    ROUGE("Redirection failed")
 };

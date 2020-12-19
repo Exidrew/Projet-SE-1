@@ -1,23 +1,32 @@
 CC = gcc
 SOURCES = error.c tinyShell.c gestionChaine.c variablesLocales.c variables.c tubeCommunication.c cd.c
-PSSOURCES = myps.c
+PSSOURCES = myps.c procdata.c error.c redirections.c tubeCommunication.c
 FLAGS = -Wall
 DEBUG_FLAGS = -Wall -g
 
-build-debug : $(SOURCES)
-	$(CC) $(DEBUG_FLAGS) $^ -o build-debug
-
-ts : $(SOURCES)
-	$(CC) $(FLAGS) $^ -o $@
+make ts : $(SOURCES) $(PSSOURCES)
+	make clear
+	$(CC) $(FLAGS) $(SOURCES) -o ts
+	$(CC) $(FLAGS) $(PSSOURCES) -o myps
+	
+ts-debug : $(SOURCES) $(PSSOURCES)
+	make clear
+	$(CC) $(DEBUG_FLAGS) $(SOURCES) -o ts-debug
+	$(CC) $(DEBUG_FLAGS) $(PSSOURCES) -o myps-debug
 
 myps : $(PSSOURCES)
+	make clear
 	$(CC) $(FLAGS) $^ -o $@
 
-clean :
-	rm -f *.o *.exe ts build-debug
+myps-debug : $(PSSOURCES)
+	make clear
+	$(CC) $(DEBUG_FLAGS) $^ -o $@
 
-debug :
-	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./build-debug
+debugmyps :
+	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./myps-debug
 
-gc : gestionChaine.c
-	$(CC) $(DEBUG_FLAGS) $^ -o gc
+debugts :
+	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./ts-debug
+
+clear :
+	rm build-debug myps myps-debug ts ts-debug 2> /dev/null || true

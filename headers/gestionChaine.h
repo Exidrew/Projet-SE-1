@@ -19,10 +19,10 @@ Retourne :
 - Le nombre de commande dans le pointeur passé en parametre */
 char** demanderCommande(char** commande, int* nbCommandes);
 
-/* Retire les espaces de la commande commandeSansEspaces passée en parametre
+/* Formatte la chaine passée en paramètre
 Retourne :
 - La commande formatée */
-char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int* nbCommandes);
+char** gererChaine(char commande[sizelgcmd], char** commandeSansEspaces, int* nbCommandes);
 
 /* Remplace les variables dans les commandes et indique le status dans le pointeur status
 passé en paramètres
@@ -32,7 +32,7 @@ Retour :
 char** remplacerLesVariablesDansLesCommandes(char** commandes, int nbCommandes, int* status);
 
 /* Vide la commande pour accueillir une nouvelle commande par la suite */
-void viderCommande(char** commandes);
+char** viderCommande(char** commandes);
 
 /* Get le chemin du repertory/directory courant
 Retourne :
@@ -48,4 +48,8 @@ int getComputerName(char *hostName);
 
 /* Affiche le nom de l'ordinateur et le chemin dans le shell */
 void affichageLigneShell();
+
+int recupererArguments(char* args[], char* commande);
+
+void recupererNomProgramme(char nomProgramme[100], char* commande);
 #endif

@@ -13,7 +13,7 @@ int doitRetirerEspace(char* commande) {
     return (strncmp(commande, "test", strlen("test")));
 }
 
-char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int* nbCommandes) {
+char** gererChaine(char commande[sizelgcmd], char** commandeSansEspaces, int* nbCommandes) {
     int i, nbEspace = 0, j = 0, indexCommandes = 0;
     for (i = 0; i < strlen(commande); i++) {
         if (commande[i] == '\n') continue;
@@ -25,17 +25,88 @@ char** retirerEspaces(char commande[sizelgcmd], char** commandeSansEspaces, int*
             j = 0;
             continue;
         }
+        if (!strncmp(commande + i, "||", 2) || !strncmp(commande + i, "&&", 2)) {
+            indexCommandes++;
+            if (commande[i] == '|') commandeSansEspaces[indexCommandes] = strcpy(commandeSansEspaces[indexCommandes], "||");
+            else if (commande[i] == '&') commandeSansEspaces[indexCommandes] = strcpy(commandeSansEspaces[indexCommandes], "&&");
+            indexCommandes++;
+            i++;
+            nbEspace = 0;
+            if (i+1 < strlen(commande) && isspace(commande[i+1]))
+                i++;
+            j = 0;
+            continue;
+        }
+        else if (!strncmp(commande + i,"|",1) && (i+1 < strlen(commande) && commande[i+1] != '|')) {
+            // Retire un espace très gênant
+            commandeSansEspaces[indexCommandes][i-1] = '\0';
+            indexCommandes++;
+            commandeSansEspaces[indexCommandes] = strcpy(commandeSansEspaces[indexCommandes], "|");
+            indexCommandes++;
+            nbEspace++;
+            i++;
+            if (i+1 < strlen(commande) && isspace(commande[i+1]))
+                i++;
+            j = 0;
+
+            continue;
+        }
+        if (!strncmp(commande + i, " > ", 3)) {
+            strcat(commandeSansEspaces[indexCommandes], " > ");
+            i += 2;
+            j += 3;
+            continue;
+        } else if (!strncmp(commande + i, " >> ", 4)) {
+            strcat(commandeSansEspaces[indexCommandes], " >> ");
+            i += 3;
+            j += 4;
+            continue;
+        } else if (!strncmp(commande + i, " 2> ", 4)) {
+            strcat(commandeSansEspaces[indexCommandes], " 2> ");
+            i += 3;
+            j += 4;
+            continue;
+        } else if (!strncmp(commande + i, " 2>> ", 5)) {
+            strcat(commandeSansEspaces[indexCommandes], " 2>> ");
+            i += 4;
+            j += 5;
+            continue;
+        } else if (!strncmp(commande + i, " >& ", 4)) {
+            strcat(commandeSansEspaces[indexCommandes], " >& ");
+            i += 3;
+            j += 4;
+            continue;
+        } else if (!strncmp(commande + i, " >>& ", 5)) {
+            strcat(commandeSansEspaces[indexCommandes], " >>& ");
+            i += 4;
+            j += 5;
+            continue;
+        } else if (!strncmp(commande + i, " < ", 3)) {
+            strcat(commandeSansEspaces[indexCommandes], " < ");
+            i += 2;
+            j += 3;
+            continue;
+        }
         if (nbEspace < 1) {
-            commandeSansEspaces[indexCommandes][j] = commande[i];
-            j++;
-            if (isspace(commande[i]) && doitRetirerEspace(commandeSansEspaces[indexCommandes])) nbEspace++;
+            if (!strncmp(commande + i, " ||", 3) || !strncmp(commande + i, "||", 2) || !strncmp(commande + i, "|| ", 3)) continue;
+            else if (!strncmp(commande + i, " &&", 3) || !strncmp(commande + i, "&&", 2) || !strncmp(commande + i, "&& ", 3)) continue;
+            else if (commande[i] == '|') {
+                continue;
+            }
+            else {
+                commandeSansEspaces[indexCommandes][j] = commande[i];
+                j++;
+                if (isspace(commande[i]) && doitRetirerEspace(commandeSansEspaces[indexCommandes])) nbEspace++;
+            }
         }
         else {
             if (!isspace(commande[i])) {
                 commandeSansEspaces[indexCommandes][j] = commande[i];
                 j++;
             }
-            else if (doitRetirerEspace(commandeSansEspaces[indexCommandes])) nbEspace++;
+            else if (doitRetirerEspace(commandeSansEspaces[indexCommandes])) {
+                nbEspace++;
+            }
         }
     }
 
@@ -75,7 +146,7 @@ char** demanderCommande(char** commande, int* nbCommandes) {
     affichageLigneShell();
     fgets(commandeEntree, sizelgcmd-1, stdin);
 
-    commandes = retirerEspaces(commandeEntree, commande, nbCommandes);
+    commandes = gererChaine(commandeEntree, commande, nbCommandes);
 
     return commandes;
 }
@@ -83,7 +154,7 @@ char** demanderCommande(char** commande, int* nbCommandes) {
 void afficherLesCommandesEntrees(char** commandes, int nbCommandes) {
     printf("Voici les commandes entrées : \n");
     for (int i = 0; i < nbCommandes && commandes[i] != NULL; i++) {
-        printf("- %s\n", commandes[i]);
+        printf("- <%s>\n", commandes[i]);
     }
 }
 
@@ -93,13 +164,13 @@ void afficherEnBrutLesCommandesEntrees(char** commandes, int nbCommandes) {
     }
 }
 
-void viderCommande(char** commandes) {
+char** viderCommande(char** commandes) {
     int i;
-
     for (i = 0; i < sizelgcmd; i++) {
         if (commandes[i] == NULL) commandes[i] = (char*) calloc(sizeWord, sizeof(char));
         memset(commandes[i], '\0', sizeWord);
     }
+    return commandes;
 }
 
 char** allouerMemoireCommandes() {
@@ -187,6 +258,26 @@ char** remplacerLesVariablesDansLesCommandes(char** commandes, int nbCommandes, 
     if (cmd != NULL) free(cmd);
     regfree(&regex);
     return commandes;
+}
+
+void recupererNomProgramme(char nomProgramme[100], char* commande) {
+    int i;
+    for (i = 0; commande[i] != ' ' && commande[i] != '\n' && commande[i] != '\0'; i++) {
+        nomProgramme[i] = commande[i];
+    }
+}
+
+int recupererArguments(char* args[], char* commande) {
+    int i, indice = 0, ind = 0;
+    for (i=0; i < strlen(commande); i++) {
+        if (isspace(commande[i])) {
+                indice++;
+                ind = 0;
+            continue;
+        }
+        args[indice][ind++] = commande[i];
+    }
+    return indice;
 }
 
 // int main(void) {
