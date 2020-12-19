@@ -32,7 +32,7 @@ Retour :
 char** remplacerLesVariablesDansLesCommandes(char** commandes, int nbCommandes, int* status);
 
 /* Vide la commande pour accueillir une nouvelle commande par la suite */
-void viderCommande(char** commandes);
+char** viderCommande(char** commandes);
 
 /* Get le chemin du repertory/directory courant
 Retourne :

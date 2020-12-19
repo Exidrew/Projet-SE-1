@@ -314,6 +314,7 @@ int main(int argc, char* argv[]) {
     if (contientRedirection(argv[0])) {
         printf("Redirection\n");
         gererRedirection(argv[0]);
+        write(STDERR_FILENO, "une erreur", strlen("une erreur"));
         afficherTousLesProcessus(listProcData, nbProcData);
     } else afficherTousLesProcessus(listProcData, nbProcData);
 

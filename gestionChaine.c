@@ -165,12 +165,17 @@ void afficherEnBrutLesCommandesEntrees(char** commandes, int nbCommandes) {
     }
 }
 
-void viderCommande(char** commandes) {
+char** viderCommande(char** commandes) {
     int i;
+    printf("Entre vider commande\n");
     for (i = 0; i < sizelgcmd; i++) {
         if (commandes[i] == NULL) commandes[i] = (char*) calloc(sizeWord, sizeof(char));
+        else if (i<5) printf("La commande : %s\n", commandes[i]);
         memset(commandes[i], '\0', sizeWord);
+        if (i<5) printf("La commande apres : %s\n", commandes[i]);
     }
+
+    return commandes;
 }
 
 char** allouerMemoireCommandes() {
@@ -184,6 +189,14 @@ char** allouerMemoireCommandes() {
     }
     
     return cmd;
+}
+
+void freeCommandes(char** commandes) {
+    int i;
+    for (i=0; i < sizelgcmd; i++) {
+        free(commandes[i]);
+    }
+    free(commandes);
 }
 
 char* chercherNomVariableRemplacer(char* commande, char* nom, int* index) {

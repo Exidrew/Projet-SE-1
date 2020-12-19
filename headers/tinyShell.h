@@ -22,6 +22,6 @@ void executerSetVariable(char* tabcmd);
 void executerDelVariable(char* tabcmd);
 int executerCommande(char** tabcmd, int nbCommandes, int* status);
 void freeCommandes(char** commandes);
-void executerProgrammeExterne(char* commandes, int redirection, int finDeRedirection);
+void executerProgrammeExterne(char* commandes, int redirection, int finDeRedirection, int* status);
 
 #endif
