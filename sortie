@@ -1,0 +1,229 @@
+un test
+USER			PID	%CPU	%MEM	VSZ	RSS	TYY	STAT			START	TIME	COMMAND
+root			1	0.01	0.00	167536	9780	?	S		10: 1	0: 1	systemd
+root			2	0.00	0.00	0	0	?	S		10: 1	0: 0	kthreadd
+root			3	0.00	0.00	0	0	?	I		10: 1	0: 0	rcu_gp
+root			4	0.00	0.00	0	0	?	I		10: 1	0: 0	rcu_par_gp
+root			9	0.00	0.00	0	0	?	I		10: 1	0: 0	mm_percpu_wq
+root			10	0.00	0.00	0	0	?	S		10: 1	0: 1	ksoftirqd/0
+root			11	0.02	0.00	0	0	?	I		10: 1	0:11	rcu_sched
+root			12	0.00	0.00	0	0	?	S		10: 1	0: 0	migration/0
+root			13	0.00	0.00	0	0	?	S		10: 1	0: 0	idle_inject/0
+root			14	0.00	0.00	0	0	?	S		10: 1	0: 0	cpuhp/0
+root			15	0.00	0.00	0	0	?	S		10: 1	0: 0	cpuhp/1
+root			16	0.00	0.00	0	0	?	S		10: 1	0: 0	idle_inject/1
+root			17	0.00	0.00	0	0	?	S		10: 1	0: 0	migration/1
+root			18	0.00	0.00	0	0	?	S		10: 1	0: 1	ksoftirqd/1
+root			21	0.00	0.00	0	0	?	S		10: 1	0: 0	cpuhp/2
+root			22	0.00	0.00	0	0	?	S		10: 1	0: 0	idle_inject/2
+root			23	0.00	0.00	0	0	?	S		10: 1	0: 0	migration/2
+root			24	0.00	0.00	0	0	?	S		10: 1	0: 1	ksoftirqd/2
+root			27	0.00	0.00	0	0	?	S		10: 1	0: 0	cpuhp/3
+root			28	0.00	0.00	0	0	?	S		10: 1	0: 0	idle_inject/3
+root			29	0.00	0.00	0	0	?	S		10: 1	0: 0	migration/3
+root			30	0.00	0.00	0	0	?	S		10: 1	0: 2	ksoftirqd/3
+root			33	0.00	0.00	0	0	?	S		10: 1	0: 0	kdevtmpfs
+root			34	0.00	0.00	0	0	?	I		10: 1	0: 0	netns
+root			35	0.00	0.00	0	0	?	S		10: 1	0: 0	rcu_tasks_kthre
+root			36	0.00	0.00	0	0	?	S		10: 1	0: 0	kauditd
+root			38	0.00	0.00	0	0	?	S		10: 1	0: 0	khungtaskd
+root			39	0.00	0.00	0	0	?	S		10: 1	0: 0	oom_reaper
+root			40	0.00	0.00	0	0	?	I		10: 1	0: 0	writeback
+root			41	0.00	0.00	0	0	?	S		10: 1	0: 0	kcompactd0
+root			42	0.00	0.00	0	0	?	S		10: 1	0: 0	ksmd
+root			43	0.00	0.00	0	0	?	S		10: 1	0: 0	khugepaged
+root			90	0.00	0.00	0	0	?	I		10: 1	0: 0	kintegrityd
+root			91	0.00	0.00	0	0	?	I		10: 1	0: 0	kblockd
+root			92	0.00	0.00	0	0	?	I		10: 1	0: 0	blkcg_punt_bio
+root			94	0.00	0.00	0	0	?	I		10: 1	0: 0	tpm_dev_wq
+root			95	0.00	0.00	0	0	?	I		10: 1	0: 0	ata_sff
+root			96	0.00	0.00	0	0	?	I		10: 1	0: 0	md
+root			97	0.00	0.00	0	0	?	I		10: 1	0: 0	edac-poller
+root			98	0.00	0.00	0	0	?	I		10: 1	0: 0	devfreq_wq
+root			99	0.00	0.00	0	0	?	S		10: 1	0: 0	watchdogd
+root			102	0.00	0.00	0	0	?	S		10: 1	0: 3	kswapd0
+root			103	0.00	0.00	0	0	?	S		10: 1	0: 0	ecryptfs-kthrea
+root			105	0.00	0.00	0	0	?	I		10: 1	0: 0	kthrotld
+root			106	0.00	0.00	0	0	?	S		10: 1	0: 0	irq/122-aerdrv
+root			107	0.00	0.00	0	0	?	I		10: 1	0: 0	acpi_thermal_pm
+root			108	0.00	0.00	0	0	?	I		10: 1	0: 0	vfio-irqfd-clea
+root			111	0.00	0.00	0	0	?	I		10: 1	0: 0	ipv6_addrconf
+root			120	0.00	0.00	0	0	?	I		10: 1	0: 0	kstrp
+root			123	0.00	0.00	0	0	?	I		10: 1	0: 0	kworker/u9:0-hci0
+root			139	0.00	0.00	0	0	?	I		10: 1	0: 0	charger_manager
+root			191	0.00	0.00	0	0	?	S		10: 2	0: 0	scsi_eh_0
+root			192	0.00	0.00	0	0	?	I		10: 2	0: 0	scsi_tmf_0
+root			193	0.00	0.00	0	0	?	S		10: 2	0: 0	scsi_eh_1
+root			194	0.00	0.00	0	0	?	I		10: 2	0: 0	scsi_tmf_1
+root			198	0.00	0.00	0	0	?	I		10: 2	0: 0	kworker/0:1H-events_highpri
+root			199	0.00	0.00	0	0	?	I		10: 2	0: 1	kworker/3:1H-events_highpri
+root			203	0.00	0.00	0	0	?	S		10: 3	0: 0	scsi_eh_2
+root			204	0.00	0.00	0	0	?	I		10: 3	0: 0	scsi_tmf_2
+root			205	0.00	0.00	0	0	?	S		10: 3	0: 8	usb-storage
+root			206	0.00	0.00	0	0	?	I		10: 3	0: 0	uas
+root			213	0.00	0.00	0	0	?	I		10: 4	0: 0	kworker/2:1H-events_highpri
+root			228	0.00	0.00	0	0	?	S		10: 4	0: 1	jbd2/sdb1-8
+root			229	0.00	0.00	0	0	?	I		10: 4	0: 0	ext4-rsv-conver
+root			265	0.00	0.00	59992	17076	?	S		10:11	0: 0	systemd-journal
+root			300	0.06	0.00	24808	7784	?	S		10:14	0: 4	systemd-udevd
+root			329	0.00	0.00	0	0	?	I		10:19	0: 0	asus_wireless_w
+root			336	0.00	0.00	0	0	?	S		10:20	0: 0	irq/128-mei_me
+root			344	0.00	0.00	0	0	?	S		10:21	0: 0	irq/109-ELAN100
+root			357	0.00	0.00	0	0	?	I		10:21	0: 0	led_workqueue
+root			381	0.00	0.00	0	0	?	I		10:22	0: 0	cryptd
+root			398	0.00	0.00	0	0	?	I		10:23	0: 0	kmemstick
+root			403	0.00	0.00	0	0	?	I		10:24	0: 0	cfg80211
+root			462	0.00	0.00	0	0	?	I		10:25	0: 0	kworker/u9:2-hci0
+root			463	0.00	0.00	0	0	?	I		10:26	0: 0	nvkm-disp
+root			500	0.00	0.00	0	0	?	I		10:27	0: 0	ath10k_wq
+root			501	0.00	0.00	0	0	?	I		10:27	0: 0	ath10k_aux_wq
+root			504	0.00	0.00	0	0	?	I		10:27	0: 0	ttm_swap
+systemd-resolve			652	0.01	0.00	24356	11896	?	S		10:27	0: 2	systemd-resolve
+systemd-timesync			653	0.00	0.00	90448	5588	?	S		10:27	0: 0	systemd-timesyn
+root			674	0.00	0.00	241472	7612	?	S		10:25	0: 0	accounts-daemon
+root			675	0.01	0.00	2540	784	?	S		10:25	0: 1	acpid
+avahi			679	0.01	0.00	8840	3192	?	S		10:25	0: 0	avahi-daemon
+root			681	0.00	0.00	8360	4528	?	S		10:25	0: 0	bluetoothd
+root			682	0.00	0.00	12184	2844	?	S		10:25	0: 0	cron
+messagebus			684	0.03	0.00	9160	5300	?	S		10:25	0: 2	dbus-daemon
+root			685	0.02	0.00	265616	17668	?	S		10:25	0: 2	NetworkManager
+root			692	0.00	0.00	81896	3764	?	S		10:25	0: 0	irqbalance
+root			694	0.00	0.00	42156	15780	?	S		10:24	0: 0	networkd-dispat
+root			697	0.00	0.00	244084	10336	?	S		10:24	0: 0	polkitd
+syslog			699	0.00	0.00	224548	4900	?	S		10:24	0: 0	rsyslogd
+root			723	0.00	0.00	17304	7536	?	S		10:23	0: 0	systemd-logind
+root			724	0.01	0.00	128428	9116	?	S		10:23	0: 1	thermald
+root			725	0.02	0.00	393132	11936	?	S		10:23	0: 1	udisksd
+root			726	0.00	0.00	13932	6364	?	S		10:23	0: 0	wpa_supplicant
+avahi			742	0.00	0.00	8568	352	?	S		10:22	0: 0	avahi-daemon
+root			802	0.00	0.00	31084	7548	?	S		10:10	0: 0	cupsd
+colord			819	0.00	0.00	249328	14168	?	S		10: 4	0: 0	colord
+root			820	0.00	0.00	180868	11764	?	S		10: 4	0: 0	cups-browsed
+root			821	0.00	0.00	200656	14204	?	S		10: 4	0: 0	php-fpm7.4
+root			823	0.00	0.00	120872	17876	?	S		10: 4	0: 0	unattended-upgr
+root			828	0.00	0.00	232368	6512	?	S		10: 3	0: 0	lightdm
+root			830	0.00	0.00	240012	8896	?	S		10: 3	0: 0	ModemManager
+root			872	5.65	0.02	1355156	87440	tty7	S		10: 5	10:43	Xorg
+root			879	0.00	0.00	11200	1828	tty1	S		10: 6	0: 0	agetty
+www-data			910	0.00	0.00	201044	5524	?	S		10:10	0: 0	php-fpm7.4
+www-data			911	0.00	0.00	201044	5524	?	S		10:10	0: 0	php-fpm7.4
+whoopsie			961	0.00	0.00	257828	19504	?	S		10:25	0: 0	whoopsie
+kernoops			966	0.00	0.00	11256	428	?	S		10:25	0: 0	kerneloops
+kernoops			968	0.00	0.00	11256	448	?	S		10:25	0: 0	kerneloops
+rtkit			1077	0.00	0.00	153156	3076	?	S		11: 8	0: 0	rtkit-daemon
+root			1113	0.00	0.00	0	0	?	S		11: 4	0: 0	krfcommd
+root			1124	0.00	0.00	160180	7832	?	S		11: 1	0: 0	lightdm
+sebastien			1476	0.00	0.00	18972	8960	?	S		11:22	0: 0	systemd
+sebastien			1480	0.00	0.00	169052	2352	?	S		11:22	0: 0	(sd-pam)
+sebastien			1494	2.16	0.00	1673496	15416	?	S		11:23	5:22	pulseaudio
+sebastien			1497	0.02	0.00	243076	6028	?	S		11:23	0: 1	gnome-keyring-d
+sebastien			1500	0.01	0.00	270816	12024	?	S		11:23	0: 0	xfce4-session
+sebastien			1502	0.08	0.00	8344	4828	?	S		11:23	0: 7	dbus-daemon
+sebastien			1584	0.00	0.00	6032	36	?	S		11:26	0: 0	ssh-agent
+sebastien			1602	0.00	0.00	305304	6548	?	S		11:26	0: 0	at-spi-bus-laun
+sebastien			1607	0.01	0.00	7604	4004	?	S		11:26	0: 0	dbus-daemon
+sebastien			1611	0.00	0.00	230208	5940	?	S		11:26	0: 0	xfconfd
+sebastien			1617	0.03	0.00	162828	6948	?	S		11:26	0: 2	at-spi2-registr
+sebastien			1621	0.01	0.00	230152	16172	?	S		11:27	0: 0	xfce4-screensav
+sebastien			1624	0.00	0.00	242464	7264	?	S		11:27	0: 0	gvfsd
+sebastien			1629	0.00	0.00	378336	6180	?	S		11:27	0: 0	gvfsd-fuse
+sebastien			1641	1.58	0.01	671520	35148	?	S		11:27	2:26	xfwm4
+sebastien			1651	0.02	0.00	231772	9400	?	S		11:32	0: 1	xfsettingsd
+sebastien			1652	0.16	0.01	301528	46696	?	S		11:32	0:11	xfce4-panel
+root			1658	0.01	0.00	255200	9676	?	S		11:32	0: 1	upowerd
+sebastien			1679	0.01	0.00	321860	18148	?	S		11:31	0: 1	panel-1-whisker
+sebastien			1682	0.00	0.00	196300	10252	?	S		11:31	0: 0	panel-4-systray
+sebastien			1683	0.00	0.00	243504	13624	?	S		11:31	0: 0	panel-5-notific
+sebastien			1684	0.00	0.00	274044	11348	?	S		11:31	0: 0	panel-6-indicat
+sebastien			1685	0.01	0.01	391604	20516	?	S		11:31	0: 0	panel-7-statusn
+sebastien			1686	0.03	0.01	243756	20880	?	S		11:31	0: 1	panel-8-power-m
+sebastien			1689	0.22	0.01	537676	43188	?	S		11:31	0:17	panel-9-pulseau
+sebastien			1696	0.13	0.01	398684	34620	?	S		11:30	0: 8	Thunar
+sebastien			1702	0.01	0.01	274168	25984	?	S		11:30	0: 0	xfce4-notifyd
+sebastien			1718	0.00	0.00	315672	7644	?	S		11:29	0: 0	indicator-messa
+sebastien			1719	0.04	0.02	432760	72944	?	S		11:29	0: 3	xfdesktop
+sebastien			1733	0.01	0.01	437444	31116	?	S		11:28	0: 0	blueman-applet
+sebastien			1734	0.00	0.00	190428	11188	?	S		11:28	0: 0	polkit-gnome-au
+sebastien			1741	0.00	0.00	589280	8228	?	S		11:27	0: 0	xiccd
+sebastien			1745	0.01	0.00	428672	19208	?	S		11:27	0: 0	nm-applet
+sebastien			1752	0.00	0.00	267616	14184	?	S		11:27	0: 0	light-locker
+sebastien			1764	0.00	0.00	156092	5384	?	S		11:27	0: 0	dconf-service
+sebastien			1765	0.01	0.01	62700	29396	?	S		11:27	0: 0	applet.py
+sebastien			1779	0.01	0.00	196884	13144	?	S		11:26	0: 0	xfce4-power-man
+sebastien			1785	0.00	0.01	418504	20788	?	S		11:26	0: 0	update-notifier
+sebastien			1814	0.01	0.01	361816	29748	?	S		11:23	0: 0	blueman-tray
+sebastien			1822	0.00	0.00	43984	5324	?	S		11:23	0: 0	obexd
+sebastien			1835	0.00	0.00	316960	8444	?	S		11:17	0: 0	gvfs-udisks2-vo
+sebastien			1840	0.00	0.00	238420	5792	?	S		11:17	0: 0	gvfs-mtp-volume
+sebastien			1844	0.00	0.00	240828	7128	?	S		11:17	0: 0	gvfs-gphoto2-vo
+sebastien			1848	0.00	0.00	319476	7312	?	S		11:16	0: 0	gvfs-afc-volume
+sebastien			1853	0.00	0.00	238620	6312	?	S		11:16	0: 0	gvfs-goa-volume
+sebastien			1863	0.00	0.00	316724	7736	?	S		11:16	0: 0	gvfsd-trash
+sebastien			1869	0.00	0.00	165132	6452	?	S		11:16	0: 0	gvfsd-metadata
+sebastien			2114	0.90	0.02	4719044	88144	?	S		11: 6	1:32	Discord
+sebastien			2215	0.00	0.01	204892	22764	?	S		11: 1	0: 0	Discord
+sebastien			2220	0.00	0.01	204892	23080	?	S		11: 1	0: 0	Discord
+sebastien			2239	0.00	0.00	204892	7648	?	S		11: 0	0: 0	Discord
+sebastien			2313	2.22	0.03	705088	111716	?	S		11: 4	3: 1	code
+sebastien			2360	1.07	0.03	679180	132372	?	S		11: 7	1:32	chrome
+sebastien			2367	0.00	0.00	10768	520	?	S		11: 7	0: 0	cat
+sebastien			2368	0.00	0.00	10768	588	?	S		11: 7	0: 0	cat
+sebastien			2477	0.00	0.01	184400	32924	?	S		11:16	0: 0	code
+sebastien			2483	0.00	0.00	184400	6268	?	S		11:17	0: 0	code
+sebastien			2545	1.60	0.02	465144	78664	?	S		11:25	2:15	Discord
+sebastien			2572	0.00	0.01	274008	33232	?	S		11:27	0: 0	chrome
+sebastien			2579	0.03	0.01	280084	35936	?	S		11:30	0: 2	Discord
+sebastien			2609	4.54	0.03	533464	114804	?	S		11:23	6:31	code
+sebastien			2633	0.00	0.01	250152	48500	?	S		11:19	0: 0	code
+sebastien			2658	0.00	0.00	10836	2964	?	S		11:15	0: 0	nacl_helper
+sebastien			2667	15.71	0.08	12533184	322756	?	S		11:14	17:55	code
+sebastien			2677	0.00	0.00	274008	16092	?	S		11:12	0: 0	chrome
+sebastien			2693	0.13	0.02	537460	96680	?	S		11: 8	0:10	code
+sebastien			2856	8.98	0.06	26143692	246136	?	S		11: 2	10:42	Discord
+sebastien			2901	6.54	0.03	590840	118876	?	S		11: 9	9:27	chrome
+sebastien			2906	0.35	0.01	346708	56836	?	S		11: 9	0:37	chrome
+sebastien			2955	2.38	0.06	12124108	218828	?	S		11:26	2:47	code
+sebastien			2989	0.03	0.02	4584964	73200	?	S		11:23	0: 2	chrome
+sebastien			2997	0.00	0.01	522412	27268	?	S		11:22	0: 0	Discord
+sebastien			3170	0.05	0.02	406704	65908	?	S		11:16	0: 3	code
+sebastien			3244	23.46	0.09	4954932	341776	?	S		11: 9	28:22	chrome
+sebastien			3316	0.46	0.01	1282556	38080	?	S		11:27	0:34	cpptools
+sebastien			3422	1.39	0.03	4621972	107092	?	S		11:11	1:29	chrome
+sebastien			3455	0.89	0.01	827336	35696	?	S		11: 5	1:38	chrome
+sebastien			3556	0.43	0.01	390484	27592	?	S		11:20	0:30	xfce4-terminal
+sebastien			3561	0.00	0.00	13648	4576	pts/0	S		11:20	0: 0	bash
+sebastien			4685	0.05	0.02	4597904	80532	?	S		11: 4	0: 3	chrome
+root			4835	0.00	0.00	0	0	?	I		11: 1	0: 0	kworker/1:1H-events_highpri
+root			6531	0.00	0.00	0	0	?	I		12:12	0: 1	kworker/2:3-events
+root			6566	0.00	0.00	0	0	?	I		12:11	0: 1	kworker/0:3-events
+sebastien			6571	1.73	0.03	4660532	126952	?	S		12: 9	1: 7	chrome
+sebastien			6595	0.02	0.01	4570884	47176	?	S		12: 7	0: 1	chrome
+root			6620	0.00	0.00	0	0	?	I		12:17	0: 7	kworker/u8:1-i915
+root			7047	0.00	0.00	0	0	?	I		12: 2	0: 5	kworker/u8:2-i915
+root			7426	0.00	0.00	0	0	?	I		12: 8	0: 5	kworker/u8:4-i915
+sebastien			7561	0.25	0.01	4586348	34808	?	S		12:14	0: 8	cpptools-srv
+sebastien			7663	0.28	0.03	86018192	131904	?	S		12:12	0: 9	atril
+sebastien			7670	0.00	0.00	156048	5464	?	S		12:15	0: 0	atrild
+sebastien			7680	0.00	0.01	102259504	39260	?	S		12:19	0: 0	WebKitWebProces
+sebastien			7681	0.00	0.01	102547152	38212	?	S		12:19	0: 0	WebKitNetworkPr
+root			8040	0.00	0.00	0	0	?	I		12: 3	0: 0	kworker/3:1-events
+root			8866	0.00	0.00	0	0	?	I		12:20	0: 0	kworker/2:0H-events_highpri
+root			8887	0.00	0.00	0	0	?	I		12:28	0: 0	kworker/3:0-events
+root			8899	0.00	0.00	0	0	?	I		12:23	0: 9	kworker/1:0-events
+root			9101	0.00	0.00	0	0	?	I		12:22	0: 0	kworker/3:2H-kblockd
+root			9103	0.00	0.00	0	0	?	I		12:21	0: 0	kworker/0:0H-events_highpri
+root			9220	0.00	0.00	0	0	?	I		12:31	0: 0	kworker/2:1-events
+root			9297	0.00	0.00	0	0	?	I		12:25	0: 1	kworker/u8:0-i915
+root			9392	0.00	0.00	0	0	?	I		12:16	0: 0	kworker/0:1-events
+root			9639	0.00	0.00	0	0	?	I		12: 6	0: 0	kworker/1:2H-events_highpri
+root			9783	0.00	0.00	0	0	?	I		12:28	0: 2	kworker/1:2-events
+root			9844	0.00	0.00	0	0	?	I		12:22	0: 0	kworker/u8:3-events_unbound
+root			9850	0.00	0.00	0	0	?	I		12:30	0: 0	kworker/3:2
+root			9854	0.00	0.00	0	0	?	I		12: 9	0: 0	kworker/2:0-events
+sebastien			10058	0.82	0.01	4586480	22876	?	S		12:18	0: 0	cpptools-srv
+sebastien			10144	0.00	0.00	10992	2304	pts/0	S		12:23	0: 0	make
+sebastien			10145	0.00	0.04	187476	146116	pts/0	S		12:23	0: 1	memcheck-amd64-
+root			10159	0.00	0.00	0	0	?	I		12: 8	0: 0	kworker/1:1-events
+root			10211	0.00	0.00	0	0	?	I		12:18	0: 0	kworker/1:0H-events_highpri
+sebastien			10213	0.00	0.00	2936	2412	pts/0	R		12:27	0: 0	myps-debug
+

@@ -281,7 +281,6 @@ int main(int argc, char* argv[]) {
     }
 
     if (argc-1 > 0 && !strncmp(argv[argc-1], "l", strlen("l"))) {
-        printf("Lecture\n");
         while (read(STDIN_FILENO, &car, 1) > 0) {
             if (car == '\n' && in[tailleMessage-1] == '\n') break;
             tailleMessage++;
@@ -294,6 +293,11 @@ int main(int argc, char* argv[]) {
         arguments = realloc(arguments, (strlen(argv[0]) + strlen(in) + 1) * sizeof(char));
         strcat(arguments, " ");
         strcat(arguments, in);
+    }
+
+    if (contientRedirection(argv[0])) {
+        printf("Redirection\n");
+        gererRedirection(argv[0]);
     }
     
     clock_gettime(CLOCK_MONOTONIC, &bootTime);
@@ -311,12 +315,7 @@ int main(int argc, char* argv[]) {
     }
     if (closedir(rep) == ERR) fatalsyserror(PS_FAIL_CLOSEDIR);
 
-    if (contientRedirection(argv[0])) {
-        printf("Redirection\n");
-        gererRedirection(argv[0]);
-        write(STDERR_FILENO, "une erreur", strlen("une erreur"));
-        afficherTousLesProcessus(listProcData, nbProcData);
-    } else afficherTousLesProcessus(listProcData, nbProcData);
+    afficherTousLesProcessus(listProcData, nbProcData);
 
     freeListProcData(listProcData, nbProcData);
     free(in);

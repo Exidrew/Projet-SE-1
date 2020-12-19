@@ -31,7 +31,7 @@ int recupererTypeRedirection(char* commande, char redirection[5]) {
     return i;
 }
 
-void gererSortieVersFichier(char* commande, char* nomFichier, int flags, int mode, int sortie) {
+void gererSortieVersFichier(char* nomFichier, int flags, int mode, int sortie) {
     if ((id = open(nomFichier, flags, mode)) == ERR) {
         if ((id = open(nomFichier, O_CREAT | O_WRONLY, mode)) == ERR) fatalsyserror(REDIRECTION_FAILED);
     }
@@ -50,10 +50,19 @@ char* recupererNomFichier(char* commande) {
     return nomFichier;
 }
 
+void gererSortieStandardSortiErreurFichier(char* nomFichier, int flags, int mode) {
+    if ((id = open(nomFichier, flags, mode)) == ERR) {
+        if ((id = open(nomFichier, O_CREAT | O_WRONLY, mode)) == ERR) fatalsyserror(REDIRECTION_FAILED);
+    }
+
+    if ((dup2(id, STDOUT_FILENO)) == ERR) fatalsyserror(REDIRECTION_FAILED);
+    if ((dup2(id, STDERR_FILENO)) == ERR) fatalsyserror(REDIRECTION_FAILED);
+}
+
 void gererRedirection(char* commande) {
     char redirection[5];
     int type;
-    int sortie;
+    int sortie = 0;
     int indexNomFichier;
     char* nomFichier;
     int flags, mode = S_IRWXU;
@@ -63,15 +72,21 @@ void gererRedirection(char* commande) {
     
     if (!strcmp(redirection, STDOUT_ERASE)) flags = O_CREAT | O_WRONLY, type = SORTIE_FICHIER_ERASE, sortie = STDOUT_FILENO;
     else if (!strcmp(redirection, STDOUT_APPEND)) flags = O_APPEND | O_WRONLY, type = SORTIE_FICHIER_APPEND, sortie = STDOUT_FILENO;
-    if (!strcmp(redirection, STDERR_ERASE)) flags = O_CREAT | O_WRONLY, type = SORTIE_FICHIER_ERASE, sortie = STDERR_FILENO;
-    else if (!strcmp(redirection, STDERR_ERASE)) flags = O_APPEND | O_WRONLY, type = SORTIE_FICHIER_APPEND, sortie = STDERR_FILENO;
+    else if (!strcmp(redirection, STDERR_ERASE)) flags = O_CREAT | O_WRONLY, type = SORTIE_FICHIER_ERASE, sortie = STDERR_FILENO;
+    else if (!strcmp(redirection, STDERR_APPEND)) flags = O_APPEND | O_WRONLY, type = SORTIE_FICHIER_APPEND, sortie = STDERR_FILENO;
+    else if (!strcmp(redirection, STD_ERASE)) flags = O_CREAT | O_WRONLY, type = SORTIE_OUT_ERR_ERASE;
+    else if (!strcmp(redirection, STD_APPEND)) flags = O_APPEND | O_WRONLY, type = SORTIE_OUT_ERR_APPEND;
 
     switch(type) {
         case SORTIE_FICHIER_ERASE:
         case SORTIE_FICHIER_APPEND:
         case SORTIE_ERREUR_ERASE:
         case SORTIE_ERREUR_APPEND:
-            gererSortieVersFichier(commande, nomFichier, flags, mode, sortie);
+            gererSortieVersFichier(nomFichier, flags, mode, sortie);
+            break;
+        case SORTIE_OUT_ERR_ERASE:
+        case SORTIE_OUT_ERR_APPEND:
+            gererSortieStandardSortiErreurFichier(nomFichier, flags, mode);
             break;
     }
 
