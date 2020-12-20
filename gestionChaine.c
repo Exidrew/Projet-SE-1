@@ -280,6 +280,31 @@ int recupererArguments(char* args[], char* commande) {
     return indice;
 }
 
+void prompt(char* chaine, char* message) {
+    size_t max = 100;
+    size_t size = 0;
+    char car;
+
+    printf("%s", message);
+
+    while(1) {
+        car = getchar();
+        size++;
+
+        if (size >= max) {
+            chaine = (char*) realloc(chaine, (size * 2) * sizeof(char));
+            if (chaine == NULL) fatalsyserror(MEM_FAILED_ALLOCATION);
+            max = size * 2;
+        }
+        chaine[size-1] = (char) car;
+        
+        if ((char) car == '\n') {
+            chaine[size] = '\0';
+            break;
+        }
+    }
+}
+
 // int main(void) {
 //     char** commandes = allouerMemoireCommandes();
 //     int nbCommandes;
