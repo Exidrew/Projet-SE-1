@@ -33,7 +33,7 @@ int recupererTypeRedirection(char* commande, char redirection[5]) {
 
 void gererSortieVersFichier(char* nomFichier, int flags, int mode, int sortie) {
     if ((id = open(nomFichier, flags, mode)) == ERR) {
-        if ((id = open(nomFichier, O_CREAT | O_WRONLY, mode)) == ERR) fatalsyserror(REDIRECTION_FAILED);
+        if ((id = open(nomFichier, O_CREAT | O_WRONLY, mode)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
     }
     if (close(sortie) == ERR) fatalsyserror(REDIRECTION_FAILED);
     if ((dup(id)) == ERR) fatalsyserror(REDIRECTION_FAILED);
@@ -41,7 +41,7 @@ void gererSortieVersFichier(char* nomFichier, int flags, int mode, int sortie) {
 
 void fermerFichierSortie() {
     fflush(stdout);
-    if (close(id) == ERR) fatalsyserror(REDIRECTION_FAILED);
+    if (close(id) == ERR) fatalsyserror(FILE_FAILED_CLOSE);
 }
 
 char* recupererNomFichier(char* commande) {
@@ -52,14 +52,23 @@ char* recupererNomFichier(char* commande) {
 
 void gererSortieStandardSortiErreurFichier(char* nomFichier, int flags, int mode) {
     if ((id = open(nomFichier, flags, mode)) == ERR) {
-        if ((id = open(nomFichier, O_CREAT | O_WRONLY, mode)) == ERR) fatalsyserror(REDIRECTION_FAILED);
+        if ((id = open(nomFichier, O_CREAT | O_WRONLY, mode)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
     }
 
     if ((dup2(id, STDOUT_FILENO)) == ERR) fatalsyserror(REDIRECTION_FAILED);
     if ((dup2(id, STDERR_FILENO)) == ERR) fatalsyserror(REDIRECTION_FAILED);
 }
 
-void gererRedirection(char* commande) {
+
+void gererFichierEnEntree(char* nomFichier, int flags) {
+    int fd;
+
+    if ((fd = open(nomFichier, flags)) == ERR) fatalsyserror(FILE_FAILED_OPEN);
+    dup2(fd, STDIN_FILENO);
+}
+
+void gererRedirection(int* argc, char* argv[]) {
+    char* commande = argv[0];
     char redirection[5];
     int type;
     int sortie = 0;
@@ -76,6 +85,7 @@ void gererRedirection(char* commande) {
     else if (!strcmp(redirection, STDERR_APPEND)) flags = O_APPEND | O_WRONLY, type = SORTIE_FICHIER_APPEND, sortie = STDERR_FILENO;
     else if (!strcmp(redirection, STD_ERASE)) flags = O_CREAT | O_WRONLY, type = SORTIE_OUT_ERR_ERASE;
     else if (!strcmp(redirection, STD_APPEND)) flags = O_APPEND | O_WRONLY, type = SORTIE_OUT_ERR_APPEND;
+    else if (!strcmp(redirection, FICHIER_IN)) flags = O_RDONLY, type = FICHIER_TO_STDIN;
 
     switch(type) {
         case SORTIE_FICHIER_ERASE:
@@ -87,6 +97,11 @@ void gererRedirection(char* commande) {
         case SORTIE_OUT_ERR_ERASE:
         case SORTIE_OUT_ERR_APPEND:
             gererSortieStandardSortiErreurFichier(nomFichier, flags, mode);
+            break;
+        case FICHIER_TO_STDIN:
+            *argc += 1;
+            argv[(*argc)-1] = "l";
+            gererFichierEnEntree(nomFichier, flags);
             break;
     }
 

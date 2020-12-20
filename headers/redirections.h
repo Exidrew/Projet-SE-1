@@ -7,7 +7,7 @@
 #define SORTIE_ERREUR_APPEND 4
 #define SORTIE_OUT_ERR_ERASE 5
 #define SORTIE_OUT_ERR_APPEND 6
-#define IN_TO_STDIN 7
+#define FICHIER_TO_STDIN 7
 
 #define STDOUT_ERASE " > "
 #define STDOUT_APPEND " >> "
@@ -18,9 +18,9 @@
 #define STD_ERASE " >& "
 #define STD_APPEND " >>& "
 
-#define STDIN_TO_STDIN " < "
+#define FICHIER_IN " < "
 
-void gererRedirection(char* commande);
+void gererRedirection(int* argc, char* argv[]);
 
 // void ecrireFichierSortie(char* commande);
 
