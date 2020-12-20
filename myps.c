@@ -270,9 +270,9 @@ int main(int argc, char* argv[]) {
     Time bootTime;
     char* arguments = (char*) calloc(1, sizeof(char));
 
-    lectureArgumentsDepuisFd(arguments, STDIN_FILENO, argc, argv);
+    if (contientRedirection(argv[0])) gererRedirection(&argc, argv);
 
-    if (contientRedirection(argv[0])) gererRedirection(argv[0]);
+    lectureArgumentsDepuisFd(arguments, STDIN_FILENO, argc, argv);
     
     clock_gettime(CLOCK_MONOTONIC, &bootTime);
     totalMemory = getTotalMemory();
