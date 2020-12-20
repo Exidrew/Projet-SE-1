@@ -2,8 +2,8 @@ CC = gcc
 SOURCES = error.c tinyShell.c gestionChaine.c variablesLocales.c variables.c tubeCommunication.c cd.c
 PSSOURCES = myps.c procdata.c error.c redirections.c tubeCommunication.c
 SSH_SOURCES = myssh.c error.c
-FLAGS = -Wall
-DEBUG_FLAGS = -Wall -g
+FLAGS = -Wall -pedantic
+DEBUG_FLAGS = -Wall -pendantic -g
 
 myssh : $(SSH_SOURCES)
 	make clear
@@ -14,7 +14,7 @@ myssh-debug : $(SSH_SOURCES)
 	$(CC) $(DEBUG_FLAGS) $^ -o $@
 
 debugmyssh :
-	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./myssh-debug
+	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes -s ./myssh-debug toto@10.10.10.1
 
 make ts : $(SOURCES) $(PSSOURCES)
 	make clear

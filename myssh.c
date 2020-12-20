@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <memory.h>
 #include <regex.h>
 #include <string.h>
 
@@ -31,8 +31,7 @@ int checkArguments(int nbArgs) {
 }
 
 void demanderPassword(char* password) {
-    char* message = "password: ";
-    write(STDOUT_FILENO, message, strlen(message));
+    printf("Password: ");
     scanf("%s", password);
 }
 
