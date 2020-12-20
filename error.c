@@ -16,5 +16,15 @@ char* errormsg[] = {
     ROUGE("Failed close file"), // 12
     ROUGE("Getting user's name failed"), // 13
     ROUGE("Pipe creation failed"), // 14
-    ROUGE("Redirection failed")
+    ROUGE("Redirection failed"), // 15
+    ROUGE("Sigempty set error"), // 16
+    ROUGE("Sigaction error"), // 17
+    ROUGE("Socket error"), // 18
+    ROUGE("Binding error"), // 19
+    ROUGE("Send error"), // 20
+    ROUGE("Accept error"), // 21
+    ROUGE("Listen error"), // 22
+    ROUGE("Read error"), // 23
+    ROUGE("Thread create error"), // 24
+    ROUGE("Connection failed")
 };
