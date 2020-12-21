@@ -47,21 +47,28 @@ void destroyClient(Client this) {
 void lancerClient() {
     char* buffer_send = calloc(MAXIMUM, sizeof(char));
     char buffer_recv[MAXIMUM];
+    ssize_t tailleMessageRecu;
 
     memset(buffer_recv, 0, sizeof(char) * MAXIMUM);
 
     Client client = createClientTcp(LOCAL_IP, PORT);
 
-    // if (connect(client->socket, (const struct sockaddr*) &(client->clientAddr), sizeof(struct sockaddr_in)) == ERR) {
-    //     destroyClient(client);
-    //     fatalsyserror(25);
-    // }
+    if (connect(client->socket, (const struct sockaddr*) &(client->clientAddr), sizeof(struct sockaddr_in)) == ERR) {
+        destroyClient(client);
+        fatalsyserror(25);
+    }
 
     for (;;) {
         prompt(buffer_send, "Entrez votre message : ");
         if (!strncmp(buffer_send, "exit", strlen("exit"))) break;
 
         printf("Le message : %s\n", buffer_send);
+
+        client->send(client, buffer_send);
+
+        tailleMessageRecu = client->receive(client, buffer_recv, MAXIMUM);
+        buffer_recv[tailleMessageRecu] = '\0';
+        printf("Recu : %s\n", buffer_recv);
     }
     free(buffer_send);
 }
