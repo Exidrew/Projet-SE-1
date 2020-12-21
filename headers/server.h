@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define neterr_server(srv, n) server_destroy(srv),syserror(n);
+#define neterr_server(srv, n) destroyServer(srv), syserror(n);
 
 struct server {
     int socket;

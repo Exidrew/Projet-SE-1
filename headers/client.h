@@ -14,7 +14,7 @@
 #define MAXIMUM 100
 #endif
 
-#define neterr_client(clt, n) destroyClient(clt),syserror(n);
+#define neterr_client(clt, n) destroyClient(clt), syserror(n);
 
 struct client {
     int socket;

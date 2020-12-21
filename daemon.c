@@ -12,7 +12,6 @@ int sockets[SOMAXCONN];
 
 static void* ping(void* p_data) {
     int index = (*(int*)p_data)-1;
-    printf("Client %d\n", index);
     int s = sockets[index];
     char* msg;
     char buf[MAX];
@@ -23,6 +22,7 @@ static void* ping(void* p_data) {
         buf[n] ='\0';
         char* str = "PING";
 
+        printf("Client %d :\n", index);
         if(strncmp(buf, str, strlen(str))==0){
             msg = "PONG";
         }else {
@@ -31,12 +31,12 @@ static void* ping(void* p_data) {
         printf("%s\n", buf);
         sendTCP(s, msg);
     }
+    pthread_exit(0);
 }
 
 int main(void) {
     int i = 0, t;
     char buf[MAX];
-    char *msg=NULL;
     memset(buf, 0, sizeof(char)*MAX);
 
     Server server1 = createServerTCP();
@@ -58,6 +58,7 @@ int main(void) {
         pthread_detach(thread1);
         i++;
     }
+    printf("Test\n");
     destroyServer(server1);
     return 0;
 }

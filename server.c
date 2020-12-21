@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <memory.h>
 
-#include "headers/server.h"
 #include "headers/error.h"
+#include "headers/server.h"
 
 /* ============= Fonctions privées ============= */
 
@@ -21,7 +21,7 @@ static void serverSendTCP(struct server* this,char* msg){
     }
 }
 
-static void server_bind(struct server* this,int port){
+static void serverBind(struct server* this,int port){
     this->servAddr.sin_family = AF_INET; // On est dans un protocole internet
     this->servAddr.sin_addr.s_addr = INADDR_ANY; // Accepte connexion de localhost et de l'exterieur
     this->servAddr.sin_port = htons((uint16_t) port); // Affecte le port via htons
@@ -33,20 +33,19 @@ static void server_bind(struct server* this,int port){
 
 /* ============= Fonctions publiques ============= */
 
-Server server_create_tcp(){
+Server createServerTCP(){
     Server server = calloc(1, sizeof(struct server));
 
     int sfd;
-    if((sfd=socket(AF_INET,SOCK_STREAM,0))==ERR){
+    if((sfd = socket(AF_INET,SOCK_STREAM,0)) == ERR){
         free(server);
         syserror(SOCKET_ERR);
     }
 
-    // TODO : Modifier les fonction send et receive
-    server->socket=sfd;
-    server->bind=&bind;
-    server->receive=&serverReceiveTCP;
-    server->send=&serverSendTCP;
+    server->socket = sfd;
+    server->bind = &serverBind;
+    server->receive = &serverReceiveTCP;
+    server->send = &serverSendTCP;
     memset(&server->servAddr, 0, sizeof(struct sockaddr_in));
     memset(&server->clientAddr, 0, sizeof(struct sockaddr_in));
     server->len=sizeof(struct sockaddr_in);
