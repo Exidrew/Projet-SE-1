@@ -280,8 +280,8 @@ int recupererArguments(char* args[], char* commande) {
     return indice;
 }
 
-void prompt(char* chaine, char* message) {
-    size_t max = 100;
+void prompt(char* chaine, char* message, int initialSize) {
+    size_t max = initialSize;
     size_t size = 0;
     char car;
 

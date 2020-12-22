@@ -39,16 +39,10 @@ void printUsage() {
 }
 
 int main(int argc, char* argv[]) {
-    char* password = calloc(MAXIMUM, sizeof(char));
     if (!checkArguments(argc)) printUsage();
     if (!checkIdentification(argv[1])) printUsage();
 
-    prompt(password, "Password: ");
+    lancerClient(argv[1]);
 
-    printf("Le password : %s\n", password);
-    printf("Test\n");
-    lancerClient();
-
-    free(password);
     return 0;
 }

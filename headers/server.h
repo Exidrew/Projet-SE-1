@@ -7,6 +7,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include "message.h"
+
 #define neterr_server(srv, n) destroyServer(srv), syserror(n);
 
 struct server {
@@ -16,8 +18,8 @@ struct server {
     struct sockaddr_in clientAddr;
     socklen_t len;
 
-    ssize_t (*receive)(struct server* this, char* buff, size_t size);
-    void (*send)(struct server* this, char* message);
+    ssize_t (*receive)(struct server* this, void* message, size_t size);
+    void (*send)(struct server* this, void* message, size_t size);
     void (*bind)(struct server* this, int port);
 };
 
@@ -25,7 +27,7 @@ typedef struct server* Server;
 
 Server createServerTCP();
 void destroyServer(Server this);
-void sendTCP(int socket, char* msg);
-ssize_t receiveTCP(int socket, char* buff, size_t size);
+void sendTCP(int socket, void* message, size_t size);
+ssize_t receiveTCP(int socket, void* message, size_t size);
 
 #endif

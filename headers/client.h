@@ -7,6 +7,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include "message.h"
+
 #define LOCAL_IP "127.0.0.1"
 #define PORT 1344
 
@@ -22,8 +24,8 @@ struct client {
     socklen_t taille;
 
     // Fonctions
-    ssize_t (*receive)(struct client* this, char* buff, size_t size);
-    void (*send)(struct client* this, char* message);
+    ssize_t (*receive)(struct client* this, void* message, size_t size);
+    void (*send)(struct client* this, void* message, size_t size);
 };
 
 typedef struct client* Client;

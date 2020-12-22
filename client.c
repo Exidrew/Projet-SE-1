@@ -5,16 +5,18 @@
 #include "headers/error.h"
 #include "headers/client.h"
 #include "headers/gestionChaine.h"
+#include "headers/message.h"
+#include "headers/authentification.h"
 
 /* ============= Fonctions privées ============= */
 
-static ssize_t clientReceiveTCP(Client this, char* buff, size_t size) {
-    if (!buff) return 0;
-    return recv(this->socket, buff, size, 0);
+static ssize_t clientReceiveTCP(Client this, void* message, size_t size) {
+    if (!message) return 0;
+    return recv(this->socket, message, size, 0);
 }
 
-static void clientSendTCP(Client this, char* message) {
-    if (send(this->socket, message, strlen(message), 0) == ERR) neterr_client(this, SEND_ERR);
+static void clientSendTCP(Client this, void* message, size_t size) {
+    if (send(this->socket, message, size, 0) == ERR) neterr_client(this, SEND_ERR);
 }
 
 /* ============= Fonctions publiques ============= */
@@ -44,13 +46,11 @@ void destroyClient(Client this) {
     free(this);
 }
 
-void lancerClient() {
-    char* buffer_send = calloc(MAXIMUM, sizeof(char));
-    char buffer_recv[MAXIMUM];
+void lancerClient(char* clientInfo) {
+    Message* send, *receive;
     ssize_t tailleMessageRecu;
-
-    memset(buffer_recv, 0, sizeof(char) * MAXIMUM);
-
+    AuthMessage authMessage;
+    AuthMessage authResult;
     Client client = createClientTcp(LOCAL_IP, PORT);
 
     if (connect(client->socket, (const struct sockaddr*) &(client->clientAddr), sizeof(struct sockaddr_in)) == ERR) {
@@ -58,19 +58,36 @@ void lancerClient() {
         fatalsyserror(25);
     }
 
+    authMessage.type = SSH_MSG_USERAUTH_REQUEST;
+    prompt(authMessage.methodFields, "Password: ", METHODFIELDSLENGTH);
+    sprintf(authMessage.userName, "%s", clientInfo);
+    sprintf(authMessage.methodName, "%s", PASSWORD);
+    sprintf(authMessage.serviceName, "%s", clientInfo);
+
+    printf("Le mot de passe : %s\n", authMessage.methodFields);
+
+    client->send(client, &authMessage, sizeof(authMessage));
+    client->receive(client, &authResult, sizeof(authResult));
+
+    printf("Resultat authentification: %d\n", authResult.type);
+
     for (;;) {
-        prompt(buffer_send, "Entrez votre message : ");
-        if (!strncmp(buffer_send, "exit", strlen("exit"))) {
-            client->send(client, buffer_send);
+        send = calloc(1, sizeof(Message));
+        receive = calloc(1, sizeof(Message));
+
+        prompt(send->msg, "Entrez votre message : ", MAXIMUM);
+        if (!strncmp(send->msg, "exit", strlen("exit"))) {
+            client->send(client, send, sizeof(send));
             break;
         }
-        printf("Le message : %s\n", buffer_send);
+        printf("Le message : %s\n", send->msg);
 
-        client->send(client, buffer_send);
+        client->send(client, send, sizeof(send));
 
-        tailleMessageRecu = client->receive(client, buffer_recv, MAXIMUM);
-        buffer_recv[tailleMessageRecu] = '\0';
-        printf("Recu : %s", buffer_recv);
+        tailleMessageRecu = client->receive(client, receive, sizeof(receive));
+        receive->msg[tailleMessageRecu] = '\0';
+        printf("Recu : %s\n", receive->msg);
+        free(send);
+        free(receive);
     }
-    free(buffer_send);
 }

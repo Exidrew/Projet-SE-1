@@ -5,40 +5,53 @@
 
 #include "headers/server.h"
 #include "headers/error.h"
+#include "headers/message.h"
+#include "headers/authentification.h"
 
-#define MAX 500
+#define MAXIMUM 100
 
 int sockets[SOMAXCONN];
 
 static void* ping(void* p_data) {
+    printf("Entre fonction\n");
     int index = (*(int*)p_data)-1;
-    int s = sockets[index];
-    char* buf;
+    int sock = sockets[index];
+    AuthMessage authRequest;
+    AuthMessage authResult;
+    Message *receive;
+    printf("Avant\n");
+    receiveTCP(sock, &authRequest, sizeof(authRequest));
+    printf("lol\n");
+    printf("Type recu : %d\n", authRequest.type);
+    printf("Password recu: %s\n", authRequest.methodFields);
+
+    authResult.type = SSH_MSG_USERAUTH_SUCCESS;
+    sendTCP(sock, &authResult, sizeof(authResult));
+
+    printf("Test avant boucle\n");
 
     for (;;) {
-        buf = calloc(MAX, sizeof(char));
-        memset(buf, 0, sizeof(char)*MAX);
-        ssize_t n = receiveTCP(s, buf, MAX);
-        buf[n] ='\0';
+        receive = calloc(1, sizeof(Message));
+
+        receiveTCP(sock, receive, sizeof(Message));
+        printf("Test avant 0\n");
 
         printf("Client %d :\n", index);
-        printf("Recu : %s", buf);
-        printf("Resultat exit : %d\n", !strncmp(buf, "exit\n", strlen("exit\n")));
-        if (!strncmp(buf, "exit", strlen("exit"))) {
+        printf("Recu : %s\n", receive->msg);
+        printf("Resultat exit : %d\n", !strncmp(receive->msg, "exit\n", strlen("exit\n")));
+        if (!strncmp(receive->msg, "exit", strlen("exit"))) {
             printf("Client disconnected\n");
             break;
         }
         
-        sendTCP(s, buf);
-        free(buf);
+        sendTCP(sock, receive, sizeof(receive));
+        free(receive);
     }
     pthread_exit(0);
 }
 
 int main(void) {
     int i = 0, t;
-    char buf[MAX];
-    memset(buf, 0, sizeof(char)*MAX);
 
     Server server1 = createServerTCP();
     server1->bind(server1, 1344);

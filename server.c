@@ -4,19 +4,20 @@
 
 #include "headers/error.h"
 #include "headers/server.h"
+#include "headers/message.h"
 
 /* ============= Fonctions privées ============= */
 
-static ssize_t serverReceiveTCP(struct server* this, char* buf, size_t size) {
+static ssize_t serverReceiveTCP(struct server* this, void* message, size_t size) {
     // Pas obligé de préciser le client avec qui on discute
     // Car la connexion est établie physiquement
-    return recv(this->acceptedSocket, buf, size, 0);
+    return recv(this->acceptedSocket, message, size, 0);
 }
 
-static void serverSendTCP(struct server* this,char* msg){
+static void serverSendTCP(struct server* this, void* message, size_t size){
     // Pas obligé de préciser le client avec qui on discute
     // Car connexion établie physiquement
-    if (send(this->acceptedSocket, msg, strlen(msg), 0) == ERR) {
+    if (send(this->acceptedSocket, message, size, 0) == ERR) {
         neterr_server(this, SEND_ERR);
     }
 }
@@ -52,12 +53,12 @@ Server createServerTCP(){
     return server;
 }
 
-ssize_t receiveTCP(int socket, char *buf, size_t size) {
-    return recv(socket, buf, size, 0);
+ssize_t receiveTCP(int socket, void *message, size_t size) {
+    return recv(socket, message, size, 0);
 }
 
-void sendTCP(int socket, char* msg) {
-    if (send(socket, msg, strlen(msg), 0) == ERR) {
+void sendTCP(int socket, void* message, size_t size) {
+    if (send(socket, message, size, 0) == ERR) {
         syserror(SEND_ERR);
     }
 }

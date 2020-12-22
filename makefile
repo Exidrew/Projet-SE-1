@@ -11,6 +11,9 @@ myssh :
 	$(CC) $(FLAGS) $(DAEMON_SOURCES) -pthread -o startServer
 	$(CC) $(FLAGS) $(SSH_SOURCES) -o myssh
 
+server :
+	$(CC) $(FLAGS) $(DAEMON_SOURCES) -pthread -o startServer
+
 myssh-debug : $(SSH_SOURCES)
 	make clear
 	$(CC) $(DEBUG_FLAGS) $^ -o $@
