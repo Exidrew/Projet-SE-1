@@ -47,10 +47,9 @@ void destroyClient(Client this) {
 }
 
 void lancerClient(char* clientInfo) {
-    Message* send, *receive;
+    Message send, receive;
     ssize_t tailleMessageRecu;
-    AuthMessage authMessage;
-    AuthMessage authResult;
+    AuthMessage authMessage, authResult;
     Client client = createClientTcp(LOCAL_IP, PORT);
 
     if (connect(client->socket, (const struct sockaddr*) &(client->clientAddr), sizeof(struct sockaddr_in)) == ERR) {
@@ -58,36 +57,34 @@ void lancerClient(char* clientInfo) {
         fatalsyserror(25);
     }
 
-    authMessage.type = SSH_MSG_USERAUTH_REQUEST;
-    prompt(authMessage.methodFields, "Password: ", METHODFIELDSLENGTH);
-    sprintf(authMessage.userName, "%s", clientInfo);
-    sprintf(authMessage.methodName, "%s", PASSWORD);
-    sprintf(authMessage.serviceName, "%s", clientInfo);
+    while (authResult.type != SSH_MSG_USERAUTH_SUCCESS) {
+        authMessage.type = SSH_MSG_USERAUTH_REQUEST;
+        prompt(authMessage.methodFields, "Password: ", METHODFIELDSLENGTH);
+        sprintf(authMessage.userName, "%s", clientInfo);
+        sprintf(authMessage.methodName, "%s", PASSWORD);
+        sprintf(authMessage.serviceName, "%s", clientInfo);
 
-    printf("Le mot de passe : %s\n", authMessage.methodFields);
+        printf("Le mot de passe : %s\n", authMessage.methodFields);
 
-    client->send(client, &authMessage, sizeof(authMessage));
-    client->receive(client, &authResult, sizeof(authResult));
-
-    printf("Resultat authentification: %d\n", authResult.type);
+        client->send(client, &authMessage, sizeof(authMessage));
+        client->receive(client, &authResult, sizeof(authResult));
+        if (authResult.type == SSH_MSG_USERAUTH_FAILURE) {
+            printf("Authentification failed: %s\n", authResult.methodFields);
+        }
+    }
 
     for (;;) {
-        send = calloc(1, sizeof(Message));
-        receive = calloc(1, sizeof(Message));
-
-        prompt(send->msg, "Entrez votre message : ", MAXIMUM);
-        if (!strncmp(send->msg, "exit", strlen("exit"))) {
-            client->send(client, send, sizeof(send));
+        prompt(send.msg, "Entrez votre message : ", MAXIMUM);
+        if (!strncmp(send.msg, "exit", strlen("exit"))) {
+            client->send(client, &send, sizeof(send));
             break;
         }
-        printf("Le message : %s\n", send->msg);
+        printf("Le message : %s\n", send.msg);
 
-        client->send(client, send, sizeof(send));
+        client->send(client, &send, sizeof(send));
 
-        tailleMessageRecu = client->receive(client, receive, sizeof(receive));
-        receive->msg[tailleMessageRecu] = '\0';
-        printf("Recu : %s\n", receive->msg);
-        free(send);
-        free(receive);
+        client->receive(client, &receive, sizeof(receive));
+        printf("Recu : %s\n", receive.msg);
     }
+    destroyClient(client);
 }
