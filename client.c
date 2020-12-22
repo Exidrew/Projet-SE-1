@@ -70,7 +70,7 @@ void lancerClient() {
 
         tailleMessageRecu = client->receive(client, buffer_recv, MAXIMUM);
         buffer_recv[tailleMessageRecu] = '\0';
-        printf("Recu : %s\n", buffer_recv);
+        printf("Recu : %s", buffer_recv);
     }
     free(buffer_send);
 }

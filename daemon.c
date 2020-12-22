@@ -13,29 +13,24 @@ int sockets[SOMAXCONN];
 static void* ping(void* p_data) {
     int index = (*(int*)p_data)-1;
     int s = sockets[index];
-    char* msg;
-    char buf[MAX];
+    char* buf;
 
     for (;;) {
+        buf = calloc(MAX, sizeof(char));
         memset(buf, 0, sizeof(char)*MAX);
         ssize_t n = receiveTCP(s, buf, MAX);
         buf[n] ='\0';
-        char* str = "PING";
 
         printf("Client %d :\n", index);
-        printf("%s", buf);
+        printf("Recu : %s", buf);
         printf("Resultat exit : %d\n", !strncmp(buf, "exit\n", strlen("exit\n")));
         if (!strncmp(buf, "exit", strlen("exit"))) {
             printf("Client disconnected\n");
             break;
         }
-        else if(!strncmp(buf, str, strlen(str))){
-            msg = "PONG";
-        }
-        else {
-            msg = "PAS PONG";
-        }
-        sendTCP(s, msg);
+        
+        sendTCP(s, buf);
+        free(buf);
     }
     pthread_exit(0);
 }
