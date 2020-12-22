@@ -23,12 +23,18 @@ static void* ping(void* p_data) {
         char* str = "PING";
 
         printf("Client %d :\n", index);
-        if(strncmp(buf, str, strlen(str))==0){
+        printf("%s", buf);
+        printf("Resultat exit : %d\n", !strncmp(buf, "exit\n", strlen("exit\n")));
+        if (!strncmp(buf, "exit", strlen("exit"))) {
+            printf("Client disconnected\n");
+            break;
+        }
+        else if(!strncmp(buf, str, strlen(str))){
             msg = "PONG";
-        }else {
+        }
+        else {
             msg = "PAS PONG";
         }
-        printf("%s\n", buf);
         sendTCP(s, msg);
     }
     pthread_exit(0);
@@ -54,8 +60,8 @@ int main(void) {
 
         pthread_t thread1;
         printf("Test : %d\n", t);
-        pthread_create(&thread1, NULL, ping, &t);
         pthread_detach(thread1);
+        pthread_create(&thread1, NULL, ping, &t);
         i++;
     }
     printf("Test\n");

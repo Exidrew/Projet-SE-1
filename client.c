@@ -60,8 +60,10 @@ void lancerClient() {
 
     for (;;) {
         prompt(buffer_send, "Entrez votre message : ");
-        if (!strncmp(buffer_send, "exit", strlen("exit"))) break;
-
+        if (!strncmp(buffer_send, "exit", strlen("exit"))) {
+            client->send(client, buffer_send);
+            break;
+        }
         printf("Le message : %s\n", buffer_send);
 
         client->send(client, buffer_send);
