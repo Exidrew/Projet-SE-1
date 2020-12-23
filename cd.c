@@ -7,7 +7,6 @@
 #include "headers/cd.h"
 
 int executerCd(char* commande, int nbCommandes) {
-    printf("branche léo");
     int taille = strlen(commande);
     if(taille <= 3){
         return chdir("/home");

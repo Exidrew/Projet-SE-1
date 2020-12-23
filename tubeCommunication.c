@@ -31,6 +31,15 @@ void ecrireVersSortieStandard(int tubeDescriptor[2]) {
     close(tubeDescriptor[1]);
 }
 
+void lireEcrireVersStandard(int tubeDescriptor[2]) {
+    close(STDIN_FILENO);
+    dup(tubeDescriptor[0]);
+    close(STDOUT_FILENO);
+    dup(tubeDescriptor[1]);
+    close(tubeDescriptor[0]);
+    close(tubeDescriptor[1]);
+}
+
 void lireDepuisEntreeStandard(int tubeDescriptor[2]) {
     close(STDIN_FILENO);
     dup(tubeDescriptor[0]);
@@ -66,38 +75,25 @@ void lireDepuisTube(int tubeDescriptor[2], char* str, int maxLength) {
     close(tubeDescriptor[0]);
 }
 
-void ecrireVariableVersTube(int tubeDescriptor[2], TableauVariables* tab) {
-    int size;
-    int nbVariables = tab->nbVar;
-    close(tubeDescriptor[0]);
-    write(tubeDescriptor[1], &nbVariables, sizeof(int));
-    while(tab->variables != NULL && tab->variables->nom != NULL) {
-        size = strlen(tab->variables->nom);
-        write(tubeDescriptor[1], &size, sizeof(int));
-        write(tubeDescriptor[1], tab->variables->nom, size * sizeof(char) + 1);
-        size = strlen(tab->variables->valeur);
-        write(tubeDescriptor[1], &size, sizeof(int));
-        write(tubeDescriptor[1], tab->variables->valeur, size * sizeof(char) + 1);
-    }
-    close(tubeDescriptor[1]);
-}
+void lectureArgumentsDepuisFd(char* arguments, int fileDescriptor, int argc, char* argv[]) {
+    if (argc-1 > 0 && !strncmp(argv[argc-1], "l", strlen("l"))) {
+        char* in = (char*) calloc(1, sizeof(char));
+        int tailleMessage = 0, tailleActuelle = 1;
+        char car = '\0';
 
-void lireVariableDepuisTube(int tubeDescriptor[2], TableauVariables* tab) {
-    int size = 1, nbVariables = 0;
-    close(tubeDescriptor[1]);
-    read(tubeDescriptor[0], &nbVariables, sizeof(int));
-    for (int i = 0; i < nbVariables; i++) {
-        read(tubeDescriptor[0], &size, sizeof(int));
-        char* nom = (char*) calloc(size, sizeof(char) + 1);
-        if (nom == NULL) perror("Problème de pointeur pour le nom"), free(nom), exit(3);
-        read(tubeDescriptor[0], nom, size * sizeof(char) + 1);
-        read(tubeDescriptor[0], &size, sizeof(int));
-        char* valeur = (char*) calloc(size, sizeof(char) + 1);
-        if (nom == NULL) perror("Problème de pointeur pour la valeur"), free(valeur), exit(4);
-        read(tubeDescriptor[0], valeur, size * sizeof(char) + 1);
-        ajouterVariable(tab, nom, valeur);
-        free(nom);
-        free(valeur);
+        while (read(STDIN_FILENO, &car, 1) > 0) {
+            if (car == '\n' && in[tailleMessage-1] == '\n') break;
+            tailleMessage++;
+            if (tailleActuelle < tailleMessage) {
+                tailleActuelle *= 2;
+                in = realloc(in, tailleActuelle * sizeof(char));
+            }
+            in[tailleMessage-1] = car;
+        }
+        arguments = realloc(arguments, (strlen(argv[0]) + strlen(in) + 1) * sizeof(char));
+        strcat(arguments, " ");
+        strcat(arguments, in);
+        
+        free(in);
     }
-    close(tubeDescriptor[0]);
 }

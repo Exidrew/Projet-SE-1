@@ -4,17 +4,22 @@
 #include "variables.h"
 
 #define CMD_SETVARIABLE "set"
-#define CMD_DELVARIABLE "del"
+#define CMD_DELVARIABLE "unset"
+#define CMD_PRINTVARIABLE "see"
+
+extern char** environ;
 
 /* Ajout d'une variable locale en fonction d'une commande */
-int setVariableLocale(char* tabcmd, TableauVariables* variables);
+int setVariableLocale(char* tabcmd);
 
 /* Suppression d'une variable locale en fonction d'une commande */
-int delVariableLocale(char* tabcmd, TableauVariables* variables);
+int delVariableLocale(char* tabcmd);
 
 /*
     Fonction qui va ajouter les chaines terminant par fin dans le tableau tab
 */
 char* gererVariableLocaleDepuisCommande(char* commande, char tab[1024], char fin);
+
+int afficherVariablesLocales();
 
 #endif

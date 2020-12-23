@@ -16,37 +16,129 @@
 #include "headers/variables.h"
 #include "headers/variablesLocales.h"
 #include "headers/cd.h"
-
-int idTab, idVar;
-key_t clefTab, clefVar;
-TableauVariables* tab;
+#include "headers/tubeCommunication.h"
 
 extern char** environ;
+int tube[2];
 
-void afficherRetour(char** tabcmd, int nbCommandes,int status) {
-    wait(&status);
+void afficherRetour(char** tabcmd, int nbCommandes, int nbRedirection, int status) {
+    int i, retour = 0;
+    for (i=0; i < nbCommandes - nbRedirection; i++) {
+        wait(&status);
+        retour = WEXITSTATUS(status);
+        if (WIFEXITED(status) && status == FAIL_EXEC) {
+            printf(ROUGE("Abnormal exit of ["));
+            afficherEnBrutLesCommandesEntrees(tabcmd, nbCommandes);
+            printf(ROUGE("\b]=%d\n"), status);
+            return;
+        }
+    }
+
     if (WIFEXITED(status)) {
-        if ((status = WEXITSTATUS(status)) != FAIL_EXEC) {
+        if (retour != FAIL_EXEC) {
             printf(VERT("exit status of ["));
             afficherEnBrutLesCommandesEntrees(tabcmd, nbCommandes);
             printf(VERT("\b]=%d\n"), status);
         }
     }
-    else puts(ROUGE("Abnormal exit"));
+    else {
+        printf(ROUGE("Abnormal exit of ["));
+        afficherEnBrutLesCommandesEntrees(tabcmd, nbCommandes);
+        printf(ROUGE("\b]=%d\n"), status);
+    }
 }
 
-void executerCommande(char** tabcmd, int nbCommandes, int* status) {
-    afficherLesCommandesEntrees(tabcmd, nbCommandes);
+int executerCommande(char** tabcmd, int nbCommandes, int* status) {
+    pid_t pid = getpid();
+    int redirection = 0, finDeRedirection = 0, nbRedirection = 0;
+    tabcmd = remplacerLesVariablesDansLesCommandes(tabcmd, nbCommandes, status);
+    //afficherLesCommandesEntrees(tabcmd, nbCommandes);
     for (int i = 0; i < nbCommandes; i++) {
-        if (estCommande(tabcmd[i], CMD_SETVARIABLE)) *status = setVariableLocale(tabcmd[i], tab);
-        else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i], tab);
-        else if (estCommande(tabcmd[i], CMD_CD)) executerCd(tabcmd[i], nbCommandes);
-        else {
-            execlp(*tabcmd, *tabcmd, NULL);
-            freeCommandes(tabcmd);
-            freeVariables(tab);
-            syserror(2);
-            exit(FAIL_EXEC);
+        if (getpid() == pid) {
+            if (tabcmd == NULL || tabcmd[i] == NULL) {
+                *status = -1;
+                return nbRedirection;
+            }
+
+            if (i+1 < nbCommandes && !strcmp(tabcmd[i+1], "|")) {
+                redirection += 1;
+                nbRedirection += 1;
+            } else if (redirection && strcmp(tabcmd[i], "|")) {
+                finDeRedirection = 1;
+                redirection = 0;
+            } else if (strcmp(tabcmd[i], "|")) redirection = 0;
+
+            if (nbRedirection) wait(status);
+
+            if (estSeparateur(tabcmd[i])) continue;
+            else if (estCommande(tabcmd[i], CMD_SETVARIABLE)) *status = setVariableLocale(tabcmd[i]);
+            else if (estCommande(tabcmd[i], CMD_DELVARIABLE)) *status = delVariableLocale(tabcmd[i]);
+            else if (estCommande(tabcmd[i], CMD_PRINTVARIABLE)) *status = afficherVariablesLocales();
+            else if (estCommande(tabcmd[i], CMD_CD)) executerCd(tabcmd[i], nbCommandes);
+            else executerProgrammeExterne(tabcmd[i], redirection, finDeRedirection, status);
+        } else {
+            exit(0);
+        }
+    }
+    return nbRedirection;
+}
+
+void executerProgrammeExterne(char* commande, int redirection, int finDeRedirection, int* status) {
+    char repertory[100], nomProgramme[100];
+    char* args[64];
+    int i, nbArgs;
+
+    if (redirection == 1) if (pipe(tube) == ERR) fatalsyserror(CREATION_PIPE_FAILED);
+
+    // Ces memset evitent une fuite de memoire valgrind
+    memset(repertory, '\0', 100);
+    memset(nomProgramme, '\0', 100);
+    
+    if (estCommandeMy(commande)) {
+        // Ici nos commandes qu'on a implémenté
+        getPwd(repertory);
+        strcat(repertory, "/");
+        recupererNomProgramme(nomProgramme, commande);
+        strcat(repertory, nomProgramme);
+
+        if(fork()==0) {
+            if (redirection) {
+                if (redirection >= 2) {
+                    lireEcrireVersStandard(tube);
+                    *status = execlp(repertory, commande, "l", NULL);
+                } else {
+                    ecrireVersSortieStandard(tube);
+                    *status = execlp(repertory, commande, NULL);
+                }
+            } else if (finDeRedirection) {
+                lireDepuisEntreeStandard(tube);
+                *status = execlp(repertory, commande, "l", NULL);
+            } else *status = execlp(repertory, commande, NULL);
+            fatalsyserror(EXEC_FAIL);
+        }
+    } else {
+        if(fork()==0) {
+            // Ici on peut executer des commandes du shell de base
+            // On doit quand même gérer les redirections ici
+            recupererNomProgramme(nomProgramme, commande);
+            for (i=0; i < 64; i++) args[i] = (char*) calloc(100, sizeof(char));
+            nbArgs = recupererArguments(args, commande);
+            free(args[nbArgs+1]);
+            args[nbArgs+1] = NULL;
+            if (redirection) {
+                if (redirection >= 2) {
+                    lireEcrireVersStandard(tube);
+                    *status = execvp(nomProgramme, args);
+                } else {
+                    ecrireVersSortieStandard(tube);
+                    *status = execvp(nomProgramme, args);
+                }
+            } else if (finDeRedirection) {
+                lireDepuisEntreeStandard(tube);
+                *status = execvp(nomProgramme, args);
+            } else *status = execvp(nomProgramme, args);
+            for (i=0; i < 64; i++) free(args[i]);
+            fatalsyserror(EXEC_FAIL);
         }
     }
 }
@@ -60,34 +152,34 @@ void freeCommandes(char** commandes) {
 }
 
 void freeTout(char** commandes) {
-    detruireMemoirePartagee(idVar, tab->variables);
-    detruireMemoirePartagee(idTab, tab);
     freeCommandes(commandes);
 }
 
 int main(void) {
     char** commandes;
-    pid_t pid;
     int nbCommandes;
-    int status;
+    int status = 0;
+    int nbRedirection;
 
-    allouerMemoirePartagee(clefTab, idTab, 0, TableauVariables, tab, 1);
-    allouerMemoirePartagee(clefVar, idVar, 1, Variables, tab->variables, 5);
     commandes = allouerMemoireCommandes();
 
     for(;;) {
+        status = 0;
         commandes = demanderCommande(commandes, &nbCommandes);
         if (!strcmp(*commandes, CMD_EXIT)) {
-            detruireMemoirePartagee(idVar, tab->variables);
-            detruireMemoirePartagee(idTab, tab);
             freeCommandes(commandes);
             exit(0);
         }
-        executerCommande(commandes, nbCommandes, &status);
-        afficherRetour(commandes, nbCommandes, status);
-        afficherVariables(tab);
-        viderCommande(commandes);
+        nbRedirection = executerCommande(commandes, nbCommandes, &status);
+        afficherRetour(commandes, nbCommandes, nbRedirection, status);
+        commandes = viderCommande(commandes);
     }
     freeTout(commandes);
     exit(0);
+   /*if(wildcardMatch("A*lgorlolithm", "A\\**lol[it]t?m")){
+       printf("match!");
+   } else {
+       printf("pas match!");
+   }
+   return 0;*/
 }
