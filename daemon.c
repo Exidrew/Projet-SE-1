@@ -23,10 +23,18 @@ static void* ping(void* p_data) {
     authResult.header = SSH_MSG_USERAUTH_FAILURE;
     while(authResult.header != SSH_MSG_USERAUTH_SUCCESS) {
         receiveTCP(sock, &authRequest, sizeof(authRequest));
+        printf("Le header recu : %d\n", authRequest.header);
         printf("Password recu: %s\n", authRequest.methodFields);
 
-        if (!strncmp(authRequest.methodFields, "mdp", strlen("mdp"))) authResult.header = SSH_MSG_USERAUTH_SUCCESS;
-        sprintf(authResult.methodFields, "%s", "Mot de passe incorrect");
+        switch (authRequest.header) {
+            case SSH_MSG_USERAUTH_REQUEST:
+                if (!strncmp(authRequest.methodFields, "mdp", strlen("mdp"))) authResult.header = SSH_MSG_USERAUTH_SUCCESS;
+                sprintf(authResult.methodFields, "%s", "Mot de passe incorrect");
+                break;
+            default:
+                sprintf(authResult.methodFields, "%s", "Authentification requise");
+                break;
+        }
         sendTCP(sock, &authResult, sizeof(authResult));
     }
 

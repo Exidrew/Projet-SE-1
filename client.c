@@ -74,13 +74,13 @@ void lancerClient(char* clientInfo) {
     }
 
     for (;;) {
+        send.header = SSH_MSG_CHANNEL_REQUEST;
+        sprintf(send.type, "%s", TYPE_EXEC);
         prompt(send.command, "Entrez votre commande : ", SIZE_CMD);
         if (!strncmp(send.command, "exit", strlen("exit"))) {
-            printf(send.type, "%s", "exec");
             client->send(client, &send, sizeof(send));
             break;
         }
-        sprintf(send.type, "%s", "exec");
         printf("Le message : %s\n", send.command);
 
         client->send(client, &send, sizeof(send));
