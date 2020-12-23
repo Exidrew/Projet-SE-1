@@ -13,18 +13,19 @@
 int sockets[SOMAXCONN];
 
 static void* ping(void* p_data) {
+    printf("Entre fonction\n");
     int index = (*(int*)p_data)-1;
     int sock = sockets[index];
     AuthMessage authRequest;
     AuthMessage authResult;
     Message receive;
     
-    authResult.type = SSH_MSG_USERAUTH_FAILURE;
-    while(authResult.type != SSH_MSG_USERAUTH_SUCCESS) {
+    authResult.header = SSH_MSG_USERAUTH_FAILURE;
+    while(authResult.header != SSH_MSG_USERAUTH_SUCCESS) {
         receiveTCP(sock, &authRequest, sizeof(authRequest));
         printf("Password recu: %s\n", authRequest.methodFields);
 
-        if (!strncmp(authRequest.methodFields, "mdp", strlen("mdp"))) authResult.type = SSH_MSG_USERAUTH_SUCCESS;
+        if (!strncmp(authRequest.methodFields, "mdp", strlen("mdp"))) authResult.header = SSH_MSG_USERAUTH_SUCCESS;
         sprintf(authResult.methodFields, "%s", "Mot de passe incorrect");
         sendTCP(sock, &authResult, sizeof(authResult));
     }
@@ -36,9 +37,11 @@ static void* ping(void* p_data) {
         printf("Test avant 0\n");
 
         printf("Client %d :\n", index);
-        printf("Recu : %s\n", receive.msg);
-        printf("Resultat exit : %d\n", !strncmp(receive.msg, "exit", strlen("exit")));
-        if (!strncmp(receive.msg, "exit", strlen("exit"))) {
+        printf("Le header recu : %d\n", receive.header);
+        printf("Le type recu : %s\n", receive.type);
+        printf("Recu : %s\n", receive.command);
+        printf("Resultat exit : %d\n", !strncmp(receive.command, "exit", strlen("exit")));
+        if (!strncmp(receive.command, "exit", strlen("exit"))) {
             printf("Client disconnected\n");
             break;
         }

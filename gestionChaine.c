@@ -291,11 +291,8 @@ void prompt(char* chaine, char* message, int initialSize) {
         car = getchar();
         size++;
 
-        if (size >= max) {
-            chaine = (char*) realloc(chaine, (size * 2) * sizeof(char));
-            if (chaine == NULL) fatalsyserror(MEM_FAILED_ALLOCATION);
-            max = size * 2;
-        }
+        if (size >= max) break;
+        
         chaine[size-1] = (char) car;
         
         if ((char) car == '\n') {

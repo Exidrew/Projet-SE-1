@@ -15,10 +15,13 @@
 #define HOSTBASED "hostbased"
 #define NONE "none"
 
+#ifndef BYTE_DEF
+#define BYTE_DER
 typedef unsigned char byte;
+#endif
 
 struct auth {
-    byte type;
+    byte header;
     char userName[USERNAMELENGTH];
     char serviceName[SERVICENAMELENGTH];
     char methodName[METHODNAMELENTGTH];

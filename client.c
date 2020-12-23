@@ -57,8 +57,8 @@ void lancerClient(char* clientInfo) {
         fatalsyserror(25);
     }
 
-    while (authResult.type != SSH_MSG_USERAUTH_SUCCESS) {
-        authMessage.type = SSH_MSG_USERAUTH_REQUEST;
+    while (authResult.header != SSH_MSG_USERAUTH_SUCCESS) {
+        authMessage.header = SSH_MSG_USERAUTH_REQUEST;
         prompt(authMessage.methodFields, "Password: ", METHODFIELDSLENGTH);
         sprintf(authMessage.userName, "%s", clientInfo);
         sprintf(authMessage.methodName, "%s", PASSWORD);
@@ -68,23 +68,25 @@ void lancerClient(char* clientInfo) {
 
         client->send(client, &authMessage, sizeof(authMessage));
         client->receive(client, &authResult, sizeof(authResult));
-        if (authResult.type == SSH_MSG_USERAUTH_FAILURE) {
+        if (authResult.header == SSH_MSG_USERAUTH_FAILURE) {
             printf("Authentification failed: %s\n", authResult.methodFields);
         }
     }
 
     for (;;) {
-        prompt(send.msg, "Entrez votre message : ", MAXIMUM);
-        if (!strncmp(send.msg, "exit", strlen("exit"))) {
+        prompt(send.command, "Entrez votre commande : ", SIZE_CMD);
+        if (!strncmp(send.command, "exit", strlen("exit"))) {
+            printf(send.type, "%s", "exec");
             client->send(client, &send, sizeof(send));
             break;
         }
-        printf("Le message : %s\n", send.msg);
+        sprintf(send.type, "%s", "exec");
+        printf("Le message : %s\n", send.command);
 
         client->send(client, &send, sizeof(send));
 
         client->receive(client, &receive, sizeof(receive));
-        printf("Recu : %s\n", receive.msg);
+        printf("Recu : %s\n", receive.command);
     }
     destroyClient(client);
 }
