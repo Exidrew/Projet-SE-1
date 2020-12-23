@@ -63,7 +63,7 @@ static void* ping(void* p_data) {
         switch(receive.header) {
             case SSH_MSG_CHANNEL_REQUEST:
                 printf("Gestion du channel request\n");
-                commandes = gererChaine("ls -l", commandes, &nbCommandes);
+                commandes = gererChaine("myls", commandes, &nbCommandes);
                 printf("Passe !\n");
                 executerCommande(commandes, 1, &status);
                 wait(NULL);

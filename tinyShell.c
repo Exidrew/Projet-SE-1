@@ -179,5 +179,11 @@ int main(void) {
     }
     freeTout(commandes);
     exit(0);
+    // if(wildcardMatch("A*lgorlolithm", "A\\**lol[it]t?m")){
+    //     printf("match!");
+    // } else {
+    //     printf("pas match!");
+    // }
+    // return 0;
 }
 #endif
