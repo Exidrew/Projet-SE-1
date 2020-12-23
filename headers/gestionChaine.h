@@ -52,4 +52,10 @@ void affichageLigneShell();
 int recupererArguments(char* args[], char* commande);
 
 void recupererNomProgramme(char nomProgramme[100], char* commande);
+
+void prompt(char* chaine, char* message, int initialSize);
+
+int reg_match(char *string, char *pattern);
+
+int wildcardMatch(char *text, char *pattern);
 #endif

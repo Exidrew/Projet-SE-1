@@ -37,6 +37,17 @@
 
 #define REDIRECTION_FAILED 15
 
+#define SIGEMPTYSET_ERR 16
+#define SIGACTION_ERR 17
+#define SOCKET_ERR 18
+#define BINDING_ERR 19
+#define SEND_ERR 20
+#define ACCEPT_ERR 21
+#define LISTEN_ERR 22
+#define READ_ERR 23
+#define THREAD_CREATE_ERR 24
+#define CONNECTION_ERR 25
+
 extern char* errormsg[];
 
 #endif

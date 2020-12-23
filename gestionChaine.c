@@ -280,6 +280,140 @@ int recupererArguments(char* args[], char* commande) {
     return indice;
 }
 
+void prompt(char* chaine, char* message, int initialSize) {
+    size_t max = initialSize;
+    size_t size = 0;
+    char car;
+
+    printf("%s", message);
+
+    while(1) {
+        car = getchar();
+        size++;
+
+        if (size >= max) break;
+        
+        chaine[size-1] = (char) car;
+        
+        if ((char) car == '\n') {
+            chaine[size] = '\0';
+            break;
+        }
+    }
+}
+
+int match(char *first, char * second) 
+{ 
+    // If we reach at the end of both strings, we are done 
+    if (*first == '\0' && *second == '\0') 
+        return 1; 
+
+    // Make sure that the characters after '*' are present 
+    // in second string. This function assumes that the first 
+    // string will not contain two consecutive '*' 
+    if (*first == '*' && *(first+1) != '\0' && *second == '\0') 
+        return 0; 
+
+    // If the first string contains '?', or current characters 
+    // of both strings match 
+    if (*first == '?' || *first == *second) 
+        return match(first+1, second+1); 
+
+    // If there is *, then there are two possibilities 
+    // a) We consider current character of second string 
+    // b) We ignore current character of second string. 
+    if (*first == '*') 
+        return match(first+1, second) || match(first, second+1); 
+    return 0;  
+}
+
+
+int reg_match(char *string, char *pattern)
+{
+    int status;
+    regex_t re;
+    if (regcomp(&re, pattern, REG_EXTENDED|REG_NOSUB) != 0) {
+        return(0);      /* Report error. */
+    }
+    status = regexec(&re, string, (size_t) 0, NULL, 0);
+    regfree(&re);
+    if (status != 0) {
+        return(0);      /* Report error. */
+    }
+    return(1);
+}
+
+int wildcardMatch(char *text, char *pattern) {
+    int n = strlen(text);
+    int m = strlen(pattern);
+    int backslash = 0;
+    char *regex_pattern = malloc(sizeof(pattern));
+    char *regex_text = malloc(sizeof(text));
+    if (m == 0)    //when pattern is empty
+        return (n == 0);
+
+    int i = 0, j = 0, r1 = 0, r2 = 0, textPointer = -1, pattPointer = -1;
+    while (i < n) {
+        if (text[i] == pattern[j]) {    //matching text and pattern characters
+            i++;
+            j++;
+            backslash = 0;
+        } else if (j < m && pattern[j] == '?' && !backslash) {    //as ? used for one character
+            i++;
+            j++;
+        } else if (j < m && pattern[j] == '*' && !backslash) {    //as * used for one or more character
+            textPointer = i;
+            pattPointer = j;
+            printf("lol\n");
+            j++;
+        } else if(j < m && pattern[j] == '[' && !backslash) {
+            r1 = j;
+            r2 = r1;
+            j++;
+            printf("i : %d \n", i);
+            while(j < m && pattern[j] != ']') {
+                r2++;
+                j++;
+            }
+            r2++;
+            printf("R1 : %d et R2 : %d\n", r1, r2);
+            strncpy(regex_pattern, pattern + r1, (r2 - r1) + 1);
+            regex_pattern[(r2-r1) + 1] = '\0';
+            printf("char à tester : %c", text[i]);
+            printf("%s\n", regex_pattern);
+            regex_text[0] = text[i];
+            regex_text[1] = '\0';
+            j++;
+            i++;
+            if (!reg_match(regex_text,regex_pattern)){
+                free(regex_pattern);
+                return 0;
+            }
+        } else if (j < m && pattern[j] == '\\'){
+            backslash = 1;
+            j++;
+        } else if (pattPointer != -1) {
+            j = pattPointer + 1;
+            i = textPointer + 1;
+            textPointer++;
+        } else {
+            return 0;
+        }
+        printf("j%d et i %d  pj : %d et pi : %d\n",j,i, pattPointer, textPointer);
+    }
+
+    while (j < m && pattern[j] == '*') {
+        printf("j : %d ----------\n", j);
+        j++;     //j will increase when wildcard is *
+    }
+
+    if (j == m) {    //check whether pattern is finished or not
+        return 1;
+    }
+    return 0;
+}
+
+
 // int main(void) {
 //     char** commandes = allouerMemoireCommandes();
 //     int nbCommandes;
