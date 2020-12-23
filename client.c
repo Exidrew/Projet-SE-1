@@ -48,7 +48,6 @@ void destroyClient(Client this) {
 
 void lancerClient(char* clientInfo) {
     Message send, receive;
-    ssize_t tailleMessageRecu;
     AuthMessage authMessage, authResult;
     Client client = createClientTcp(LOCAL_IP, PORT);
 

@@ -48,12 +48,20 @@ static void* ping(void* p_data) {
         printf("Le header recu : %d\n", receive.header);
         printf("Le type recu : %s\n", receive.type);
         printf("Recu : %s\n", receive.command);
-        printf("Resultat exit : %d\n", !strncmp(receive.command, "exit", strlen("exit")));
         if (!strncmp(receive.command, "exit", strlen("exit"))) {
             printf("Client disconnected\n");
             break;
         }
         
+        switch(receive.header) {
+            case SSH_MSG_CHANNEL_REQUEST:
+                printf("Gestion du channel request\n");
+                break;
+            default:
+                printf("Gestion de l'erreur ici\n");
+                break;
+        }
+
         sendTCP(sock, &receive, sizeof(receive));
     }
     pthread_exit(0);
