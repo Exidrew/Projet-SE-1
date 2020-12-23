@@ -2,13 +2,13 @@ CC = gcc
 SOURCES = error.c tinyShell.c gestionChaine.c variablesLocales.c variables.c tubeCommunication.c cd.c
 PSSOURCES = myps.c procdata.c error.c redirections.c tubeCommunication.c
 SSH_SOURCES = myssh.c error.c client.c server.c gestionChaine.c
-DAEMON_SOURCES = daemon.c server.c error.c
+DAEMON_SOURCES = $(SOURCES) daemon.c server.c
 FLAGS = -Wall -pedantic
 DEBUG_FLAGS = -Wall -pendantic -g
 
 myssh :
 	make clear
-	$(CC) $(FLAGS) $(DAEMON_SOURCES) -pthread -o startServer
+	$(CC) $(FLAGS) $(DAEMON_SOURCES) -DSERVER -pthread -o startServer
 	$(CC) $(FLAGS) $(SSH_SOURCES) -o myssh
 
 server :

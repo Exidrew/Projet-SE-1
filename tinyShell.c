@@ -49,11 +49,13 @@ void afficherRetour(char** tabcmd, int nbCommandes, int nbRedirection, int statu
 }
 
 int executerCommande(char** tabcmd, int nbCommandes, int* status) {
+    printf("Entre dans l'execution avec les commandes :\n");
     pid_t pid = getpid();
-    int redirection = 0, finDeRedirection = 0, nbRedirection = 0;
+    int redirection = 0, finDeRedirection = 0, nbRedirection = 0, i;
     tabcmd = remplacerLesVariablesDansLesCommandes(tabcmd, nbCommandes, status);
     //afficherLesCommandesEntrees(tabcmd, nbCommandes);
-    for (int i = 0; i < nbCommandes; i++) {
+    for (i = 0; i < nbCommandes; i++) {
+        printf("La commande : %s\n", tabcmd[i]);
         if (getpid() == pid) {
             if (tabcmd == NULL || tabcmd[i] == NULL) {
                 *status = -1;
@@ -155,6 +157,7 @@ void freeTout(char** commandes) {
     freeCommandes(commandes);
 }
 
+#ifndef SERVER
 int main(void) {
     char** commandes;
     int nbCommandes;
@@ -177,3 +180,4 @@ int main(void) {
     freeTout(commandes);
     exit(0);
 }
+#endif

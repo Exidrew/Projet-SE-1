@@ -1,3 +1,4 @@
+#include <sys/wait.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -7,6 +8,8 @@
 #include "headers/error.h"
 #include "headers/message.h"
 #include "headers/authentification.h"
+#include "headers/tinyShell.h"
+#include "headers/gestionChaine.h"
 
 #define MAXIMUM 100
 
@@ -19,6 +22,9 @@ static void* ping(void* p_data) {
     AuthMessage authRequest;
     AuthMessage authResult;
     Message receive;
+    char** commandes = allouerMemoireCommandes();
+    int status = 0;
+    int nbCommandes = 0;
     
     authResult.header = SSH_MSG_USERAUTH_FAILURE;
     while(authResult.header != SSH_MSG_USERAUTH_SUCCESS) {
@@ -41,6 +47,7 @@ static void* ping(void* p_data) {
     printf("Test avant boucle\n");
 
     for (;;) {
+        printf("Attend un TCP\n");
         receiveTCP(sock, &receive, sizeof(receive));
         printf("Test avant 0\n");
 
@@ -56,12 +63,17 @@ static void* ping(void* p_data) {
         switch(receive.header) {
             case SSH_MSG_CHANNEL_REQUEST:
                 printf("Gestion du channel request\n");
+                commandes = gererChaine("ls -l", commandes, &nbCommandes);
+                printf("Passe !\n");
+                executerCommande(commandes, 1, &status);
+                wait(NULL);
+                printf("Termine le executerCommande");
                 break;
             default:
                 printf("Gestion de l'erreur ici\n");
                 break;
         }
-
+        
         sendTCP(sock, &receive, sizeof(receive));
     }
     pthread_exit(0);
